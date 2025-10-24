@@ -1,36 +1,199 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# کتاب‌یار (Ketab-Yar) - Official
 
-## Getting Started
+> پلتفرم مطالعه آنلاین با هوش مصنوعی برای یادگیری زبان انگلیسی
 
-First, run the development server:
+## 🌟 ویژگی‌ها
 
-```bash
+### 📖 تجربه مطالعه پیشرفته
+- **صفحه‌گردانی واقع‌گرایانه**: انیمیشن صفحه‌گردانی با فیزیک واقعی
+- **پشتیبانی دو زبانه**: انگلیسی و فارسی با قابلیت تغییر آنی
+- **حالت تمام‌صفحه**: تجربه مطالعه بدون حواس‌پرتی
+- **تنظیمات شخصی‌سازی**: فونت، اندازه، فاصله خطوط، تم
+
+### 🤖 هوش مصنوعی Gemini 2.5 Flash
+- **دستیار مطالعه هوشمند**: چت با کتاب و پرسش سوال
+- **ترجمه آنی**: ترجمه متن و کلمات به فارسی
+- **تعریف کلمات**: معنی و مثال‌های کاربردی
+- **تحلیل متن**: استخراج کلمات کلیدی و سطح دشواری
+
+### 📚 مدیریت واژگان
+- **ذخیره کلمات**: افزودن کلمات ناشناخته به لیست شخصی
+- **فلش‌کارت هوشمند**: سیستم تکرار فاصله‌دار (Spaced Repetition)
+- **آزمون‌های خودکار**: تست یادگیری با سوالات متنوع
+- **پیگیری پیشرفت**: نمودار و آمار یادگیری
+
+### 🎯 گیمیفیکیشن
+- **سیستم امتیازدهی**: کسب امتیاز با مطالعه و یادگیری
+- **نشان‌های دستاورد**: بج‌ها برای رسیدن به اهداف
+- **جدول رتبه‌بندی**: رقابت با سایر کاربران
+- **چالش‌های روزانه**: اهداف مطالعه روزانه
+
+### 👨‍💼 پنل مدیریت حرفه‌ای
+- **داشبورد تحلیلی**: آمار کامل کاربران و فعالیت‌ها
+- **مدیریت کتاب‌ها**: افزودن، ویرایش، حذف کتاب‌ها
+- **ویرایشگر متن پیشرفته**: TipTap با قابلیت‌های Word
+- **مدیریت کاربران**: مشاهده و کنترل کاربران
+- **گزارش‌گیری**: خروجی Excel/CSV از داده‌ها
+
+## 🛠 تکنولوژی‌ها
+
+### Frontend
+- **Next.js 15.1.0** - App Router
+- **React 18.3** - Server & Client Components
+- **TypeScript 5.3** - Type Safety
+- **Tailwind CSS 3.4** - Styling
+- **Framer Motion 12** - Animations
+- **GSAP 3.12** - Complex Animations
+
+### Backend & Database
+- **Supabase** - PostgreSQL + Auth + Storage
+- **@supabase/ssr** - Server-Side Auth
+- **Row Level Security** - Data Protection
+
+### AI & External Services
+- **Google Gemini 2.5 Flash** - AI Assistant
+- **Stripe** - Payment Processing (Optional)
+
+### UI Components
+- **shadcn/ui** - Radix UI Primitives
+- **Lucide React** - Icons
+- **Sonner** - Toast Notifications
+- **TipTap** - Rich Text Editor
+
+### State Management
+- **TanStack Query 5.74** - Server State
+- **TanStack Virtual 3.1** - Virtualized Lists
+- **React Hook Form 7.50** - Form Management
+- **Zod 3.22** - Schema Validation
+
+## 🚀 شروع به کار
+
+### پیش‌نیازها
+- Node.js 20+ 
+- npm یا yarn یا pnpm
+- حساب Supabase
+- کلید API Gemini
+
+### نصب
+
+1. کلون کردن پروژه:
+\`\`\`bash
+git clone https://github.com/your-username/official-ketab-yar.git
+cd official-ketab-yar
+\`\`\`
+
+2. نصب وابستگی‌ها:
+\`\`\`bash
+npm install --legacy-peer-deps
+\`\`\`
+
+3. تنظیم متغیرهای محیطی:
+\`\`\`bash
+cp .env.example .env.local
+\`\`\`
+
+سپس فایل `.env.local` را با اطلاعات خود پر کنید.
+
+4. اجرای پروژه:
+\`\`\`bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+\`\`\`
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+پروژه در آدرس `http://localhost:3000` اجرا می‌شود.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 📁 ساختار پروژه
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+\`\`\`
+official-ketab-yar/
+├── app/                      # Next.js App Router
+│   ├── (auth)/              # صفحات احراز هویت
+│   ├── (main)/              # صفحات اصلی
+│   ├── admin/               # پنل مدیریت
+│   ├── api/                 # API Routes
+│   ├── layout.tsx           # Layout اصلی
+│   └── page.tsx             # صفحه اصلی
+├── components/              # کامپوننت‌های React
+│   ├── ui/                  # کامپوننت‌های پایه
+│   ├── layout/              # کامپوننت‌های Layout
+│   ├── reader/              # کامپوننت‌های خواندن کتاب
+│   ├── vocabulary/          # کامپوننت‌های واژگان
+│   ├── ai/                  # کامپوننت‌های AI
+│   └── providers/           # Context Providers
+├── lib/                     # توابع کمکی و تنظیمات
+│   ├── supabase/           # تنظیمات Supabase
+│   ├── gemini/             # تنظیمات Gemini AI
+│   └── utils.ts            # توابع کمکی
+├── hooks/                   # Custom React Hooks
+├── types/                   # تعریف Type‌ها
+├── public/                  # فایل‌های استاتیک
+└── middleware.ts            # Next.js Middleware
+\`\`\`
 
-## Learn More
+## 🎨 طراحی و UI/UX
 
-To learn more about Next.js, take a look at the following resources:
+### رنگ‌بندی
+- **رنگ اصلی**: طلایی/بژ (#BE8348, #D29E64, #E6B980)
+- **الهام**: Netflix, Disney+, Apple Books
+- **حالت تاریک**: پشتیبانی کامل
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### انیمیشن‌ها
+- صفحه‌گردانی: 600-800ms با فیزیک واقعی
+- تراکنش‌های صفحه: 300-500ms
+- Micro-interactions: 150-250ms
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 📊 پایگاه داده
 
-## Deploy on Vercel
+### جداول اصلی
+- `profiles` - پروفایل کاربران
+- `books` - کتاب‌ها
+- `book_content` - محتوای کتاب‌ها
+- `user_progress` - پیشرفت مطالعه
+- `vocabulary` - واژگان کاربران
+- `bookmarks` - نشانک‌ها
+- `highlights` - هایلایت‌ها
+- `categories` - دسته‌بندی‌ها
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 🔒 امنیت
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Row Level Security (RLS) در Supabase
+- احراز هویت امن با Supabase Auth
+- محافظت از API Routes
+- Validation با Zod
+- XSS و CSRF Protection
+
+## 📈 بهینه‌سازی
+
+- Server-Side Rendering (SSR)
+- Static Site Generation (SSG)
+- Image Optimization
+- Code Splitting
+- Lazy Loading
+- React Suspense
+- TanStack Query Caching
+
+## 🤝 مشارکت
+
+برای مشارکت در پروژه:
+1. Fork کنید
+2. Branch جدید بسازید (`git checkout -b feature/AmazingFeature`)
+3. تغییرات را Commit کنید (`git commit -m 'Add some AmazingFeature'`)
+4. Push کنید (`git push origin feature/AmazingFeature`)
+5. Pull Request باز کنید
+
+## 📝 لایسنس
+
+این پروژه تحت لایسنس MIT منتشر شده است.
+
+## 👥 تیم توسعه
+
+تیم کتاب‌یار - [ketabyar.ir](https://ketabyar.ir)
+
+## 📞 تماس با ما
+
+- وب‌سایت: [ketabyar.ir](https://ketabyar.ir)
+- ایمیل: info@ketabyar.ir
+- تلگرام: @ketabyar
+
+---
+
+**ساخته شده با ❤️ برای یادگیرندگان زبان انگلیسی**
