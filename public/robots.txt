@@ -1,0 +1,41 @@
+# Ketab-Yar Robots.txt
+# Optimized for SEO by Agent 1 (Search Dominator)
+
+User-agent: *
+
+# Allow public pages for SEO
+Allow: /
+Allow: /about
+Allow: /help
+Allow: /guide
+Allow: /contact
+Allow: /blog/
+Allow: /books/
+Allow: /library
+
+# Disallow private app sections (CSR pages - no SEO value)
+Disallow: /dashboard/
+Disallow: /profile/
+Disallow: /settings/
+Disallow: /vocabulary/
+Disallow: /review/
+Disallow: /subscription/
+Disallow: /admin/
+Disallow: /auth/
+Disallow: /api/
+Disallow: /books/read/
+
+# Disallow search results and filters (duplicate content)
+Disallow: /*?*q=
+Disallow: /*?*filter=
+Disallow: /*?*sort=
+
+# Allow CSS and JS for proper rendering
+Allow: /*.css
+Allow: /*.js
+
+# Crawl-delay (be nice to server)
+Crawl-delay: 1
+
+# Sitemap location
+Sitemap: https://ketabyar.ir/sitemap.xml

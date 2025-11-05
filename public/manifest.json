@@ -1,0 +1,78 @@
+{
+  "name": "کتاب‌یار - پلتفرم هوشمند مطالعه دوزبانه",
+  "short_name": "کتاب‌یار",
+  "description": "بیش از 1000 کتاب انگلیسی را رایگان و دوزبانه بخوانید. با هوش مصنوعی Gemini، واژگان هوشمند و گیمیفیکیشن",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f4ecd8",
+  "theme_color": "#D4AF37",
+  "orientation": "portrait-primary",
+  "dir": "rtl",
+  "lang": "fa",
+  "icons": [
+    {
+      "src": "/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-256x256.png",
+      "sizes": "256x256",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-384x384.png",
+      "sizes": "384x384",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["education", "books", "productivity"],
+  "screenshots": [
+    {
+      "src": "/screenshot-1.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "label": "صفحه اصلی کتاب‌یار"
+    },
+    {
+      "src": "/screenshot-2.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "label": "کتاب‌خوان دوزبانه"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "کتابخانه",
+      "short_name": "کتابخانه",
+      "description": "مرور کتاب‌ها",
+      "url": "/library",
+      "icons": [{ "src": "/icon-192x192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "داشبورد",
+      "short_name": "داشبورد",
+      "description": "پیشرفت من",
+      "url": "/dashboard",
+      "icons": [{ "src": "/icon-192x192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "واژگان",
+      "short_name": "واژگان",
+      "description": "واژگان من",
+      "url": "/vocabulary",
+      "icons": [{ "src": "/icon-192x192.png", "sizes": "192x192" }]
+    }
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false
+}
