@@ -1,12 +1,9 @@
 "use client"
 
-import { useEffect, useState, createContext, useContext } from "react"
-
-import { useRouter } from "next/navigation"
-
 import { createClient } from "@/lib/supabase/client"
-
-import type { User, Session, AuthChangeEvent } from "@supabase/supabase-js"
+import type { AuthChangeEvent, Session, User } from "@supabase/supabase-js"
+import { useRouter } from "next/navigation"
+import { createContext, useContext, useEffect, useMemo, useState } from "react"
 
 interface AuthContextType {
   user: User | null
@@ -17,17 +14,24 @@ interface AuthContextType {
   signIn: (email: string, password: string) => Promise<void>
   signOut: () => Promise<void>
   resetPassword: (email: string) => Promise<void>
+  refreshSession: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
+/**
+ * Enhanced Auth Provider with singleton Supabase client
+ * Implements Agent 2's performance optimization
+ */
 export function AuthProvider({ children }: { children: React.ReactNode }): React.ReactElement {
   const [user, setUser] = useState<User | null>(null)
   const [session, setSession] = useState<Session | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<Error | null>(null)
   const router = useRouter()
-  const supabase = createClient()
+
+  // Create singleton Supabase client (Agent 2 fix)
+  const supabase = useMemo(() => createClient(), [])
 
   useEffect(() => {
     const getSession = async (): Promise<void> => {
@@ -69,12 +73,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }): React
       console.error("Error setting up auth state change listener:", error)
       setError(error instanceof Error ? error : new Error("Unknown error occurred"))
       setIsLoading(false)
-      return () => {}
+      return () => { }
     }
   }, [supabase.auth])
 
   const signUp = async (email: string, password: string): Promise<void> => {
     setIsLoading(true)
+    setError(null)
     try {
       const { error } = await supabase.auth.signUp({
         email,
@@ -83,10 +88,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }): React
       if (error) {
         throw error
       }
+      logger.info('User signed up successfully', {
+        context: 'useSupabaseAuth',
+        metadata: { email }
+      })
       router.push("/auth/verify")
     } catch (error) {
-      console.error("Error signing up:", error)
-      throw error instanceof Error ? error : new Error("Unknown error occurred")
+      const err = error instanceof Error ? error : new Error("Unknown error occurred")
+      setError(err)
+      logger.error("Error signing up", error, { context: 'useSupabaseAuth' })
+      throw err
     } finally {
       setIsLoading(false)
     }
@@ -94,6 +105,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }): React
 
   const signIn = async (email: string, password: string): Promise<void> => {
     setIsLoading(true)
+    setError(null)
     try {
       const { error } = await supabase.auth.signInWithPassword({
         email,
@@ -102,10 +114,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }): React
       if (error) {
         throw error
       }
+      logger.info('User signed in successfully', {
+        context: 'useSupabaseAuth',
+        metadata: { email }
+      })
       router.push("/dashboard")
     } catch (error) {
-      console.error("Error signing in:", error)
-      throw error instanceof Error ? error : new Error("Unknown error occurred")
+      const err = error instanceof Error ? error : new Error("Unknown error occurred")
+      setError(err)
+      logger.error("Error signing in", error, { context: 'useSupabaseAuth' })
+      throw err
     } finally {
       setIsLoading(false)
     }
@@ -113,15 +131,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }): React
 
   const signOut = async (): Promise<void> => {
     setIsLoading(true)
+    setError(null)
     try {
       const { error } = await supabase.auth.signOut()
       if (error) {
         throw error
       }
+      logger.info('User signed out successfully', { context: 'useSupabaseAuth' })
       router.push("/")
     } catch (error) {
-      console.error("Error signing out:", error)
-      throw error instanceof Error ? error : new Error("Unknown error occurred")
+      const err = error instanceof Error ? error : new Error("Unknown error occurred")
+      setError(err)
+      logger.error("Error signing out", error, { context: 'useSupabaseAuth' })
+      throw err
     } finally {
       setIsLoading(false)
     }
@@ -129,6 +151,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }): React
 
   const resetPassword = async (email: string): Promise<void> => {
     setIsLoading(true)
+    setError(null)
     try {
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
         redirectTo: `${window.location.origin}/auth/reset-password`,
@@ -136,11 +159,30 @@ export function AuthProvider({ children }: { children: React.ReactNode }): React
       if (error) {
         throw error
       }
+      logger.info('Password reset email sent', {
+        context: 'useSupabaseAuth',
+        metadata: { email }
+      })
     } catch (error) {
-      console.error("Error resetting password:", error)
-      throw error instanceof Error ? error : new Error("Unknown error occurred")
+      const err = error instanceof Error ? error : new Error("Unknown error occurred")
+      setError(err)
+      logger.error("Error resetting password", error, { context: 'useSupabaseAuth' })
+      throw err
     } finally {
       setIsLoading(false)
+    }
+  }
+
+  const refreshSession = async (): Promise<void> => {
+    try {
+      const { data, error } = await supabase.auth.refreshSession()
+      if (error) throw error
+
+      setSession(data.session)
+      setUser(data.session?.user ?? null)
+      logger.info('Session refreshed', { context: 'useSupabaseAuth' })
+    } catch (error) {
+      logger.error("Error refreshing session", error, { context: 'useSupabaseAuth' })
     }
   }
 
@@ -153,6 +195,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }): React
     signIn,
     signOut,
     resetPassword,
+    refreshSession,
   }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

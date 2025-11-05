@@ -6,6 +6,8 @@ import { revalidatePath } from 'next/cache'
 /**
  * Update reading progress for a book
  * Automatically marks book as completed when progress reaches 90%+
+ * 
+ * Agent 2 (Performance): Uses database function for atomic updates
  */
 export async function updateReadingProgress(
     bookId: string,
@@ -31,26 +33,37 @@ export async function updateReadingProgress(
             100
         )
 
-        // Upsert reading progress
-        const { error: progressError } = await supabase
-            .from('reading_progress')
-            .upsert(
-                {
-                    user_id: user.id,
-                    book_id: bookId,
-                    current_page: currentPage,
-                    total_pages: totalPages,
-                    progress_percentage: progressPercentage,
-                    last_read_at: new Date().toISOString(),
-                },
-                {
-                    onConflict: 'user_id,book_id',
-                }
-            )
+        // Use database function for atomic update (prevents race conditions)
+        const { error } = await supabase.rpc('update_reading_progress', {
+            p_user_id: user.id,
+            p_book_id: bookId,
+            p_current_page: currentPage,
+            p_total_pages: totalPages,
+            p_progress_percentage: progressPercentage,
+        })
 
-        if (progressError) {
-            console.error('Error updating reading progress:', progressError)
-            return { success: false, error: progressError.message }
+        if (error) {
+            // Fallback to direct upsert if function doesn't exist
+            const { error: progressError } = await supabase
+                .from('reading_progress')
+                .upsert(
+                    {
+                        user_id: user.id,
+                        book_id: bookId,
+                        current_page: currentPage,
+                        total_pages: totalPages,
+                        progress_percentage: progressPercentage,
+                        last_read_at: new Date().toISOString(),
+                    },
+                    {
+                        onConflict: 'user_id,book_id',
+                    }
+                )
+
+            if (progressError) {
+                console.error('Error updating reading progress:', progressError)
+                return { success: false, error: progressError.message }
+            }
         }
 
         // The database trigger will automatically handle completion tracking
@@ -313,7 +326,7 @@ export async function getUserReadingStats() {
             .eq('user_id', user.id)
 
         const totalPagesRead = progressData?.reduce(
-            (sum, p) => sum + (p.current_page || 0),
+            (sum: number, p: { current_page: number | null }) => sum + (p.current_page || 0),
             0
         ) || 0
 
@@ -330,7 +343,7 @@ export async function getUserReadingStats() {
             const today = new Date()
             today.setHours(0, 0, 0, 0)
 
-            let currentDate = new Date(today)
+            const currentDate = new Date(today)
             const activityDates = new Set(
                 recentActivity.map(a => {
                     const date = new Date(a.last_read_at)

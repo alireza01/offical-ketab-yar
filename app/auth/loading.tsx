@@ -3,25 +3,27 @@ import { Skeleton } from "@/components/ui/skeleton"
 
 export default function AuthLoading() {
   return (
-    <Card>
-      <CardHeader className="mx-auto space-y-2">
-        <Skeleton className="mx-auto h-8 w-3/4" />
-        <Skeleton className="h-4 w-full" />
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <Skeleton className="h-10 w-full" />
-        <Skeleton className="h-10 w-full" />
-        <Skeleton className="h-10 w-full" />
-        <div className="relative py-4">
-          <div className="absolute inset-0 flex items-center">
-            <Skeleton className="h-px w-full" />
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-gold/5 p-4">
+      <Card className="w-full max-w-md">
+        <CardHeader className="space-y-2">
+          <Skeleton className="mx-auto h-8 w-3/4" />
+          <Skeleton className="h-4 w-full" />
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <Skeleton className="h-10 w-full" />
+          <Skeleton className="h-10 w-full" />
+          <Skeleton className="h-10 w-full" />
+          <div className="relative py-4">
+            <div className="absolute inset-0 flex items-center">
+              <Skeleton className="h-px w-full" />
+            </div>
+            <div className="relative flex justify-center">
+              <Skeleton className="mx-auto h-4 w-16" />
+            </div>
           </div>
-          <div className="relative flex justify-center">
-            <Skeleton className="mx-auto h-4 w-16" />
-          </div>
-        </div>
-        <Skeleton className="h-10 w-full" />
-      </CardContent>
-    </Card>
+          <Skeleton className="h-10 w-full" />
+        </CardContent>
+      </Card>
+    </div>
   )
 }

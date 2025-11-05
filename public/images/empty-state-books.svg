@@ -1,0 +1,29 @@
+<svg width="240" height="240" viewBox="0 0 240 240" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Empty library illustration -->
+  <defs>
+    <linearGradient id="emptyGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#C9A961;stop-opacity:0.2" />
+      <stop offset="100%" style="stop-color:#D4AF37;stop-opacity:0.1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Empty bookshelf -->
+  <rect x="40" y="80" width="160" height="120" rx="8" fill="url(#emptyGradient)" stroke="#C9A961" stroke-width="2"/>
+  
+  <!-- Shelf lines -->
+  <line x1="40" y1="120" x2="200" y2="120" stroke="#C9A961" stroke-width="2" opacity="0.5"/>
+  <line x1="40" y1="160" x2="200" y2="160" stroke="#C9A961" stroke-width="2" opacity="0.5"/>
+  
+  <!-- Sad book icon -->
+  <g transform="translate(120, 140)">
+    <rect x="-20" y="-30" width="40" height="50" rx="4" fill="#C9A961" opacity="0.3"/>
+    <circle cx="-8" cy="-10" r="3" fill="#C9A961"/>
+    <circle cx="8" cy="-10" r="3" fill="#C9A961"/>
+    <path d="M -10 5 Q 0 0 10 5" stroke="#C9A961" stroke-width="2" fill="none" stroke-linecap="round"/>
+  </g>
+  
+  <!-- Text -->
+  <text x="120" y="220" text-anchor="middle" fill="#C9A961" font-size="14" font-family="Arial">
+    کتابخانه شما خالی است
+  </text>
+</svg>

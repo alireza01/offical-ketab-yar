@@ -1,0 +1,78 @@
+# Ketab-Yar Robots.txt
+# Agent 1 (SEO): Strategic crawl control
+
+User-agent: *
+
+# ✅ Allow public pages (SSG - for SEO)
+Allow: /
+Allow: /about
+Allow: /help
+Allow: /support
+Allow: /subscription
+Allow: /library
+Allow: /books/$
+Allow: /books/[a-z0-9-]+$
+
+# ❌ Disallow private app sections (CSR - no SEO value)
+Disallow: /dashboard
+Disallow: /my-books
+Disallow: /profile
+Disallow: /settings
+Disallow: /vocabulary
+Disallow: /review
+Disallow: /admin
+Disallow: /auth
+Disallow: /api
+Disallow: /books/read/
+
+# ❌ Disallow technical files
+Disallow: /_next/
+Disallow: /static/
+Disallow: /*.json$
+Disallow: /*.xml$
+
+# Sitemap location
+Sitemap: https://ketabyar.com/sitemap.xml
+
+# Crawl delay (be nice to server)
+Crawl-delay: 1
+
+# Specific bot rules
+User-agent: Googlebot
+Allow: /
+Disallow: /dashboard
+Disallow: /my-books
+Disallow: /profile
+Disallow: /settings
+Disallow: /vocabulary
+Disallow: /review
+Disallow: /admin
+Disallow: /auth
+Disallow: /api
+Disallow: /books/read/
+
+User-agent: Bingbot
+Allow: /
+Disallow: /dashboard
+Disallow: /my-books
+Disallow: /profile
+Disallow: /settings
+Disallow: /vocabulary
+Disallow: /review
+Disallow: /admin
+Disallow: /auth
+Disallow: /api
+Disallow: /books/read/
+
+# Block bad bots
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: SemrushBot
+Disallow: /
+
+User-agent: DotBot
+Disallow: /
+
+User-agent: MJ12bot
+Disallow: /

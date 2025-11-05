@@ -107,9 +107,9 @@ export default function AdminDashboard() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
+        <h1 className="text-3xl font-bold tracking-tight">پنل مدیریت</h1>
         <p className="text-muted-foreground">
-          Welcome to the Ketab Yar admin panel
+          خوش آمدید به پنل مدیریت کتاب‌یار
         </p>
       </div>
 
@@ -120,47 +120,50 @@ export default function AdminDashboard() {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
         <Card className="col-span-4">
           <CardHeader>
-            <CardTitle>Recent Activity</CardTitle>
+            <CardTitle>فعالیت‌های اخیر</CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-muted-foreground text-sm">
-              Activity tracking coming soon...
+              سیستم ردیابی فعالیت به زودی اضافه می‌شود...
             </p>
           </CardContent>
         </Card>
 
         <Card className="col-span-3">
           <CardHeader>
-            <CardTitle>Quick Actions</CardTitle>
+            <CardTitle>دسترسی سریع</CardTitle>
           </CardHeader>
           <CardContent className="space-y-2">
             <a
               href="/admin/books/new"
               className="hover:bg-accent block rounded-lg p-3 transition-colors"
             >
-              <div className="font-medium">Add New Book</div>
+              <div className="font-medium">افزودن کتاب جدید</div>
               <div className="text-muted-foreground text-sm">
-                Publish a new book to the library
+                انتشار کتاب جدید در کتابخانه
               </div>
             </a>
             <a
-              href="/admin/users"
+              href="/admin/books"
               className="hover:bg-accent block rounded-lg p-3 transition-colors"
             >
-              <div className="font-medium">Manage Users</div>
+              <div className="font-medium">مدیریت کتاب‌ها</div>
               <div className="text-muted-foreground text-sm">
-                View and manage user accounts
+                مشاهده و ویرایش تمام کتاب‌ها
               </div>
             </a>
-            <a
-              href="/admin/analytics"
-              className="hover:bg-accent block rounded-lg p-3 transition-colors"
-            >
-              <div className="font-medium">View Analytics</div>
+            <div className="hover:bg-accent/50 block rounded-lg p-3 opacity-50 cursor-not-allowed">
+              <div className="font-medium">مدیریت کاربران</div>
               <div className="text-muted-foreground text-sm">
-                Check platform statistics
+                فاز ۲ - به زودی
               </div>
-            </a>
+            </div>
+            <div className="hover:bg-accent/50 block rounded-lg p-3 opacity-50 cursor-not-allowed">
+              <div className="font-medium">آنالیتیکس</div>
+              <div className="text-muted-foreground text-sm">
+                فاز ۲ - به زودی
+              </div>
+            </div>
           </CardContent>
         </Card>
       </div>

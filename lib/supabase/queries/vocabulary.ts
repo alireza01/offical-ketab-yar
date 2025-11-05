@@ -24,12 +24,33 @@ export async function getUserVocabulary(userId?: string) {
   return data
 }
 
-// Add word to vocabulary
+// Add word to vocabulary (with freemium limit enforcement - Agent 3)
 export async function addVocabularyWord(word: Omit<VocabularyInsert, 'user_id'>) {
   const supabase = createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
   if (!user) throw new Error('User not authenticated')
+
+  // Check user's subscription tier
+  const { data: userData } = await supabase
+    .from('users')
+    .select('subscription_tier')
+    .eq('id', user.id)
+    .single()
+
+  const isFree = !userData || userData.subscription_tier === 'free'
+
+  // If free user, check word count limit (20 words)
+  if (isFree) {
+    const { count } = await supabase
+      .from('vocabulary')
+      .select('*', { count: 'exact', head: true })
+      .eq('user_id', user.id)
+
+    if (count && count >= 20) {
+      throw new Error('VOCABULARY_LIMIT_REACHED')
+    }
+  }
 
   const { data, error } = await supabase
     .from('vocabulary')

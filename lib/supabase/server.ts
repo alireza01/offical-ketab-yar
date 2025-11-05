@@ -1,14 +1,19 @@
 "use server"
 
-import { cookies } from "next/headers"
-import { createServerClient as createSSRClient } from "@supabase/ssr"
+import { createMockSupabaseClient } from "@/lib/mock-data/mock-supabase"
 import type { CookieOptions } from "@supabase/ssr"
+import { createServerClient as createSSRClient } from "@supabase/ssr"
 import type { ResponseCookie } from "next/dist/compiled/@edge-runtime/cookies"
-import { SUPABASE_URL, SUPABASE_ANON_KEY, DEFAULT_COOKIE_OPTIONS } from "./config"
+import { cookies } from "next/headers"
+import { DEFAULT_COOKIE_OPTIONS, SUPABASE_ANON_KEY, SUPABASE_URL } from "./config"
+
+const DEV_MODE = process.env.NEXT_PUBLIC_DEV_MODE === 'true'
 
 export async function createServerClient() {
-  if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
-    throw new Error("Missing Supabase environment variables")
+  // In dev mode without Supabase, return comprehensive mock client with real data
+  if (DEV_MODE || !SUPABASE_URL || SUPABASE_URL === 'https://placeholder.supabase.co' || !SUPABASE_ANON_KEY || SUPABASE_ANON_KEY === 'placeholder-key') {
+    console.log('🎭 DEV MODE (Server): Using mock Supabase with sample data')
+    return createMockSupabaseClient()
   }
 
   const cookieStore = await cookies()

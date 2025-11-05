@@ -1,4 +1,4 @@
-import { SettingsTabs } from '@/components/settings/settings-tabs'
+import { SettingsTabs } from '@/components/settings/settings-tabs.tsx'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {

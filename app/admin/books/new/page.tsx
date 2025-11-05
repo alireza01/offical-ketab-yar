@@ -1,4 +1,4 @@
-import { BookEditor } from '@/components/admin/book-editor'
+import { SimpleBookForm } from '@/components/admin/simple-book-form'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
@@ -12,11 +12,11 @@ export default function NewBookPage() {
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Add New Book</h1>
         <p className="text-muted-foreground">
-          Create and publish a new book to the library
+          Upload book content as JSON files and add metadata
         </p>
       </div>
 
-      <BookEditor />
+      <SimpleBookForm />
     </div>
   )
 }

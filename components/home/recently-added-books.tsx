@@ -1,34 +1,20 @@
-import { createServerClient } from '@/lib/supabase/server'
-import { Sparkles } from 'lucide-react'
-import { BookCarouselSection } from './book-carousel-section'
+import { Card } from '@/components/ui/card'
 
-export async function RecentlyAddedBooks() {
-    try {
-        const supabase = await createServerClient()
-
-        const { data: books } = await supabase
-            .from('books')
-            .select('*')
-            .eq('is_active', true)
-            .order('created_at', { ascending: false })
-            .limit(12)
-
-        if (!books || books.length === 0) {
-            return null
-        }
-
-        return (
-            <BookCarouselSection
-                title="جدیدترین کتاب‌ها"
-                description="تازه‌ترین کتاب‌های اضافه شده به کتابخانه"
-                books={books}
-                icon={<Sparkles className="w-8 h-8 text-gold-500" />}
-                viewAllLink="/library?sort=newest"
-                viewAllText="مشاهده همه کتاب‌های جدید"
-            />
-        )
-    } catch (error) {
-        console.error('Error loading recently added books:', error)
-        return null
-    }
+export function RecentlyAddedBooks() {
+    return (
+        <section className="py-12">
+            <div className="container">
+                <h2 className="text-3xl font-bold mb-6">Recently Added</h2>
+                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                    {[1, 2, 3, 4, 5, 6].map((i) => (
+                        <Card key={i} className="p-4 hover:shadow-lg transition-shadow cursor-pointer">
+                            <div className="aspect-[2/3] bg-muted rounded-md mb-2" />
+                            <h3 className="font-semibold text-sm line-clamp-2">Book Title {i}</h3>
+                            <p className="text-xs text-muted-foreground">Author Name</p>
+                        </Card>
+                    ))}
+                </div>
+            </div>
+        </section>
+    )
 }

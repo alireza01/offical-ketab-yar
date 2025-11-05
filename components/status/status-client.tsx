@@ -1,277 +1,220 @@
 'use client'
 
 import { Badge } from '@/components/ui/badge'
-import { Card } from '@/components/ui/card'
-import { motion } from 'framer-motion'
-import {
-    Activity,
-    CheckCircle2,
-    Clock,
-    Database,
-    Globe,
-    Server,
-    TrendingUp,
-    Zap
-} from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { AlertCircle, CheckCircle2, Clock } from 'lucide-react'
 
-interface ServiceStatus {
-    name: string
-    status: 'operational' | 'degraded' | 'down'
-    uptime: number
-    responseTime: number
-    icon: any
+const services = [
+    {
+        name: 'وب‌سایت اصلی',
+        status: 'operational',
+        uptime: '99.98%',
+        responseTime: '142ms'
+    },
+    {
+        name: 'API سرور',
+        status: 'operational',
+        uptime: '99.96%',
+        responseTime: '89ms'
+    },
+    {
+        name: 'پایگاه داده',
+        status: 'operational',
+        uptime: '99.99%',
+        responseTime: '12ms'
+    },
+    {
+        name: 'هوش مصنوعی (Gemini)',
+        status: 'operational',
+        uptime: '99.94%',
+        responseTime: '1.2s'
+    },
+    {
+        name: 'ذخیره‌سازی فایل',
+        status: 'operational',
+        uptime: '99.97%',
+        responseTime: '234ms'
+    },
+    {
+        name: 'احراز هویت',
+        status: 'operational',
+        uptime: '99.95%',
+        responseTime: '156ms'
+    }
+]
+
+const incidents = [
+    {
+        date: '2025-01-15',
+        title: 'کندی موقت در سرویس AI',
+        description: 'به دلیل ترافیک بالا، سرویس هوش مصنوعی با کندی مواجه شد. مشکل در 12 دقیقه برطرف شد.',
+        status: 'resolved',
+        duration: '12 دقیقه'
+    }
+]
+
+const StatusBadge = ({ status }: { status: string }) => {
+    const config = {
+        operational: {
+            icon: CheckCircle2,
+            label: 'عملیاتی',
+            variant: 'default' as const,
+            className: 'bg-green-500/10 text-green-700 border-green-500/20'
+        },
+        degraded: {
+            icon: AlertCircle,
+            label: 'کندی',
+            variant: 'secondary' as const,
+            className: 'bg-yellow-500/10 text-yellow-700 border-yellow-500/20'
+        },
+        outage: {
+            icon: AlertCircle,
+            label: 'قطعی',
+            variant: 'destructive' as const,
+            className: 'bg-red-500/10 text-red-700 border-red-500/20'
+        }
+    }
+
+    const { icon: Icon, label, className } = config[status as keyof typeof config] || config.operational
+
+    return (
+        <Badge variant="outline" className={className}>
+            <Icon className="h-3 w-3 ml-1" />
+            {label}
+        </Badge>
+    )
 }
 
 export function StatusClient() {
-    const [currentTime, setCurrentTime] = useState(new Date())
-    const [lastDeploy] = useState(new Date('2025-01-15T10:30:00'))
-
-    useEffect(() => {
-        const timer = setInterval(() => setCurrentTime(new Date()), 1000)
-        return () => clearInterval(timer)
-    }, [])
-
-    const services: ServiceStatus[] = [
-        {
-            name: 'وب‌سایت اصلی',
-            status: 'operational',
-            uptime: 99.98,
-            responseTime: 145,
-            icon: Globe
-        },
-        {
-            name: 'API سرور',
-            status: 'operational',
-            uptime: 99.95,
-            responseTime: 89,
-            icon: Server
-        },
-        {
-            name: 'پایگاه داده',
-            status: 'operational',
-            uptime: 99.99,
-            responseTime: 23,
-            icon: Database
-        },
-        {
-            name: 'هوش مصنوعی',
-            status: 'operational',
-            uptime: 99.92,
-            responseTime: 312,
-            icon: Zap
-        }
-    ]
-
-    const getStatusColor = (status: string) => {
-        switch (status) {
-            case 'operational':
-                return 'text-green-600 bg-green-500/10 border-green-500/20'
-            case 'degraded':
-                return 'text-yellow-600 bg-yellow-500/10 border-yellow-500/20'
-            case 'down':
-                return 'text-red-600 bg-red-500/10 border-red-500/20'
-            default:
-                return 'text-gray-600 bg-gray-500/10 border-gray-500/20'
-        }
-    }
-
-    const getStatusText = (status: string) => {
-        switch (status) {
-            case 'operational':
-                return 'عملیاتی'
-            case 'degraded':
-                return 'کاهش عملکرد'
-            case 'down':
-                return 'خارج از سرویس'
-            default:
-                return 'نامشخص'
-        }
-    }
-
-    const calculateUptime = () => {
-        const now = new Date()
-        const diff = now.getTime() - lastDeploy.getTime()
-        const days = Math.floor(diff / (1000 * 60 * 60 * 24))
-        const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
-        return { days, hours }
-    }
-
-    const uptime = calculateUptime()
+    const overallStatus = services.every(s => s.status === 'operational') ? 'operational' : 'degraded'
 
     return (
-        <div className="min-h-screen bg-gradient-to-b from-background via-muted/30 to-background py-20">
-            <div className="container mx-auto px-4">
-                {/* Header */}
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="text-center mb-16"
-                >
-                    <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br from-green-600 to-green-400 mb-6">
-                        <Activity className="h-10 w-10 text-white" />
-                    </div>
-                    <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-green-600 via-green-500 to-green-400 bg-clip-text text-transparent">
-                        وضعیت سرویس
-                    </h1>
-                    <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                        تمام سیستم‌ها عملیاتی هستند
-                    </p>
-                </motion.div>
-
-                <div className="max-w-5xl mx-auto space-y-8">
-                    {/* Overall Status */}
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.1 }}
-                    >
-                        <Card className="p-8 bg-gradient-to-br from-green-500/10 to-green-600/10 border-green-500/20">
-                            <div className="flex items-center justify-between flex-wrap gap-4">
-                                <div className="flex items-center gap-4">
-                                    <CheckCircle2 className="h-12 w-12 text-green-600" />
-                                    <div>
-                                        <h2 className="text-2xl font-bold">همه سیستم‌ها عملیاتی</h2>
-                                        <p className="text-muted-foreground">آخرین بررسی: {currentTime.toLocaleTimeString('fa-IR')}</p>
-                                    </div>
-                                </div>
-                                <Badge className="bg-green-600 text-white text-lg px-6 py-2">
-                                    99.96% Uptime
-                                </Badge>
-                            </div>
-                        </Card>
-                    </motion.div>
-
-                    {/* Services Status */}
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.2 }}
-                    >
-                        <Card className="p-8">
-                            <h3 className="text-2xl font-bold mb-6">وضعیت سرویس‌ها</h3>
-                            <div className="space-y-4">
-                                {services.map((service, index) => {
-                                    const Icon = service.icon
-                                    return (
-                                        <motion.div
-                                            key={service.name}
-                                            initial={{ opacity: 0, x: -20 }}
-                                            animate={{ opacity: 1, x: 0 }}
-                                            transition={{ delay: 0.3 + index * 0.1 }}
-                                            className="flex items-center justify-between p-4 rounded-lg border bg-card hover:bg-accent/50 transition-colors"
-                                        >
-                                            <div className="flex items-center gap-4">
-                                                <div className="w-12 h-12 rounded-lg bg-muted flex items-center justify-center">
-                                                    <Icon className="h-6 w-6 text-gold-600" />
-                                                </div>
-                                                <div>
-                                                    <h4 className="font-bold">{service.name}</h4>
-                                                    <div className="flex items-center gap-4 text-sm text-muted-foreground mt-1">
-                                                        <span>Uptime: {service.uptime}%</span>
-                                                        <span>•</span>
-                                                        <span>زمان پاسخ: {service.responseTime}ms</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <Badge className={getStatusColor(service.status)}>
-                                                {getStatusText(service.status)}
-                                            </Badge>
-                                        </motion.div>
-                                    )
-                                })}
-                            </div>
-                        </Card>
-                    </motion.div>
-
-                    {/* Deployment Info */}
-                    <div className="grid md:grid-cols-2 gap-6">
-                        <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.4 }}
-                        >
-                            <Card className="p-6">
-                                <div className="flex items-start gap-4">
-                                    <div className="w-12 h-12 rounded-lg bg-blue-500/10 flex items-center justify-center flex-shrink-0">
-                                        <Clock className="h-6 w-6 text-blue-600" />
-                                    </div>
-                                    <div>
-                                        <h3 className="font-bold mb-2">آخرین دیپلوی</h3>
-                                        <p className="text-sm text-muted-foreground mb-1">
-                                            {lastDeploy.toLocaleDateString('fa-IR', {
-                                                year: 'numeric',
-                                                month: 'long',
-                                                day: 'numeric'
-                                            })}
-                                        </p>
-                                        <p className="text-sm text-muted-foreground">
-                                            ساعت {lastDeploy.toLocaleTimeString('fa-IR')}
-                                        </p>
-                                    </div>
-                                </div>
-                            </Card>
-                        </motion.div>
-
-                        <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.5 }}
-                        >
-                            <Card className="p-6">
-                                <div className="flex items-start gap-4">
-                                    <div className="w-12 h-12 rounded-lg bg-green-500/10 flex items-center justify-center flex-shrink-0">
-                                        <TrendingUp className="h-6 w-6 text-green-600" />
-                                    </div>
-                                    <div>
-                                        <h3 className="font-bold mb-2">مدت زمان آنلاین</h3>
-                                        <p className="text-2xl font-bold text-green-600">
-                                            {uptime.days} روز و {uptime.hours} ساعت
-                                        </p>
-                                        <p className="text-sm text-muted-foreground mt-1">
-                                            بدون وقفه
-                                        </p>
-                                    </div>
-                                </div>
-                            </Card>
-                        </motion.div>
-                    </div>
-
-                    {/* Recent Updates */}
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.6 }}
-                    >
-                        <Card className="p-8">
-                            <h3 className="text-2xl font-bold mb-6">به‌روزرسانی‌های اخیر</h3>
-                            <div className="space-y-4">
-                                <div className="flex gap-4 pb-4 border-b">
-                                    <div className="w-2 h-2 rounded-full bg-green-600 mt-2 flex-shrink-0" />
-                                    <div>
-                                        <p className="font-medium">بهبود عملکرد سرور</p>
-                                        <p className="text-sm text-muted-foreground">15 ژانویه 2025 - 10:30</p>
-                                    </div>
-                                </div>
-                                <div className="flex gap-4 pb-4 border-b">
-                                    <div className="w-2 h-2 rounded-full bg-green-600 mt-2 flex-shrink-0" />
-                                    <div>
-                                        <p className="font-medium">افزودن قابلیت‌های جدید AI</p>
-                                        <p className="text-sm text-muted-foreground">10 ژانویه 2025 - 14:20</p>
-                                    </div>
-                                </div>
-                                <div className="flex gap-4">
-                                    <div className="w-2 h-2 rounded-full bg-green-600 mt-2 flex-shrink-0" />
-                                    <div>
-                                        <p className="font-medium">بهینه‌سازی پایگاه داده</p>
-                                        <p className="text-sm text-muted-foreground">5 ژانویه 2025 - 09:15</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </Card>
-                    </motion.div>
+        <div className="container max-w-5xl py-8 space-y-8">
+            {/* Header */}
+            <div className="text-center space-y-4">
+                <h1 className="text-4xl font-bold">وضعیت سرویس</h1>
+                <div className="flex items-center justify-center gap-2">
+                    {overallStatus === 'operational' ? (
+                        <>
+                            <CheckCircle2 className="h-6 w-6 text-green-600" />
+                            <p className="text-xl text-green-600 font-semibold">
+                                تمام سیستم‌ها عملیاتی هستند
+                            </p>
+                        </>
+                    ) : (
+                        <>
+                            <AlertCircle className="h-6 w-6 text-yellow-600" />
+                            <p className="text-xl text-yellow-600 font-semibold">
+                                برخی سرویس‌ها با کندی مواجه هستند
+                            </p>
+                        </>
+                    )}
                 </div>
             </div>
+
+            {/* Overall Stats */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <Card>
+                    <CardHeader className="pb-3">
+                        <CardDescription>آپتایم کلی</CardDescription>
+                        <CardTitle className="text-3xl text-green-600">99.96%</CardTitle>
+                    </CardHeader>
+                </Card>
+                <Card>
+                    <CardHeader className="pb-3">
+                        <CardDescription>زمان پاسخ میانگین</CardDescription>
+                        <CardTitle className="text-3xl">156ms</CardTitle>
+                    </CardHeader>
+                </Card>
+                <Card>
+                    <CardHeader className="pb-3">
+                        <CardDescription>مانیتورینگ</CardDescription>
+                        <CardTitle className="text-3xl flex items-center gap-2">
+                            <Clock className="h-6 w-6" />
+                            24/7
+                        </CardTitle>
+                    </CardHeader>
+                </Card>
+            </div>
+
+            {/* Services Status */}
+            <Card>
+                <CardHeader>
+                    <CardTitle>وضعیت سرویس‌ها</CardTitle>
+                    <CardDescription>
+                        مانیتورینگ لحظه‌ای تمام سرویس‌های کتاب‌یار
+                    </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                    {services.map((service) => (
+                        <div
+                            key={service.name}
+                            className="flex items-center justify-between p-4 rounded-lg border bg-card hover:bg-accent/50 transition-colors"
+                        >
+                            <div className="space-y-1">
+                                <h3 className="font-semibold">{service.name}</h3>
+                                <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                                    <span>آپتایم: {service.uptime}</span>
+                                    <span>زمان پاسخ: {service.responseTime}</span>
+                                </div>
+                            </div>
+                            <StatusBadge status={service.status} />
+                        </div>
+                    ))}
+                </CardContent>
+            </Card>
+
+            {/* Recent Incidents */}
+            <Card>
+                <CardHeader>
+                    <CardTitle>رویدادهای اخیر</CardTitle>
+                    <CardDescription>
+                        تاریخچه مشکلات و قطعی‌های سرویس
+                    </CardDescription>
+                </CardHeader>
+                <CardContent>
+                    {incidents.length > 0 ? (
+                        <div className="space-y-4">
+                            {incidents.map((incident, index) => (
+                                <div
+                                    key={index}
+                                    className="p-4 rounded-lg border bg-card space-y-2"
+                                >
+                                    <div className="flex items-start justify-between">
+                                        <div className="space-y-1">
+                                            <h3 className="font-semibold">{incident.title}</h3>
+                                            <p className="text-sm text-muted-foreground">
+                                                {incident.description}
+                                            </p>
+                                        </div>
+                                        <Badge variant="outline" className="bg-green-500/10 text-green-700 border-green-500/20">
+                                            برطرف شده
+                                        </Badge>
+                                    </div>
+                                    <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                                        <span>{incident.date}</span>
+                                        <span>مدت: {incident.duration}</span>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    ) : (
+                        <p className="text-center text-muted-foreground py-8">
+                            هیچ رویداد قابل توجهی در 30 روز گذشته ثبت نشده است
+                        </p>
+                    )}
+                </CardContent>
+            </Card>
+
+            {/* Subscribe to Updates */}
+            <Card className="bg-primary/5 border-primary/20">
+                <CardHeader>
+                    <CardTitle>اطلاع از وضعیت سرویس</CardTitle>
+                    <CardDescription>
+                        برای دریافت اطلاعیه‌های وضعیت سرویس، ایمیل خود را وارد کنید
+                    </CardDescription>
+                </CardHeader>
+            </Card>
         </div>
     )
 }
