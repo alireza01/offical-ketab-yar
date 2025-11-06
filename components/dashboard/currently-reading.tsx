@@ -6,7 +6,7 @@ import { BookOpen, Clock } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
-import { createServerClient } from "@/lib/supabase/server"
+import { createClient } from "@/lib/supabase/server"
 
 interface UserProgress {
   id: string
@@ -45,8 +45,8 @@ type UserProgressResponse = {
 }[]
 
 export async function CurrentlyReading() {
-  const supabase = await createServerClient()
-  
+  const supabase = await createClient()
+
   // Get current user
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return null

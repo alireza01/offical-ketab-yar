@@ -29,8 +29,6 @@ export function GamificationDashboard() {
         levelUpData,
         newAchievements,
         clearXPReward,
-        clearLevelUp,
-        clearNewAchievements,
     } = useGamification()
 
     if (isLoading) {

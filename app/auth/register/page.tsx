@@ -1,9 +1,9 @@
 import { Metadata } from 'next'
-import dynamic from 'next/dynamic'
+import dynamicImport from 'next/dynamic'
 import { Suspense } from 'react'
 import RegisterLoading from './loading'
 
-const RegisterForm = dynamic(() => import('@/components/auth/register-form'), {
+const RegisterForm = dynamicImport(() => import('@/components/auth/register-form'), {
     loading: () => <RegisterLoading />,
 })
 
@@ -15,6 +15,9 @@ export const metadata: Metadata = {
         follow: false,
     },
 }
+
+// Force dynamic rendering for auth pages
+export const dynamic = 'force-dynamic'
 
 export default function RegisterPage() {
     return (

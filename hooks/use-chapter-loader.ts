@@ -60,13 +60,14 @@ export function useChapterLoader({ bookSlug, initialChapter }: UseChapterLoaderP
 
                 if (cachedChapter) {
                     // Found in offline storage
+                    const chapter: Chapter = {
+                        title: cachedChapter.title,
+                        chapterNumber: cachedChapter.chapterNumber,
+                        content: cachedChapter.content,
+                    }
                     setChapters((prev) => ({
                         ...prev,
-                        [chapterNumber]: {
-                            title: cachedChapter.title,
-                            chapterNumber: cachedChapter.chapterNumber,
-                            content: cachedChapter.content,
-                        },
+                        [chapterNumber]: chapter,
                     }))
                     loadingRef.current.delete(chapterNumber)
                     setLoading((prev) => ({ ...prev, [chapterNumber]: false }))
@@ -80,9 +81,12 @@ export function useChapterLoader({ bookSlug, initialChapter }: UseChapterLoaderP
             chapterNumber,
             content[] {
               _type,
+              _key,
               _type == "bilingualParagraph" => {
                 english,
-                farsi
+                farsi,
+                alignment,
+                pageBreakAfter
               },
               _type == "image" => {
                 "url": asset->url,

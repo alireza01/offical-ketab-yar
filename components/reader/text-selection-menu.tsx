@@ -9,7 +9,7 @@ interface TextSelectionMenuProps {
     position: { x: number; y: number }
     theme: 'light' | 'sepia' | 'dark'
     onHighlight: (color: string) => void
-    onAddToVocabulary: () => void
+    onAddToVocabulary?: () => void // Optional - only for single words
     onAIChat: () => void
     onClose: () => void
 }
@@ -77,26 +77,31 @@ export function TextSelectionMenu({
                 </Button>
             </motion.div>
 
-            <div className={cn(
-                "w-px mx-1 my-1",
-                theme === 'dark' ? 'bg-gold-700' : 'bg-gold-300'
-            )} />
-
-            {/* Add to Vocabulary */}
-            <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
-                <Button
-                    size="sm"
-                    variant="ghost"
-                    onClick={onAddToVocabulary}
-                    className="hover:bg-gold-100 dark:hover:bg-gold-900/50 transition-all duration-200 p-2 rounded-lg"
-                    title="افزودن به واژگان"
-                >
-                    <BookmarkPlus className={cn(
-                        "h-5 w-5",
-                        theme === 'dark' ? 'text-gold-400' : 'text-gold-600'
+            {/* Only show vocabulary button for single words */}
+            {onAddToVocabulary && (
+                <>
+                    <div className={cn(
+                        "w-px mx-1 my-1",
+                        theme === 'dark' ? 'bg-gold-700' : 'bg-gold-300'
                     )} />
-                </Button>
-            </motion.div>
+
+                    {/* Add to Vocabulary */}
+                    <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
+                        <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={onAddToVocabulary}
+                            className="hover:bg-gold-100 dark:hover:bg-gold-900/50 transition-all duration-200 p-2 rounded-lg"
+                            title="افزودن به واژگان"
+                        >
+                            <BookmarkPlus className={cn(
+                                "h-5 w-5",
+                                theme === 'dark' ? 'text-gold-400' : 'text-gold-600'
+                            )} />
+                        </Button>
+                    </motion.div>
+                </>
+            )}
 
             {/* AI Chat */}
             <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
@@ -104,13 +109,15 @@ export function TextSelectionMenu({
                     size="sm"
                     variant="ghost"
                     onClick={onAIChat}
-                    className="hover:bg-gold-100 dark:hover:bg-gold-900/50 transition-all duration-200 p-2 rounded-lg"
-                    title="چت با AI"
+                    className="hover:bg-purple-100 dark:hover:bg-purple-900/50 transition-all duration-200 p-2 rounded-lg relative"
+                    title="پرسیدن از AI درباره این متن"
                 >
-                    <MessageSquare className={cn(
-                        "h-5 w-5",
-                        theme === 'dark' ? 'text-gold-400' : 'text-gold-600'
-                    )} />
+                    <MessageSquare className="h-5 w-5 text-purple-600" />
+                    <motion.div
+                        className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-purple-500 rounded-full"
+                        animate={{ scale: [1, 1.3, 1], opacity: [1, 0.7, 1] }}
+                        transition={{ duration: 2, repeat: Infinity }}
+                    />
                 </Button>
             </motion.div>
 

@@ -64,7 +64,8 @@ export function DownloadBookButton({
                     title: 'حذف شد',
                     description: 'کتاب از حافظه آفلاین حذف شد',
                 })
-            } catch (error) {
+            } catch (err) {
+                console.error('Failed to delete offline book:', err)
                 toast({
                     title: 'خطا',
                     description: 'حذف کتاب با مشکل مواجه شد',

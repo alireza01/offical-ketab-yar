@@ -8,7 +8,7 @@
 import { Card, CardContent } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
 import { Skeleton } from '@/components/ui/skeleton'
-import { createBrowserClient } from '@/lib/supabase/client'
+import { createClient } from '@/lib/supabase/client'
 import { useQuery } from '@tanstack/react-query'
 import { BookOpen, Target, TrendingUp, Trophy } from 'lucide-react'
 import { VocabularyManager } from './vocabulary-manager'
@@ -18,7 +18,7 @@ interface VocabularyClientProps {
 }
 
 export function VocabularyClient({ userId }: VocabularyClientProps) {
-    const supabase = createBrowserClient()
+    const supabase = createClient()
 
     // Fetch stats
     const { data: stats, isLoading } = useQuery({

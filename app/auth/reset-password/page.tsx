@@ -1,10 +1,10 @@
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Metadata } from 'next'
-import dynamic from 'next/dynamic'
+import dynamicImport from 'next/dynamic'
 import { Suspense } from 'react'
 
-const ResetPasswordForm = dynamic(() => import('@/components/auth/reset-password-form'), {
+const ResetPasswordForm = dynamicImport(() => import('@/components/auth/reset-password-form'), {
     loading: () => (
         <Card className="mx-auto max-w-md">
             <CardHeader className="space-y-2">
@@ -29,6 +29,9 @@ export const metadata: Metadata = {
         follow: false,
     },
 }
+
+// Force dynamic rendering for auth pages
+export const dynamic = 'force-dynamic'
 
 export default function ResetPasswordPage() {
     return (

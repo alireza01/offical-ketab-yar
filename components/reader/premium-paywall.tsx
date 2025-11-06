@@ -14,7 +14,6 @@ interface PremiumPaywallProps {
 
 export function PremiumPaywall({
     bookTitle,
-    currentPage,
     freePages,
     onClose,
 }: PremiumPaywallProps) {

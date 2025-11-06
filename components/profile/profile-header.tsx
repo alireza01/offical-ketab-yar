@@ -6,14 +6,28 @@ import { XPDisplay } from '@/components/gamification/xp-display'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
+import type { User } from '@supabase/supabase-js'
 import { motion } from 'framer-motion'
 import { Calendar, Mail } from 'lucide-react'
 import ProfileCompletion from './profile-completion'
 
 interface ProfileHeaderProps {
-    user: any
-    profile: any
-    userStats: any
+    user: User
+    profile: {
+        username?: string
+        full_name?: string
+        avatar_url?: string
+        bio?: string
+        website?: string
+        level?: string
+        created_at: string
+    }
+    userStats: {
+        xp: number
+        level: number
+        current_streak: number
+        longest_streak: number
+    }
 }
 
 export function ProfileHeader({ user, profile, userStats }: ProfileHeaderProps) {
@@ -93,10 +107,12 @@ export function ProfileHeader({ user, profile, userStats }: ProfileHeaderProps) 
 
                             {/* Meta Info */}
                             <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
-                                <div className="flex items-center gap-2">
-                                    <Mail className="size-4" />
-                                    <span>{user.email}</span>
-                                </div>
+                                {user.email && (
+                                    <div className="flex items-center gap-2">
+                                        <Mail className="size-4" />
+                                        <span>{user.email}</span>
+                                    </div>
+                                )}
                                 <div className="flex items-center gap-2">
                                     <Calendar className="size-4" />
                                     <span>

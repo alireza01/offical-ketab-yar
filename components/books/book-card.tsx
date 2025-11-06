@@ -11,10 +11,11 @@ import { useEffect, useRef, useState } from 'react'
 
 interface BookCardProps {
   book: {
-    id: string
+    id?: string
+    _id?: string
     slug: string
-    title: string
-    author?: string
+    title: string | { en: string; fa: string }
+    author?: string | { name: string; slug: string }
     author_id?: string
     authors?: { name: string }
     cover_image?: string | null
@@ -25,6 +26,7 @@ interface BookCardProps {
     read_count?: number
   }
   showReadCount?: boolean
+  showProgress?: boolean
   progress?: number
 }
 
@@ -35,7 +37,19 @@ export function BookCard({ book, showReadCount, progress }: BookCardProps) {
   const coverImage = book.cover_image || book.coverImage || '/placeholder-book.jpg'
   const bookRating = book.rating || 0
   const bookGenre = book.genres || book.genre || []
-  const bookAuthor = book.authors?.name || book.author || 'Unknown Author'
+
+  // Handle bilingual title
+  const bookTitle = typeof book.title === 'string' ? book.title : (book.title?.fa || book.title?.en || 'Untitled')
+
+  // Handle bilingual author
+  let bookAuthor = 'Unknown Author'
+  if (typeof book.author === 'string') {
+    bookAuthor = book.author
+  } else if (book.author && typeof book.author === 'object' && 'name' in book.author) {
+    bookAuthor = book.author.name
+  } else if (book.authors?.name) {
+    bookAuthor = book.authors.name
+  }
 
   // Agent 2 (Performance): Simplified 3D effect - only on desktop, GPU-optimized
   const [enable3D, setEnable3D] = useState(false)
@@ -121,7 +135,7 @@ export function BookCard({ book, showReadCount, progress }: BookCardProps) {
             <div className="relative aspect-[2/3] overflow-hidden bg-gradient-to-br from-gold-100 via-gold-50 to-white dark:from-gray-800 dark:via-gray-850 dark:to-gray-900">
               <Image
                 src={coverImage}
-                alt={book.title}
+                alt={bookTitle}
                 fill
                 className="object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
                 sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 20vw"
@@ -185,7 +199,7 @@ export function BookCard({ book, showReadCount, progress }: BookCardProps) {
 
           <CardFooter className="flex flex-col items-start p-4 gap-2.5 bg-gradient-to-b from-white to-gray-50 dark:from-card dark:to-card/80 border-t-2 border-gray-100 dark:border-border/50">
             <h3 className="font-bold text-base line-clamp-2 text-gray-900 group-hover:text-gold-600 dark:text-foreground transition-colors leading-snug">
-              {book.title}
+              {bookTitle}
             </h3>
             <p className="text-sm text-gray-600 dark:text-muted-foreground line-clamp-1 font-medium">{bookAuthor}</p>
             {bookGenre.length > 0 && (

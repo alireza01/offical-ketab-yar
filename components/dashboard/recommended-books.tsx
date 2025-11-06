@@ -4,10 +4,10 @@ import Link from "next/link"
 import { Star } from "lucide-react"
 
 import { Badge } from "@/components/ui/badge"
-import { createServerClient } from "@/lib/supabase/server"
+import { createClient } from "@/lib/supabase/server"
 
 export async function RecommendedBooks() {
-  const supabase = await createServerClient()
+  const supabase = await createClient()
 
   const { data: books } = await supabase
     .from("books")
@@ -30,7 +30,7 @@ export async function RecommendedBooks() {
 
   return (
     <div className="grid grid-cols-2 gap-6 md:grid-cols-4">
-      {books.map((book) => (
+      {books.map((book: { id: string; title: string; slug: string; cover_image: string | null; level: string; author: string; rating: number | null }) => (
         <Link key={book.id} href={`/books/${book.slug}`} className="book-card group">
           <div className="relative aspect-[2/3] overflow-hidden rounded-lg">
             <Image
@@ -41,13 +41,12 @@ export async function RecommendedBooks() {
             />
 
             <Badge
-              className={`absolute left-2 top-2 ${
-                book.level === "beginner"
-                  ? "bg-green-500 hover:bg-green-600"
-                  : book.level === "intermediate"
-                    ? "bg-blue-500 hover:bg-blue-600"
-                    : "bg-purple-500 hover:bg-purple-600"
-              }`}
+              className={`absolute left-2 top-2 ${book.level === "beginner"
+                ? "bg-green-500 hover:bg-green-600"
+                : book.level === "intermediate"
+                  ? "bg-blue-500 hover:bg-blue-600"
+                  : "bg-purple-500 hover:bg-purple-600"
+                }`}
             >
               {book.level === "beginner" ? "مبتدی" : book.level === "intermediate" ? "متوسط" : "پیشرفته"}
             </Badge>

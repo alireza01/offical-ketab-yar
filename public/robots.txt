@@ -1,41 +1,48 @@
 # Ketab-Yar Robots.txt
-# Optimized for SEO by Agent 1 (Search Dominator)
+# Agent 1 (SEO): Optimized for Google crawling
 
 User-agent: *
 
 # Allow public pages for SEO
 Allow: /
 Allow: /about
-Allow: /help
-Allow: /guide
-Allow: /contact
-Allow: /blog/
 Allow: /books/
-Allow: /library
+Allow: /authors/
+Allow: /blog/
+Allow: /_next/static/
+Allow: /_next/image
 
-# Disallow private app sections (CSR pages - no SEO value)
-Disallow: /dashboard/
-Disallow: /profile/
-Disallow: /settings/
-Disallow: /vocabulary/
-Disallow: /review/
-Disallow: /subscription/
-Disallow: /admin/
-Disallow: /auth/
-Disallow: /api/
+# Disallow private app sections (Agent 1: Save crawl budget)
+Disallow: /dashboard
+Disallow: /library
+Disallow: /profile
+Disallow: /settings
+Disallow: /vocabulary
+Disallow: /review
+Disallow: /subscription
+Disallow: /admin
+Disallow: /auth
+Disallow: /api
 Disallow: /books/read/
+Disallow: /offline
 
-# Disallow search results and filters (duplicate content)
-Disallow: /*?*q=
-Disallow: /*?*filter=
-Disallow: /*?*sort=
-
-# Allow CSS and JS for proper rendering
-Allow: /*.css
-Allow: /*.js
-
-# Crawl-delay (be nice to server)
-Crawl-delay: 1
+# Disallow admin and internal
+Disallow: /Studio
+Disallow: /_next/data/
 
 # Sitemap location
 Sitemap: https://ketabyar.ir/sitemap.xml
+Sitemap: https://ketabyar.ir/sitemap-0.xml
+
+# Crawl-delay for politeness
+Crawl-delay: 1
+
+# Special rules for specific bots
+User-agent: Googlebot
+Allow: /
+
+User-agent: Googlebot-Image
+Allow: /
+
+User-agent: bingbot
+Allow: /

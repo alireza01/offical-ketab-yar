@@ -1,4 +1,4 @@
-import { UsersManagement } from '@/components/admin/users-management'
+import { CompleteUsersManagement } from '@/components/admin/complete-users-management'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
@@ -14,11 +14,11 @@ export default function AdminUsersPage() {
             <div>
                 <h1 className="text-3xl font-bold tracking-tight">User Management</h1>
                 <p className="text-muted-foreground">
-                    Manage users, subscriptions, and permissions
+                    Manage users, ban/unban, create test accounts, assign admin roles
                 </p>
             </div>
 
-            <UsersManagement />
+            <CompleteUsersManagement />
         </div>
     )
 }

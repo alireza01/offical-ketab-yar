@@ -2,12 +2,12 @@
 // Agent 4: Free trial activation
 
 import { activateFreeTrial } from '@/lib/subscription/subscription-manager'
-import { createServerClient } from '@/lib/supabase/server'
+import { createClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
 
 export async function POST() {
     try {
-        const supabase = await createServerClient()
+        const supabase = await createClient()
 
         // Check authentication
         const { data: { user } } = await supabase.auth.getUser()

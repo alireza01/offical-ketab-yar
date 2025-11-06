@@ -1,5 +1,5 @@
 import { applyRateLimit } from "@/lib/rate-limit"
-import { createServerClient } from "@/lib/supabase/server"
+import { createClient } from "@/lib/supabase/server"
 import { NextResponse } from "next/server"
 import { z } from "zod"
 
@@ -12,7 +12,7 @@ const settingsSchema = z.object({
 })
 
 // Helper function to verify admin access (Agent 2 - Security)
-async function verifyAdminAccess(supabase: any) {
+async function verifyAdminAccess(supabase: Awaited<ReturnType<typeof createClient>>) {
   const { data: { session } } = await supabase.auth.getSession()
 
   if (!session) {
@@ -47,7 +47,7 @@ export async function POST(request: Request) {
       )
     }
 
-    const supabase = await createServerClient()
+    const supabase = await createClient()
 
     // Verify admin access (Agent 2 - Security)
     const authCheck = await verifyAdminAccess(supabase)
@@ -118,7 +118,7 @@ export async function POST(request: Request) {
 
 export async function GET() {
   try {
-    const supabase = await createServerClient()
+    const supabase = await createClient()
 
     // Verify admin access (Agent 2 - Security)
     const authCheck = await verifyAdminAccess(supabase)

@@ -1,4 +1,6 @@
 import { groq } from 'next-sanity'
+import { sanityClient } from './client'
+import type { Author, SanityBook, SanityBookListItem } from './types'
 
 // ============================================
 // BOOK QUERIES
@@ -249,6 +251,7 @@ export const bookWithFirstChapterQuery = groq`
     "slug": slug.current,
     title,
     "coverImage": coverImage.asset->url,
+    "coverImageAlt": coverImage.alt,
     "author": author->{
       _id,
       name,
@@ -261,9 +264,12 @@ export const bookWithFirstChapterQuery = groq`
       chapterNumber,
       content[] {
         _type,
+        _key,
         _type == "bilingualParagraph" => {
           english,
-          farsi
+          farsi,
+          alignment,
+          pageBreakAfter
         },
         _type == "image" => {
           "url": asset->url,
@@ -274,3 +280,228 @@ export const bookWithFirstChapterQuery = groq`
     }
   }
 `
+
+// Get specific chapter by number
+export const chapterByNumberQuery = groq`
+  *[_type == "book" && slug.current == $slug && !(_id in path("drafts.**"))][0] {
+    "chapter": chapters[$chapterIndex] {
+      title,
+      chapterNumber,
+      content[] {
+        _type,
+        _key,
+        _type == "bilingualParagraph" => {
+          english,
+          farsi,
+          alignment,
+          pageBreakAfter
+        },
+        _type == "image" => {
+          "url": asset->url,
+          alt,
+          caption
+        }
+      }
+    }
+  }
+`
+
+// Get book metadata for reader (without content)
+export const bookMetadataQuery = groq`
+  *[_type == "book" && slug.current == $slug && !(_id in path("drafts.**"))][0] {
+    _id,
+    "slug": slug.current,
+    title,
+    "coverImage": coverImage.asset->url,
+    "coverImageAlt": coverImage.alt,
+    "author": author->{
+      _id,
+      name,
+      "slug": slug.current
+    },
+    publishYear,
+    "totalChapters": count(chapters),
+    "chapterTitles": chapters[].title,
+    freePreviewPages,
+    isPremium
+  }
+`
+
+
+// ============================================
+// QUERY FUNCTIONS
+// ============================================
+
+/**
+ * Get all published books
+ */
+export async function getAllBooks(): Promise<SanityBookListItem[]> {
+  try {
+    return await sanityClient.fetch(booksQuery)
+  } catch (error) {
+    console.error('Error fetching all books:', error)
+    return []
+  }
+}
+
+/**
+ * Get book by slug
+ */
+export async function getBookBySlug(slug: string): Promise<SanityBook | null> {
+  try {
+    return await sanityClient.fetch(bookBySlugQuery, { slug })
+  } catch (error) {
+    console.error('Error fetching book by slug:', error)
+    return null
+  }
+}
+
+/**
+ * Get book by ID
+ */
+export async function getBookById(id: string): Promise<SanityBook | null> {
+  try {
+    const query = groq`*[_type == "book" && _id == $id && !(_id in path("drafts.**"))][0]`
+    return await sanityClient.fetch(query, { id })
+  } catch (error) {
+    console.error('Error fetching book by ID:', error)
+    return null
+  }
+}
+
+/**
+ * Get recently added books
+ */
+export async function getRecentlyAddedBooks(limit: number = 12): Promise<SanityBookListItem[]> {
+  try {
+    const query = groq`
+      *[_type == "book" && !(_id in path("drafts.**"))] | order(publishedAt desc) [0...$limit] {
+        _id,
+        "slug": slug.current,
+        title,
+        "coverImage": coverImage.asset->url,
+        "coverImageAlt": coverImage.alt,
+        "author": author->{
+          name,
+          "slug": slug.current
+        },
+        publishYear,
+        summary,
+        genres,
+        level,
+        isPremium,
+        featured
+      }
+    `
+    return await sanityClient.fetch(query, { limit })
+  } catch (error) {
+    console.error('Error fetching recently added books:', error)
+    return []
+  }
+}
+
+/**
+ * Get featured books
+ */
+export async function getFeaturedBooks(limit: number = 6): Promise<SanityBookListItem[]> {
+  try {
+    const query = groq`
+      *[_type == "book" && featured == true && !(_id in path("drafts.**"))] | order(publishedAt desc) [0...$limit] {
+        _id,
+        "slug": slug.current,
+        title,
+        "coverImage": coverImage.asset->url,
+        "coverImageAlt": coverImage.alt,
+        "author": author->{
+          name,
+          "slug": slug.current
+        },
+        publishYear,
+        summary,
+        genres,
+        level,
+        isPremium,
+        featured
+      }
+    `
+    return await sanityClient.fetch(query, { limit })
+  } catch (error) {
+    console.error('Error fetching featured books:', error)
+    return []
+  }
+}
+
+/**
+ * Get books by genre
+ */
+export async function getBooksByGenre(genre: string, limit: number = 12): Promise<SanityBookListItem[]> {
+  try {
+    return await sanityClient.fetch(booksByGenreQuery, { genre, limit })
+  } catch (error) {
+    console.error('Error fetching books by genre:', error)
+    return []
+  }
+}
+
+/**
+ * Get author by ID
+ */
+export async function getAuthorById(id: string): Promise<Author | null> {
+  try {
+    const query = groq`*[_type == "author" && _id == $id && !(_id in path("drafts.**"))][0]`
+    return await sanityClient.fetch(query, { id })
+  } catch (error) {
+    console.error('Error fetching author by ID:', error)
+    return null
+  }
+}
+
+/**
+ * Get author by slug
+ */
+export async function getAuthorBySlug(slug: string): Promise<Author | null> {
+  try {
+    return await sanityClient.fetch(authorBySlugQuery, { slug })
+  } catch (error) {
+    console.error('Error fetching author by slug:', error)
+    return null
+  }
+}
+
+/**
+ * Get book with first chapter (for reader)
+ */
+export async function getBookWithFirstChapter(slug: string) {
+  try {
+    return await sanityClient.fetch(bookWithFirstChapterQuery, { slug })
+  } catch (error) {
+    console.error('Error fetching book with first chapter:', error)
+    return null
+  }
+}
+
+/**
+ * Get specific chapter by number
+ */
+export async function getChapterByNumber(slug: string, chapterNumber: number) {
+  try {
+    const chapterIndex = chapterNumber - 1 // Convert to 0-based index
+    const result = await sanityClient.fetch(chapterByNumberQuery, { slug, chapterIndex })
+    return result?.chapter || null
+  } catch (error) {
+    console.error(`Error fetching chapter ${chapterNumber}:`, error)
+    return null
+  }
+}
+
+/**
+ * Get book metadata (without content)
+ */
+export async function getBookMetadata(slug: string) {
+  try {
+    return await sanityClient.fetch(bookMetadataQuery, { slug })
+  } catch (error) {
+    console.error('Error fetching book metadata:', error)
+    return null
+  }
+}

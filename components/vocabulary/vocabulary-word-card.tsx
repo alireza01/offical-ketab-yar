@@ -4,7 +4,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
-import { createBrowserClient } from '@/lib/supabase/client'
+import { createClient } from '@/lib/supabase/client'
 import { cn } from '@/lib/utils'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { motion } from 'framer-motion'
@@ -32,7 +32,7 @@ interface VocabularyWordCardProps {
 }
 
 export function VocabularyWordCard({ word, userId }: VocabularyWordCardProps) {
-    const supabase = createBrowserClient()
+    const supabase = createClient()
     const queryClient = useQueryClient()
 
     const accuracy = word.review_count > 0

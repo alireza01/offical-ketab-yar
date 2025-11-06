@@ -1,215 +1,134 @@
 /**
- * Sound Effects Utility
- * Agent 3 (Psychology) - Audio feedback for gamification
- * 
- * All sounds are optional and fail gracefully if not available
+ * Sound Effects Library
+ * Provides subtle, premium audio feedback for user interactions
+ * Agent 3 (Psychology) - Audio feedback enhances satisfaction
+ * Agent 2 (Performance) - Lazy loaded, small file sizes
  */
 
-type SoundType = 'xp-gain' | 'level-up' | 'streak' | 'achievement' | 'celebration' | 'page-turn' | 'bookmark' | 'error' | 'success'
+class SoundEffects {
+    private audioContext: AudioContext | null = null
+    private enabled: boolean = true
 
-interface SoundConfig {
-    volume: number
-    playbackRate?: number
-}
-
-const DEFAULT_VOLUME = 0.3
-const DEFAULT_PLAYBACK_RATE = 1.0
-
-// Sound file paths (relative to /public/sounds/)
-const SOUND_PATHS: Record<SoundType, string> = {
-    'xp-gain': '/sounds/xp-gain.mp3',
-    'level-up': '/sounds/level-up.mp3',
-    'streak': '/sounds/streak.mp3',
-    'achievement': '/sounds/achievement.mp3',
-    'celebration': '/sounds/celebration.mp3',
-    'page-turn': '/sounds/page-turn.mp3',
-    'bookmark': '/sounds/bookmark.mp3',
-    'error': '/sounds/error.mp3',
-    'success': '/sounds/success.mp3',
-}
-
-// Audio cache to prevent re-loading
-const audioCache = new Map<SoundType, HTMLAudioElement>()
-
-// User preferences
-let soundEnabled = true
-let masterVolume = DEFAULT_VOLUME
-
-/**
- * Initialize sound system
- * Call this once on app load
- */
-export function initSoundSystem() {
-    // Load sound preferences from localStorage
-    if (typeof window !== 'undefined') {
-        const savedEnabled = localStorage.getItem('sound-enabled')
-        const savedVolume = localStorage.getItem('sound-volume')
-
-        if (savedEnabled !== null) {
-            soundEnabled = savedEnabled === 'true'
-        }
-
-        if (savedVolume !== null) {
-            masterVolume = parseFloat(savedVolume)
-        }
-    }
-}
-
-/**
- * Play a sound effect
- */
-export function playSound(
-    type: SoundType,
-    config: Partial<SoundConfig> = {}
-): void {
-    // Don't play if sounds are disabled
-    if (!soundEnabled || typeof window === 'undefined') {
-        return
-    }
-
-    try {
-        let audio = audioCache.get(type)
-
-        // Create and cache audio if not exists
-        if (!audio) {
-            audio = new Audio(SOUND_PATHS[type])
-            audioCache.set(type, audio)
-        }
-
-        // Configure audio
-        audio.volume = (config.volume ?? masterVolume) * masterVolume
-        audio.playbackRate = config.playbackRate ?? DEFAULT_PLAYBACK_RATE
-
-        // Reset and play
-        audio.currentTime = 0
-        audio.play().catch((error) => {
-            // Silently fail if audio can't play (e.g., user hasn't interacted with page yet)
-            if (process.env.NODE_ENV === 'development') {
-                console.warn(`Failed to play sound: ${type}`, error)
+    constructor() {
+        if (typeof window !== 'undefined') {
+            // Initialize AudioContext on first user interaction
+            const AudioContextClass = window.AudioContext || (window as typeof window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext
+            if (AudioContextClass) {
+                this.audioContext = new AudioContextClass()
             }
+        }
+    }
+
+    /**
+     * Enable/disable sound effects
+     */
+    setEnabled(enabled: boolean) {
+        this.enabled = enabled
+    }
+
+    /**
+     * Play a sound effect
+     */
+    private play(frequency: number, duration: number, type: OscillatorType = 'sine', volume: number = 0.1) {
+        if (!this.enabled || !this.audioContext) return
+
+        try {
+            const oscillator = this.audioContext.createOscillator()
+            const gainNode = this.audioContext.createGain()
+
+            oscillator.connect(gainNode)
+            gainNode.connect(this.audioContext.destination)
+
+            oscillator.frequency.value = frequency
+            oscillator.type = type
+
+            gainNode.gain.setValueAtTime(volume, this.audioContext.currentTime)
+            gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + duration)
+
+            oscillator.start(this.audioContext.currentTime)
+            oscillator.stop(this.audioContext.currentTime + duration)
+        } catch (error) {
+            console.debug('Sound effect failed:', error)
+        }
+    }
+
+    /**
+     * Subtle click sound for buttons
+     */
+    click() {
+        this.play(800, 0.05, 'sine', 0.05)
+    }
+
+    /**
+     * Success sound (higher pitch, pleasant)
+     */
+    success() {
+        this.play(880, 0.1, 'sine', 0.08)
+        setTimeout(() => this.play(1046, 0.15, 'sine', 0.08), 50)
+    }
+
+    /**
+     * Error sound (lower pitch, attention-grabbing)
+     */
+    error() {
+        this.play(200, 0.2, 'sawtooth', 0.1)
+    }
+
+    /**
+     * XP gain sound (quick, satisfying)
+     */
+    xp() {
+        this.play(523, 0.08, 'sine', 0.06)
+        setTimeout(() => this.play(659, 0.08, 'sine', 0.06), 40)
+        setTimeout(() => this.play(784, 0.12, 'sine', 0.06), 80)
+    }
+
+    /**
+     * Celebration sound (triumphant sequence)
+     */
+    celebration() {
+        const notes = [523, 659, 784, 1046] // C, E, G, C (major chord)
+        notes.forEach((note, index) => {
+            setTimeout(() => this.play(note, 0.3, 'sine', 0.08), index * 100)
         })
-    } catch (error) {
-        // Silently fail
-        if (process.env.NODE_ENV === 'development') {
-            console.warn(`Error playing sound: ${type}`, error)
-        }
+    }
+
+    /**
+     * Page turn sound (subtle whoosh)
+     */
+    pageTurn() {
+        this.play(400, 0.1, 'sine', 0.03)
+    }
+
+    /**
+     * Achievement unlock sound (special, memorable)
+     */
+    achievement() {
+        this.play(659, 0.15, 'sine', 0.1)
+        setTimeout(() => this.play(784, 0.15, 'sine', 0.1), 100)
+        setTimeout(() => this.play(1046, 0.25, 'sine', 0.1), 200)
+        setTimeout(() => this.play(1318, 0.3, 'sine', 0.1), 300)
     }
 }
 
-/**
- * Enable/disable all sounds
- */
-export function setSoundEnabled(enabled: boolean): void {
-    soundEnabled = enabled
+// Singleton instance
+let soundEffectsInstance: SoundEffects | null = null
 
-    if (typeof window !== 'undefined') {
-        localStorage.setItem('sound-enabled', enabled.toString())
+export function getSoundEffects(): SoundEffects {
+    if (!soundEffectsInstance) {
+        soundEffectsInstance = new SoundEffects()
     }
+    return soundEffectsInstance
 }
 
-/**
- * Get current sound enabled state
- */
-export function isSoundEnabled(): boolean {
-    return soundEnabled
-}
-
-/**
- * Set master volume (0.0 to 1.0)
- */
-export function setMasterVolume(volume: number): void {
-    masterVolume = Math.max(0, Math.min(1, volume))
-
-    if (typeof window !== 'undefined') {
-        localStorage.setItem('sound-volume', masterVolume.toString())
-    }
-}
-
-/**
- * Get current master volume
- */
-export function getMasterVolume(): number {
-    return masterVolume
-}
-
-/**
- * Preload sounds for better performance
- * Call this during app initialization or on user interaction
- */
-export function preloadSounds(types: SoundType[]): void {
-    if (typeof window === 'undefined') return
-
-    types.forEach((type) => {
-        if (!audioCache.has(type)) {
-            const audio = new Audio(SOUND_PATHS[type])
-            audio.preload = 'auto'
-            audioCache.set(type, audio)
-        }
-    })
-}
-
-/**
- * Clear audio cache (useful for memory management)
- */
-export function clearSoundCache(): void {
-    audioCache.forEach((audio) => {
-        audio.pause()
-        audio.src = ''
-    })
-    audioCache.clear()
-}
-
-// Convenience functions for common sounds
+// Convenience exports
 export const soundEffects = {
-    xpGain: (amount: number) => {
-        // Vary pitch based on amount
-        const playbackRate = 1.0 + Math.min(amount / 100, 0.3)
-        playSound('xp-gain', { playbackRate })
-    },
-
-    levelUp: () => {
-        playSound('level-up', { volume: 0.5 })
-    },
-
-    streak: (days: number) => {
-        // Louder for milestone streaks
-        const volume = days % 7 === 0 ? 0.5 : 0.3
-        playSound('streak', { volume })
-    },
-
-    achievement: () => {
-        playSound('achievement', { volume: 0.4 })
-    },
-
-    celebration: () => {
-        playSound('celebration', { volume: 0.4 })
-    },
-
-    pageTurn: () => {
-        playSound('page-turn', { volume: 0.2 })
-    },
-
-    bookmark: () => {
-        playSound('bookmark', { volume: 0.25 })
-    },
-
-    error: () => {
-        playSound('error', { volume: 0.3 })
-    },
-
-    success: () => {
-        playSound('success', { volume: 0.3 })
-    },
-}
-
-// React hook for sound effects
-export function useSoundEffects() {
-    return {
-        playSound,
-        soundEffects,
-        setSoundEnabled,
-        isSoundEnabled: isSoundEnabled(),
-        setMasterVolume,
-        masterVolume: getMasterVolume(),
-    }
+    click: () => getSoundEffects().click(),
+    success: () => getSoundEffects().success(),
+    error: () => getSoundEffects().error(),
+    xp: () => getSoundEffects().xp(),
+    celebration: () => getSoundEffects().celebration(),
+    pageTurn: () => getSoundEffects().pageTurn(),
+    achievement: () => getSoundEffects().achievement(),
+    setEnabled: (enabled: boolean) => getSoundEffects().setEnabled(enabled),
 }

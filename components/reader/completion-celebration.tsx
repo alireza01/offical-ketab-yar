@@ -35,9 +35,13 @@ export function CompletionCelebration({
         setConfetti(particles)
 
         // Play celebration sound (Agent 3 - Psychology)
-        import('@/lib/utils/sound-effects').then(({ soundEffects }) => {
-            soundEffects.celebration()
-        })
+        if (typeof window !== 'undefined') {
+            import('@/lib/utils/sound-effects').then(({ soundEffects }) => {
+                soundEffects.celebration()
+            }).catch(() => {
+                // Silently fail if sound effects not available
+            })
+        }
     }, [])
 
     const isBook = type === 'book'

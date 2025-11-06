@@ -61,7 +61,7 @@ export function useBookTracking(bookId: string, totalPages: number) {
 
     // Update progress
     const handleUpdateProgress = useCallback(
-        async (currentPage: number) => {
+        async (currentPage: number, onCompletion?: (type: 'chapter' | 'book', xpEarned: number) => void) => {
             setError(null)
             const result = await updateReadingProgress(bookId, currentPage, totalPages)
 
@@ -74,9 +74,15 @@ export function useBookTracking(bookId: string, totalPages: number) {
 
                 if (result.isCompleted) {
                     setIsCompleted(true)
+
+                    // Trigger completion celebration (Agent 3 - Psychology)
+                    if (onCompletion) {
+                        const xpEarned = typeof result.progress === 'number' ? result.progress : 0
+                        onCompletion('book', xpEarned)
+                    }
                 }
 
-                return { success: true, progress: result.progress }
+                return { success: true, progress: result.progress, isCompleted: result.isCompleted }
             }
 
             setError(result.error || 'Failed to update progress')

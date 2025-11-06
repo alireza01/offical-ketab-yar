@@ -9,7 +9,7 @@
  * 4. COMPLETION: Marked when user reaches 90%+ (triggers read_count increment)
  */
 
-import { createServerClient } from '@/lib/supabase/server'
+import { createClient } from '@/lib/supabase/server'
 
 /**
  * Calculate progress percentage from current page and total pages
@@ -125,7 +125,7 @@ export function calculateTrendingScore(
  */
 export async function trackBookView(bookId: string, userId?: string) {
     try {
-        const supabase = await createServerClient()
+        const supabase = await createClient()
 
         // Generate session ID if not provided
         const sessionId = typeof window !== 'undefined'
@@ -162,7 +162,7 @@ function generateSessionId(): string {
  */
 export async function getBookAnalytics(bookId: string) {
     try {
-        const supabase = await createServerClient()
+        const supabase = await createClient()
 
         const { data, error } = await supabase
             .from('book_analytics')
@@ -187,7 +187,7 @@ export async function getBookAnalytics(bookId: string) {
  */
 export async function getTrendingBooks(limit: number = 12) {
     try {
-        const supabase = await createServerClient()
+        const supabase = await createClient()
 
         const { data, error } = await supabase
             .from('book_analytics')

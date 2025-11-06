@@ -1,7 +1,7 @@
 // Subscription Management System
 // Agent 4: Core subscription logic
 
-import { createServerClient } from '@/lib/supabase/server'
+import { createClient } from '@/lib/supabase/server'
 
 export type SubscriptionTier = 'free' | 'monthly' | 'quarterly' | 'annual'
 export type SubscriptionStatus = 'active' | 'inactive' | 'cancelled' | 'expired'
@@ -18,7 +18,7 @@ export interface SubscriptionInfo {
  * Check if user has active premium subscription
  */
 export async function checkPremiumStatus(userId: string): Promise<boolean> {
-    const supabase = await createServerClient()
+    const supabase = await createClient()
 
     const { data: profile } = await supabase
         .from('profiles')
@@ -54,7 +54,7 @@ export async function checkPremiumStatus(userId: string): Promise<boolean> {
  * Get detailed subscription information
  */
 export async function getSubscriptionInfo(userId: string): Promise<SubscriptionInfo> {
-    const supabase = await createServerClient()
+    const supabase = await createClient()
 
     const { data: profile } = await supabase
         .from('profiles')
@@ -88,7 +88,7 @@ export async function getSubscriptionInfo(userId: string): Promise<SubscriptionI
  * Activate free trial (1 day)
  */
 export async function activateFreeTrial(userId: string): Promise<boolean> {
-    const supabase = await createServerClient()
+    const supabase = await createClient()
 
     // Check if user already had a trial
     const { data: profile } = await supabase
@@ -143,7 +143,7 @@ export async function upgradeSubscription(
     stripeSubscriptionId?: string,
     stripeCustomerId?: string
 ): Promise<boolean> {
-    const supabase = await createServerClient()
+    const supabase = await createClient()
 
     const now = new Date()
     let expiresAt: Date
@@ -163,7 +163,7 @@ export async function upgradeSubscription(
             return false
     }
 
-    const updateData: any = {
+    const updateData: Record<string, string> = {
         subscription_tier: planId,
         subscription_status: 'active',
         subscription_started_at: now.toISOString(),
@@ -214,7 +214,7 @@ export async function upgradeSubscription(
  * Cancel subscription
  */
 export async function cancelSubscription(userId: string): Promise<boolean> {
-    const supabase = await createServerClient()
+    const supabase = await createClient()
 
     const { error } = await supabase
         .from('profiles')

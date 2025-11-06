@@ -8,11 +8,12 @@ import { Award, Lock, Trophy } from 'lucide-react'
 
 interface ProfileAchievementsProps {
     userId: string
-    userStats: any
+    userStats: unknown
 }
 
-export default function ProfileAchievements({ userId, userStats }: ProfileAchievementsProps) {
+export default function ProfileAchievements({ userId: _userId, userStats: _userStats }: ProfileAchievementsProps) {
     // Mock achievements data - will be replaced with real data from database
+    // userId and userStats will be used when real data is implemented
     const achievements = {
         unlocked: [
             {
@@ -20,24 +21,42 @@ export default function ProfileAchievements({ userId, userStats }: ProfileAchiev
                 name: 'خواننده مبتدی',
                 description: 'اولین کتاب خود را تمام کنید',
                 icon: '📚',
-                unlockedAt: new Date().toISOString(),
-                points: 100,
+                xp_reward: 100,
+                requirement_type: 'books_completed' as const,
+                requirement_value: 1,
+                tier: 'bronze' as const,
+                created_at: new Date().toISOString(),
+                earned: true,
+                progress: 1,
+                progress_percentage: 100,
             },
             {
                 id: '2',
                 name: 'استریک ۷ روزه',
                 description: '۷ روز متوالی مطالعه کنید',
                 icon: '🔥',
-                unlockedAt: new Date().toISOString(),
-                points: 150,
+                xp_reward: 150,
+                requirement_type: 'streak_days' as const,
+                requirement_value: 7,
+                tier: 'silver' as const,
+                created_at: new Date().toISOString(),
+                earned: true,
+                progress: 7,
+                progress_percentage: 100,
             },
             {
                 id: '3',
                 name: 'جمع‌آوری لغات',
                 description: '۵۰ لغت جدید ذخیره کنید',
                 icon: '📝',
-                unlockedAt: new Date().toISOString(),
-                points: 100,
+                xp_reward: 100,
+                requirement_type: 'pages_read' as const,
+                requirement_value: 50,
+                tier: 'bronze' as const,
+                created_at: new Date().toISOString(),
+                earned: true,
+                progress: 50,
+                progress_percentage: 100,
             },
         ],
         locked: [
@@ -46,29 +65,47 @@ export default function ProfileAchievements({ userId, userStats }: ProfileAchiev
                 name: 'خواننده حرفه‌ای',
                 description: '۱۰ کتاب تمام کنید',
                 icon: '🏆',
-                points: 500,
-                progress: 50, // 5/10 books
+                xp_reward: 500,
+                requirement_type: 'books_completed' as const,
+                requirement_value: 10,
+                tier: 'gold' as const,
+                created_at: new Date().toISOString(),
+                earned: false,
+                progress: 5,
+                progress_percentage: 50,
             },
             {
                 id: '5',
                 name: 'استریک ۳۰ روزه',
                 description: '۳۰ روز متوالی مطالعه کنید',
                 icon: '⚡',
-                points: 1000,
-                progress: 50, // 15/30 days
+                xp_reward: 1000,
+                requirement_type: 'streak_days' as const,
+                requirement_value: 30,
+                tier: 'platinum' as const,
+                created_at: new Date().toISOString(),
+                earned: false,
+                progress: 15,
+                progress_percentage: 50,
             },
             {
                 id: '6',
                 name: 'استاد لغات',
                 description: '۵۰۰ لغت جدید ذخیره کنید',
                 icon: '🎓',
-                points: 750,
-                progress: 10, // 50/500 words
+                xp_reward: 750,
+                requirement_type: 'pages_read' as const,
+                requirement_value: 500,
+                tier: 'gold' as const,
+                created_at: new Date().toISOString(),
+                earned: false,
+                progress: 50,
+                progress_percentage: 10,
             },
         ],
     }
 
-    const totalPoints = achievements.unlocked.reduce((sum, a) => sum + a.points, 0)
+    const totalPoints = achievements.unlocked.reduce((sum, a) => sum + a.xp_reward, 0)
 
     return (
         <div className="space-y-6">
@@ -139,7 +176,7 @@ export default function ProfileAchievements({ userId, userStats }: ProfileAchiev
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: index * 0.1 }}
                             >
-                                <AchievementCard achievement={achievement} unlocked />
+                                <AchievementCard achievement={achievement} />
                             </motion.div>
                         ))}
                     </div>
@@ -154,7 +191,7 @@ export default function ProfileAchievements({ userId, userStats }: ProfileAchiev
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: index * 0.1 }}
                             >
-                                <AchievementCard achievement={achievement} unlocked={false} />
+                                <AchievementCard achievement={achievement} />
                             </motion.div>
                         ))}
                     </div>

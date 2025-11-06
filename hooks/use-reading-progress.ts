@@ -15,7 +15,7 @@ export function useReadingProgress({ bookId, chapterNumber, totalParagraphs }: U
     const supabase = createClient()
     const readParagraphsRef = useRef<Set<number>>(new Set())
     const lastSaveRef = useRef<number>(Date.now())
-    const saveTimeoutRef = useRef<NodeJS.Timeout>()
+    const saveTimeoutRef = useRef<NodeJS.Timeout | undefined>(undefined)
 
     // Track paragraph as read
     const markParagraphAsRead = useCallback(
@@ -25,9 +25,6 @@ export function useReadingProgress({ bookId, chapterNumber, totalParagraphs }: U
             // Add to read set
             if (!readParagraphsRef.current.has(paragraphIndex)) {
                 readParagraphsRef.current.add(paragraphIndex)
-
-                // Calculate XP (1 XP per paragraph)
-                const xpGained = 1
 
                 // Debounced save to database
                 if (saveTimeoutRef.current) {

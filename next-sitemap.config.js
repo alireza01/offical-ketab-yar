@@ -1,27 +1,32 @@
 /** @type {import('next-sitemap').IConfig} */
 module.exports = {
-  siteUrl: process.env.NEXT_PUBLIC_APP_URL || 'https://ketabyar.ir',
-  generateRobotsTxt: true,
+  siteUrl: process.env.NEXT_PUBLIC_SITE_URL || 'https://ketabyar.ir',
+  generateRobotsTxt: false, // We have custom robots.txt
   generateIndexSitemap: true,
-  sitemapSize: 7000,
-  changefreq: 'daily',
-  priority: 0.7,
   exclude: [
-    '/admin/*',
-    '/auth/*',
     '/dashboard',
     '/dashboard/*',
     '/library',
+    '/library/*',
     '/profile',
     '/profile/*',
     '/settings',
     '/settings/*',
+    '/vocabulary',
+    '/vocabulary/*',
+    '/review',
+    '/review/*',
     '/subscription',
     '/subscription/*',
-    '/vocabulary',
-    '/review',
-    '/books/read/*',
+    '/admin',
+    '/admin/*',
+    '/auth',
+    '/auth/*',
     '/api/*',
+    '/books/read/*',
+    '/offline',
+    '/Studio',
+    '/Studio/*',
   ],
   robotsTxtOptions: {
     policies: [
@@ -29,43 +34,30 @@ module.exports = {
         userAgent: '*',
         allow: '/',
         disallow: [
-          '/admin/',
-          '/auth/',
-          '/dashboard/',
-          '/profile/',
-          '/settings/',
-          '/subscription/',
-          '/vocabulary/',
-          '/review/',
+          '/dashboard',
+          '/library',
+          '/profile',
+          '/settings',
+          '/vocabulary',
+          '/review',
+          '/subscription',
+          '/admin',
+          '/auth',
+          '/api',
           '/books/read/',
-          '/api/',
+          '/offline',
+          '/Studio',
         ],
       },
-      {
-        userAgent: 'Googlebot',
-        allow: '/',
-        disallow: [
-          '/admin/',
-          '/auth/',
-          '/dashboard/',
-          '/profile/',
-          '/settings/',
-          '/subscription/',
-          '/vocabulary/',
-          '/review/',
-          '/books/read/',
-          '/api/',
-        ],
-      },
-    ],
-    additionalSitemaps: [
-      `${process.env.NEXT_PUBLIC_APP_URL || 'https://ketabyar.ir'}/sitemap.xml`,
     ],
   },
+  // Agent 1 (SEO): Priority configuration
+  priority: 1.0,
+  changefreq: 'daily',
   transform: async (config, path) => {
-    // Custom priority for important pages
-    let priority = config.priority
-    let changefreq = config.changefreq
+    // Custom priority for different page types
+    let priority = 0.7
+    let changefreq = 'weekly'
 
     if (path === '/') {
       priority = 1.0
@@ -73,11 +65,14 @@ module.exports = {
     } else if (path.startsWith('/books/')) {
       priority = 0.9
       changefreq = 'weekly'
-    } else if (path === '/about' || path === '/library') {
+    } else if (path.startsWith('/blog/')) {
       priority = 0.8
       changefreq = 'weekly'
-    } else if (path.startsWith('/(main)/')) {
+    } else if (path.startsWith('/authors/')) {
       priority = 0.7
+      changefreq = 'monthly'
+    } else if (path === '/about') {
+      priority = 0.6
       changefreq = 'monthly'
     }
 
@@ -85,8 +80,21 @@ module.exports = {
       loc: path,
       changefreq,
       priority,
-      lastmod: config.autoLastmod ? new Date().toISOString() : undefined,
-      alternateRefs: config.alternateRefs ?? [],
+      lastmod: new Date().toISOString(),
+      alternateRefs: [
+        {
+          href: `https://ketabyar.ir${path}`,
+          hreflang: 'fa',
+        },
+        {
+          href: `https://ketabyar.ir${path}`,
+          hreflang: 'en',
+        },
+      ],
     }
+  },
+  additionalPaths: async (config) => {
+    // Add dynamic paths here if needed
+    return []
   },
 }

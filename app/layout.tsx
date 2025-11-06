@@ -1,3 +1,4 @@
+import { GamificationProvider } from "@/components/gamification/gamification-provider"
 import { ConditionalLayout } from "@/components/layout/conditional-layout"
 import { QueryProvider } from "@/components/providers/query-provider"
 import { ThemeProvider } from "@/components/providers/theme-provider"
@@ -111,21 +112,23 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <QueryProvider>
-            <PWAWrapper>
-              <ConditionalLayout>
-                {children}
-              </ConditionalLayout>
-              <Toaster
-                position="bottom-center"
-                richColors
-                toastOptions={{
-                  className: 'bottom-nav-safe',
-                  style: {
-                    marginBottom: 'env(safe-area-inset-bottom)',
-                  }
-                }}
-              />
-            </PWAWrapper>
+            <GamificationProvider>
+              <PWAWrapper>
+                <ConditionalLayout>
+                  {children}
+                </ConditionalLayout>
+                <Toaster
+                  position="bottom-center"
+                  richColors
+                  toastOptions={{
+                    className: 'bottom-nav-safe',
+                    style: {
+                      marginBottom: 'env(safe-area-inset-bottom)',
+                    }
+                  }}
+                />
+              </PWAWrapper>
+            </GamificationProvider>
           </QueryProvider>
         </ThemeProvider>
       </body>

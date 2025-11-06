@@ -18,26 +18,40 @@ const NativeCard = React.forwardRef<HTMLDivElement, NativeCardProps>(
             glass: "frosted-glass rounded-xl border border-white/20",
         }
 
-        const Component = pressable ? motion.div : "div"
-        const motionProps = pressable ? {
-            whileTap: { scale: 0.98 },
-            transition: { type: "spring", stiffness: 400, damping: 17 }
-        } : {}
+        if (pressable) {
+            const { onClick, role, tabIndex, ...restProps } = props
+            return (
+                <motion.div
+                    ref={ref}
+                    className={cn(
+                        variants[variant],
+                        hover && "hover:shadow-md hover:scale-[1.02] transition-all duration-200",
+                        className
+                    )}
+                    whileTap={{ scale: 0.98 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 17 }}
+                    onClick={onClick}
+                    role={role}
+                    tabIndex={tabIndex}
+                    aria-label={restProps["aria-label"]}
+                >
+                    {children}
+                </motion.div>
+            )
+        }
 
         return (
-            <Component
+            <div
                 ref={ref}
                 className={cn(
                     variants[variant],
-                    hover && "hover:shadow-xl hover:-translate-y-1 transition-all duration-200",
-                    "gpu-accelerated",
+                    hover && "hover:shadow-md hover:scale-[1.02] transition-all duration-200",
                     className
                 )}
-                {...motionProps}
                 {...props}
             >
                 {children}
-            </Component>
+            </div>
         )
     }
 )
@@ -56,10 +70,10 @@ const NativeCardHeader = React.forwardRef<
 NativeCardHeader.displayName = "NativeCardHeader"
 
 const NativeCardTitle = React.forwardRef<
-    HTMLDivElement,
-    React.HTMLAttributes<HTMLDivElement>
+    HTMLParagraphElement,
+    React.HTMLAttributes<HTMLHeadingElement>
 >(({ className, ...props }, ref) => (
-    <div
+    <h3
         ref={ref}
         className={cn(
             "text-2xl font-semibold leading-none tracking-tight",
@@ -71,12 +85,12 @@ const NativeCardTitle = React.forwardRef<
 NativeCardTitle.displayName = "NativeCardTitle"
 
 const NativeCardDescription = React.forwardRef<
-    HTMLDivElement,
-    React.HTMLAttributes<HTMLDivElement>
+    HTMLParagraphElement,
+    React.HTMLAttributes<HTMLParagraphElement>
 >(({ className, ...props }, ref) => (
-    <div
+    <p
         ref={ref}
-        className={cn("text-muted-foreground text-sm", className)}
+        className={cn("text-sm text-muted-foreground", className)}
         {...props}
     />
 ))
@@ -103,11 +117,6 @@ const NativeCardFooter = React.forwardRef<
 NativeCardFooter.displayName = "NativeCardFooter"
 
 export {
-    NativeCard,
-    NativeCardContent,
-    NativeCardDescription,
-    NativeCardFooter,
-    NativeCardHeader,
-    NativeCardTitle
+    NativeCard, NativeCardContent, NativeCardDescription, NativeCardFooter, NativeCardHeader, NativeCardTitle
 }
 

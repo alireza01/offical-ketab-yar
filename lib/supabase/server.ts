@@ -1,58 +1,34 @@
-"use server"
+import type { Database } from '@/types/database.types'
+import { createServerClient as createSupabaseServerClient } from '@supabase/ssr'
+import { cookies } from 'next/headers'
 
-import { cookies } from "next/headers"
-import { createServerClient as createSSRClient } from "@supabase/ssr"
-import type { CookieOptions } from "@supabase/ssr"
-import type { ResponseCookie } from "next/dist/compiled/@edge-runtime/cookies"
-import { SUPABASE_URL, SUPABASE_ANON_KEY, DEFAULT_COOKIE_OPTIONS } from "./config"
-
-export async function createServerClient() {
-  if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
-    throw new Error("Missing Supabase environment variables")
-  }
-
+export async function createClient() {
   const cookieStore = await cookies()
 
-  return createSSRClient(
-    SUPABASE_URL,
-    SUPABASE_ANON_KEY,
+  return createSupabaseServerClient<Database>(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
-        get(name: string) {
-          return cookieStore.get(name)?.value
+        getAll() {
+          return cookieStore.getAll()
         },
-        set(name: string, value: string, options: CookieOptions) {
+        setAll(cookiesToSet) {
           try {
-            cookieStore.set({
-              ...DEFAULT_COOKIE_OPTIONS,
-              ...options as Omit<ResponseCookie, "value">,
-              name,
-              value,
-            })
-          } catch (error) {
-            // Cookie setting failed - this is expected in some environments
-            if (process.env.NODE_ENV === 'development') {
-              console.warn("Failed to set cookie:", error)
-            }
-          }
-        },
-        remove(name: string, options: CookieOptions) {
-          try {
-            cookieStore.set({
-              ...DEFAULT_COOKIE_OPTIONS,
-              ...options as Omit<ResponseCookie, "value">,
-              name,
-              value: "",
-              maxAge: 0,
-            })
-          } catch (error) {
-            // Cookie removal failed - this is expected in some environments
-            if (process.env.NODE_ENV === 'development') {
-              console.warn("Failed to remove cookie:", error)
-            }
+            cookiesToSet.forEach(({ name, value, options }) =>
+              cookieStore.set(name, value, options)
+            )
+          } catch {
+            // The `setAll` method was called from a Server Component.
+            // This can be ignored if you have middleware refreshing
+            // user sessions.
           }
         },
       },
     }
   )
 }
+
+// Export for backward compatibility
+export { createSupabaseServerClient as createServerClient }
+

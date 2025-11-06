@@ -9,7 +9,14 @@ import Link from 'next/link'
 
 interface ProfileCompletionProps {
     percentage: number
-    profile: any
+    profile: {
+        username?: string
+        full_name?: string
+        avatar_url?: string
+        bio?: string
+        website?: string
+        level?: string
+    }
 }
 
 export default function ProfileCompletion({ percentage, profile }: ProfileCompletionProps) {

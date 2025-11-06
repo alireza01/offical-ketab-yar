@@ -1,7 +1,7 @@
-import { BookOpen, Clock, Calendar, TrendingUp } from "lucide-react"
+import { BookOpen, Calendar, Clock, TrendingUp } from "lucide-react"
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { createServerClient } from "@/lib/supabase/server"
+import { createClient } from "@/lib/supabase/server"
 
 type SupabaseProgress = {
   id: string
@@ -15,8 +15,8 @@ type SupabaseProgress = {
 }
 
 export async function ReadingStats() {
-  const supabase = await createServerClient()
-  
+  const supabase = await createClient()
+
   // Get current user
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return null
@@ -83,9 +83,8 @@ export async function ReadingStats() {
             {[...Array(7)].map((_, i) => (
               <div
                 key={i}
-                className={`h-2 flex-1 rounded-full ${
-                  i < 5 ? "bg-gradient-to-r from-purple-500 to-indigo-500" : "bg-muted"
-                }`}
+                className={`h-2 flex-1 rounded-full ${i < 5 ? "bg-gradient-to-r from-purple-500 to-indigo-500" : "bg-muted"
+                  }`}
               />
             ))}
           </div>

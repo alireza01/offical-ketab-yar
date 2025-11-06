@@ -18,12 +18,12 @@ interface AuthorDetailClientProps {
 export function AuthorDetailClient({ author }: AuthorDetailClientProps) {
     const portableTextComponents = {
         block: {
-            normal: ({ children }: any) => <p className="mb-4 leading-relaxed">{children}</p>,
-            h2: ({ children }: any) => <h2 className="text-2xl font-bold mb-4 mt-6">{children}</h2>,
+            normal: ({ children }: { children?: React.ReactNode }) => <p className="mb-4 leading-relaxed">{children}</p>,
+            h2: ({ children }: { children?: React.ReactNode }) => <h2 className="text-2xl font-bold mb-4 mt-6">{children}</h2>,
         },
         marks: {
-            strong: ({ children }: any) => <strong className="font-bold">{children}</strong>,
-            em: ({ children }: any) => <em className="italic">{children}</em>,
+            strong: ({ children }: { children?: React.ReactNode }) => <strong className="font-bold">{children}</strong>,
+            em: ({ children }: { children?: React.ReactNode }) => <em className="italic">{children}</em>,
         },
     }
 
@@ -41,7 +41,7 @@ export function AuthorDetailClient({ author }: AuthorDetailClientProps) {
                             className="flex-shrink-0"
                         >
                             <Avatar className="h-48 w-48 border-4 border-gold-500/20">
-                                <AvatarImage src={author.image} alt={author.name} />
+                                <AvatarImage src={author.photo || author.image || ''} alt={author.name} />
                                 <AvatarFallback className="text-4xl">{author.name[0]}</AvatarFallback>
                             </Avatar>
                         </motion.div>
@@ -61,8 +61,8 @@ export function AuthorDetailClient({ author }: AuthorDetailClientProps) {
                                             {author.nationality}
                                         </span>
                                     )}
-                                    {author.born && <span>{author.born}</span>}
-                                    {author.books && (
+                                    {(author.birthYear || author.born) && <span>{author.birthYear || author.born}</span>}
+                                    {author.books && author.books.length > 0 && (
                                         <span className="flex items-center gap-2">
                                             <BookOpen className="h-4 w-4" />
                                             {author.books.length} {author.books.length === 1 ? 'Book' : 'Books'}
@@ -124,15 +124,23 @@ export function AuthorDetailClient({ author }: AuthorDetailClientProps) {
                                 <h2 className="text-2xl font-bold mb-6">Biography | بیوگرافی</h2>
                                 <div className="prose prose-lg dark:prose-invert max-w-none space-y-6">
                                     {/* English Bio */}
-                                    <div dir="ltr">
-                                        <h3 className="text-xl font-semibold mb-3">English</h3>
-                                        <PortableText value={author.bio.en} components={portableTextComponents} />
-                                    </div>
+                                    {author.bio && typeof author.bio === 'object' && 'en' in author.bio && (
+                                        <div dir="ltr">
+                                            <h3 className="text-xl font-semibold mb-3">English</h3>
+                                            <PortableText value={author.bio.en} components={portableTextComponents} />
+                                        </div>
+                                    )}
                                     {/* Persian Bio */}
-                                    <div dir="rtl" className="font-vazirmatn">
-                                        <h3 className="text-xl font-semibold mb-3">فارسی</h3>
-                                        <PortableText value={author.bio.fa} components={portableTextComponents} />
-                                    </div>
+                                    {author.bio && typeof author.bio === 'object' && 'fa' in author.bio && (
+                                        <div dir="rtl" className="font-vazirmatn">
+                                            <h3 className="text-xl font-semibold mb-3">فارسی</h3>
+                                            <PortableText value={author.bio.fa} components={portableTextComponents} />
+                                        </div>
+                                    )}
+                                    {/* Fallback for string bio */}
+                                    {author.bio && typeof author.bio === 'string' && (
+                                        <p className="leading-relaxed">{author.bio}</p>
+                                    )}
                                 </div>
                             </CardContent>
                         </Card>
@@ -148,43 +156,46 @@ export function AuthorDetailClient({ author }: AuthorDetailClientProps) {
                     >
                         <h2 className="text-3xl font-bold mb-6">کتاب‌های دیگر این نویسنده</h2>
                         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
-                            {author.books.map((book, index) => (
-                                <motion.div
-                                    key={book._id}
-                                    initial={{ opacity: 0, y: 20 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ duration: 0.3, delay: 0.5 + index * 0.05 }}
-                                >
-                                    <Link href={`/books/${book.slug}`} className="group block">
-                                        <div className="relative aspect-[2/3] rounded-lg overflow-hidden shadow-lg group-hover:shadow-xl transition-shadow">
-                                            <Image
-                                                src={book.coverImage}
-                                                alt={book.title.en}
-                                                fill
-                                                className="object-cover group-hover:scale-105 transition-transform duration-300"
-                                            />
-                                            {book.isPremium && (
-                                                <Badge className="absolute top-2 right-2 bg-gold-600">Premium</Badge>
-                                            )}
-                                        </div>
-                                        <div className="mt-3 space-y-1">
-                                            <h3 className="font-semibold line-clamp-2 group-hover:text-gold-600 transition-colors">
-                                                {book.title.en}
-                                            </h3>
-                                            <p className="text-sm text-muted-foreground">{book.publishYear}</p>
-                                            {book.genres && book.genres.length > 0 && (
-                                                <div className="flex flex-wrap gap-1">
-                                                    {book.genres.slice(0, 2).map((genre) => (
-                                                        <Badge key={genre} variant="secondary" className="text-xs">
-                                                            {genre}
-                                                        </Badge>
-                                                    ))}
-                                                </div>
-                                            )}
-                                        </div>
-                                    </Link>
-                                </motion.div>
-                            ))}
+                            {author.books.map((book, index) => {
+                                const bookTitle = typeof book.title === 'string' ? book.title : book.title.en
+                                return (
+                                    <motion.div
+                                        key={book._id}
+                                        initial={{ opacity: 0, y: 20 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ duration: 0.3, delay: 0.5 + index * 0.05 }}
+                                    >
+                                        <Link href={`/books/${book.slug}`} className="group block">
+                                            <div className="relative aspect-[2/3] rounded-lg overflow-hidden shadow-lg group-hover:shadow-xl transition-shadow">
+                                                <Image
+                                                    src={book.coverImage}
+                                                    alt={bookTitle}
+                                                    fill
+                                                    className="object-cover group-hover:scale-105 transition-transform duration-300"
+                                                />
+                                                {book.isPremium && (
+                                                    <Badge className="absolute top-2 right-2 bg-gold-600">Premium</Badge>
+                                                )}
+                                            </div>
+                                            <div className="mt-3 space-y-1">
+                                                <h3 className="font-semibold line-clamp-2 group-hover:text-gold-600 transition-colors">
+                                                    {bookTitle}
+                                                </h3>
+                                                <p className="text-sm text-muted-foreground">{book.publishYear}</p>
+                                                {book.genres && book.genres.length > 0 && (
+                                                    <div className="flex flex-wrap gap-1">
+                                                        {book.genres.slice(0, 2).map((genre) => (
+                                                            <Badge key={genre} variant="secondary" className="text-xs">
+                                                                {genre}
+                                                            </Badge>
+                                                        ))}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </Link>
+                                    </motion.div>
+                                )
+                            })}
                         </div>
                     </motion.div>
                 )}

@@ -44,12 +44,31 @@ export interface ButtonProps
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, asChild = false, ...props }, ref) => {
+  ({ className, variant, size, asChild = false, onClick, ...props }, ref) => {
     const Comp = asChild ? Slot : "button"
+
+    // Add haptic feedback on click (Agent 3 - Psychology)
+    const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+      // Trigger haptic feedback
+      if (typeof window !== 'undefined' && 'vibrate' in navigator) {
+        try {
+          // Light haptic for normal buttons, medium for premium
+          const pattern = variant === 'premium' || variant === 'gold' ? 20 : 10
+          navigator.vibrate(pattern)
+        } catch {
+          // Silently fail
+        }
+      }
+
+      // Call original onClick
+      onClick?.(e)
+    }
+
     return (
       <Comp
         className={cn(buttonVariants({ variant, size, className }))}
         ref={ref}
+        onClick={handleClick}
         {...props}
       />
     )

@@ -1,9 +1,11 @@
 'use client'
 
+import { ReadingTracker } from '@/components/gamification/reading-tracker'
 import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useChapterLoader } from '@/hooks/use-chapter-loader'
+import type { BilingualParagraph, Chapter } from '@/lib/sanity/types'
 import { AnimatePresence, motion } from 'framer-motion'
 import { ChevronLeft, ChevronRight, Menu, X } from 'lucide-react'
 import Link from 'next/link'
@@ -27,7 +29,7 @@ interface BookReaderProps {
         }
         publishYear: number
         totalChapters: number
-        firstChapter: any
+        firstChapter: Chapter
     }
 }
 
@@ -48,8 +50,9 @@ export function BookReader({ book }: BookReaderProps) {
 
     const [showControls, setShowControls] = useState(true)
     const [showChapterMenu, setShowChapterMenu] = useState(false)
+    const [chapterDirection, setChapterDirection] = useState<'next' | 'prev'>('next')
     const contentRef = useRef<HTMLDivElement>(null)
-    const scrollTimeoutRef = useRef<NodeJS.Timeout>()
+    const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
     // Track scroll position for smart loading
     useEffect(() => {
@@ -186,8 +189,8 @@ export function BookReader({ book }: BookReaderProps) {
                                                 }}
                                                 disabled={isLoading}
                                                 className={`w-full text-left p-3 rounded-lg transition-colors ${isCurrent
-                                                        ? 'bg-gold-500/20 border-2 border-gold-500'
-                                                        : 'hover:bg-muted border-2 border-transparent'
+                                                    ? 'bg-gold-500/20 border-2 border-gold-500'
+                                                    : 'hover:bg-muted border-2 border-transparent'
                                                     }`}
                                             >
                                                 <div className="flex items-center justify-between">
@@ -221,55 +224,69 @@ export function BookReader({ book }: BookReaderProps) {
             <div ref={contentRef} className="flex-1 overflow-y-auto">
                 <div className="container max-w-4xl mx-auto px-4 py-8">
                     {currentChapterData ? (
-                        <>
-                            {/* Chapter Title */}
+                        <AnimatePresence mode="wait">
                             <motion.div
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                className="mb-8"
+                                key={currentChapter}
+                                initial={{ opacity: 0, x: chapterDirection === 'next' ? 50 : -50 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                exit={{ opacity: 0, x: chapterDirection === 'next' ? -50 : 50 }}
+                                transition={{ duration: 0.3 }}
                             >
-                                <h2 className="text-3xl font-bold mb-2">{currentChapterData.title.en}</h2>
-                                <p className="text-xl text-muted-foreground font-vazirmatn" dir="rtl">
-                                    {currentChapterData.title.fa}
-                                </p>
+                                {/* Chapter Title */}
+                                <motion.div
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    className="mb-8"
+                                >
+                                    <h2 className="text-3xl font-bold mb-2">{currentChapterData.title.en}</h2>
+                                    <p className="text-xl text-muted-foreground font-vazirmatn" dir="rtl">
+                                        {currentChapterData.title.fa}
+                                    </p>
+                                </motion.div>
+
+                                {/* Chapter Content */}
+                                <div className="space-y-6">
+                                    {currentChapterData.content.map((item, index: number) => {
+                                        if (item._type === 'bilingualParagraph') {
+                                            return <BilingualRenderer key={index} paragraph={item as BilingualParagraph} index={index} bookId={book._id} />
+                                        }
+                                        // Handle images if needed
+                                        return null
+                                    })}
+                                </div>
+
+                                {/* Chapter Navigation */}
+                                <div className="flex items-center justify-between mt-12 pt-8 border-t">
+                                    <Button
+                                        variant="outline"
+                                        onClick={() => {
+                                            setChapterDirection('prev')
+                                            goToChapter(currentChapter - 1)
+                                        }}
+                                        disabled={!hasPrevChapter}
+                                    >
+                                        <ChevronLeft className="h-4 w-4 mr-2" />
+                                        Previous Chapter
+                                    </Button>
+
+                                    <span className="text-sm text-muted-foreground">
+                                        Chapter {currentChapter} of {totalChapters || '...'}
+                                    </span>
+
+                                    <Button
+                                        variant="outline"
+                                        onClick={() => {
+                                            setChapterDirection('next')
+                                            goToChapter(currentChapter + 1)
+                                        }}
+                                        disabled={!hasNextChapter}
+                                    >
+                                        Next Chapter
+                                        <ChevronRight className="h-4 w-4 ml-2" />
+                                    </Button>
+                                </div>
                             </motion.div>
-
-                            {/* Chapter Content */}
-                            <div className="space-y-6">
-                                {currentChapterData.content.map((item: any, index: number) => {
-                                    if (item._type === 'bilingualParagraph') {
-                                        return <BilingualRenderer key={index} paragraph={item} index={index} />
-                                    }
-                                    // Handle images if needed
-                                    return null
-                                })}
-                            </div>
-
-                            {/* Chapter Navigation */}
-                            <div className="flex items-center justify-between mt-12 pt-8 border-t">
-                                <Button
-                                    variant="outline"
-                                    onClick={() => goToChapter(currentChapter - 1)}
-                                    disabled={!hasPrevChapter}
-                                >
-                                    <ChevronLeft className="h-4 w-4 mr-2" />
-                                    Previous Chapter
-                                </Button>
-
-                                <span className="text-sm text-muted-foreground">
-                                    Chapter {currentChapter} of {totalChapters || '...'}
-                                </span>
-
-                                <Button
-                                    variant="outline"
-                                    onClick={() => goToChapter(currentChapter + 1)}
-                                    disabled={!hasNextChapter}
-                                >
-                                    Next Chapter
-                                    <ChevronRight className="h-4 w-4 ml-2" />
-                                </Button>
-                            </div>
-                        </>
+                        </AnimatePresence>
                     ) : (
                         // Loading skeleton
                         <div className="space-y-6">
@@ -299,7 +316,10 @@ export function BookReader({ book }: BookReaderProps) {
                             <Button
                                 variant="ghost"
                                 size="sm"
-                                onClick={() => goToChapter(currentChapter - 1)}
+                                onClick={() => {
+                                    setChapterDirection('prev')
+                                    goToChapter(currentChapter - 1)
+                                }}
                                 disabled={!hasPrevChapter}
                             >
                                 <ChevronLeft className="h-4 w-4" />
@@ -312,7 +332,10 @@ export function BookReader({ book }: BookReaderProps) {
                             <Button
                                 variant="ghost"
                                 size="sm"
-                                onClick={() => goToChapter(currentChapter + 1)}
+                                onClick={() => {
+                                    setChapterDirection('next')
+                                    goToChapter(currentChapter + 1)
+                                }}
                                 disabled={!hasNextChapter}
                             >
                                 <ChevronRight className="h-4 w-4" />
@@ -321,6 +344,14 @@ export function BookReader({ book }: BookReaderProps) {
                     </motion.footer>
                 )}
             </AnimatePresence>
+
+            {/* Reading Tracker for Gamification */}
+            <ReadingTracker
+                bookId={book._id}
+                currentPage={currentChapter}
+                totalPages={totalChapters || 1}
+                isReading={!showChapterMenu}
+            />
         </div>
     )
 }

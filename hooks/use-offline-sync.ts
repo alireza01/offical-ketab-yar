@@ -9,6 +9,12 @@ import { clearSyncQueue, getSyncQueue } from '@/lib/pwa/offline-storage'
 import { createClient } from '@/lib/supabase/client'
 import { useEffect, useState } from 'react'
 
+interface SyncQueueItem {
+    type: 'xp' | 'streak' | 'reading_session' | 'vocabulary'
+    timestamp: number
+    data: Record<string, unknown>
+}
+
 export function useOfflineSync() {
     const [isSyncing, setIsSyncing] = useState(false)
     const [queueSize, setQueueSize] = useState(0)
@@ -19,7 +25,7 @@ export function useOfflineSync() {
 
         try {
             setIsSyncing(true)
-            const queue = await getSyncQueue()
+            const queue = (await getSyncQueue()) as SyncQueueItem[]
             setQueueSize(queue.length)
 
             if (queue.length === 0) return

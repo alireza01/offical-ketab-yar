@@ -48,17 +48,43 @@ export interface NativeButtonProps
 }
 
 const NativeButton = React.forwardRef<HTMLButtonElement, NativeButtonProps>(
-    ({ className, variant, size, haptic, asChild = false, loading, children, ...props }, ref) => {
-        const Comp = asChild ? Slot : motion.button
+    ({ className, variant, size, haptic, asChild = false, loading, children, onClick, ...props }, ref) => {
+        if (asChild) {
+            return (
+                <Slot
+                    className={cn(nativeButtonVariants({ variant, size, haptic, className }))}
+                    ref={ref}
+                    onClick={onClick}
+                    {...props}
+                >
+                    {children}
+                </Slot>
+            )
+        }
 
         return (
-            <Comp
+            <motion.button
                 className={cn(nativeButtonVariants({ variant, size, haptic, className }))}
                 ref={ref}
                 whileTap={{ scale: 0.97 }}
                 transition={{ type: "spring", stiffness: 400, damping: 17 }}
                 disabled={loading || props.disabled}
-                {...props}
+                onClick={onClick as React.MouseEventHandler<HTMLButtonElement>}
+                type={props.type}
+                aria-label={props['aria-label']}
+                aria-disabled={props['aria-disabled']}
+                aria-pressed={props['aria-pressed']}
+                id={props.id}
+                name={props.name}
+                value={props.value}
+                form={props.form}
+                formAction={props.formAction}
+                formEncType={props.formEncType}
+                formMethod={props.formMethod}
+                formNoValidate={props.formNoValidate}
+                formTarget={props.formTarget}
+                autoFocus={props.autoFocus}
+                tabIndex={props.tabIndex}
             >
                 {loading ? (
                     <>
@@ -68,10 +94,11 @@ const NativeButton = React.forwardRef<HTMLButtonElement, NativeButtonProps>(
                 ) : (
                     children
                 )}
-            </Comp>
+            </motion.button>
         )
     }
 )
 NativeButton.displayName = "NativeButton"
 
 export { NativeButton, nativeButtonVariants }
+

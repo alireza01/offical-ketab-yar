@@ -25,6 +25,12 @@ export interface Database {
           subscription_expires_at: string | null
           stripe_customer_id: string | null
           stripe_subscription_id: string | null
+          role: 'user' | 'admin' | 'test_user'
+          is_banned: boolean
+          banned_at: string | null
+          banned_reason: string | null
+          made_admin_by: string | null
+          made_admin_at: string | null
           created_at: string
           updated_at: string
         }
@@ -43,6 +49,12 @@ export interface Database {
           subscription_expires_at?: string | null
           stripe_customer_id?: string | null
           stripe_subscription_id?: string | null
+          role?: 'user' | 'admin' | 'test_user'
+          is_banned?: boolean
+          banned_at?: string | null
+          banned_reason?: string | null
+          made_admin_by?: string | null
+          made_admin_at?: string | null
           created_at?: string
           updated_at?: string
         }
@@ -61,6 +73,12 @@ export interface Database {
           subscription_expires_at?: string | null
           stripe_customer_id?: string | null
           stripe_subscription_id?: string | null
+          role?: 'user' | 'admin' | 'test_user'
+          is_banned?: boolean
+          banned_at?: string | null
+          banned_reason?: string | null
+          made_admin_by?: string | null
+          made_admin_at?: string | null
           created_at?: string
           updated_at?: string
         }

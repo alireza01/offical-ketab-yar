@@ -1,5 +1,5 @@
 import { AdminSidebar } from '@/components/admin/admin-sidebar'
-import { createServerClient } from '@/lib/supabase/server'
+import { createClient } from '@/lib/supabase/server'
 import type { Metadata } from 'next'
 import { redirect } from 'next/navigation'
 
@@ -15,11 +15,11 @@ export default async function AdminLayout({
 }: {
   children: React.ReactNode
 }) {
-  const supabase = await createServerClient()
-  
+  const supabase = await createClient()
+
   // Check authentication
   const { data: { user }, error } = await supabase.auth.getUser()
-  
+
   if (error || !user) {
     redirect('/auth/login?redirect=/admin')
   }

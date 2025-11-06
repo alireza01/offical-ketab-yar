@@ -5,6 +5,7 @@ import { Progress } from '@/components/ui/progress'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useChapterLoader } from '@/hooks/use-chapter-loader'
 import { useReadingProgress } from '@/hooks/use-reading-progress'
+import type { BilingualParagraph, Chapter } from '@/lib/sanity/types'
 import { AnimatePresence, motion } from 'framer-motion'
 import { ChevronLeft, ChevronRight, Menu, X } from 'lucide-react'
 import Link from 'next/link'
@@ -31,7 +32,7 @@ interface BookReaderEnhancedProps {
         publishYear: number
         totalChapters: number
         freePreviewPages: number
-        firstChapter: any
+        firstChapter: Chapter
     }
 }
 
@@ -52,7 +53,7 @@ export function BookReaderEnhanced({ book }: BookReaderEnhancedProps) {
 
     const currentChapterData = chapters[currentChapter]
     const totalParagraphs = currentChapterData?.content?.filter(
-        (item: any) => item._type === 'bilingualParagraph'
+        (item): item is BilingualParagraph => item._type === 'bilingualParagraph'
     ).length || 0
 
     const { markParagraphAsRead } = useReadingProgress({
@@ -64,8 +65,8 @@ export function BookReaderEnhanced({ book }: BookReaderEnhancedProps) {
     const [showControls, setShowControls] = useState(true)
     const [showChapterMenu, setShowChapterMenu] = useState(false)
     const [currentPage, setCurrentPage] = useState(1)
-    const contentRef = useRef<HTMLDivElement>(null)
-    const scrollTimeoutRef = useRef<NodeJS.Timeout>()
+    const contentRef = useRef<HTMLDivElement | null>(null)
+    const scrollTimeoutRef = useRef<NodeJS.Timeout | undefined>(undefined)
 
     // Calculate current page based on chapter and paragraphs read
     useEffect(() => {
@@ -215,8 +216,8 @@ export function BookReaderEnhanced({ book }: BookReaderEnhancedProps) {
                                                 }}
                                                 disabled={isLoading}
                                                 className={`w-full text-left p-3 rounded-lg transition-colors ${isCurrent
-                                                        ? 'bg-gold-500/20 border-2 border-gold-500'
-                                                        : 'hover:bg-muted border-2 border-transparent'
+                                                    ? 'bg-gold-500/20 border-2 border-gold-500'
+                                                    : 'hover:bg-muted border-2 border-transparent'
                                                     }`}
                                             >
                                                 <div className="flex items-center justify-between">
@@ -263,12 +264,12 @@ export function BookReaderEnhanced({ book }: BookReaderEnhancedProps) {
                             </motion.div>
 
                             <div className="space-y-6">
-                                {currentChapterData.content.map((item: any, index: number) => {
+                                {currentChapterData.content.map((item, index: number) => {
                                     if (item._type === 'bilingualParagraph') {
                                         return (
                                             <BilingualRenderer
                                                 key={index}
-                                                paragraph={item}
+                                                paragraph={item as BilingualParagraph}
                                                 index={index}
                                                 onVisible={handleParagraphVisible}
                                             />

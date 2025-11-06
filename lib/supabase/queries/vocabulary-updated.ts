@@ -1,6 +1,6 @@
 'use server'
 
-import { createServerClient } from '@/lib/supabase/server'
+import { createClient } from '@/lib/supabase/server'
 
 /**
  * Updated vocabulary queries using user_words table (from Part 2)
@@ -9,7 +9,7 @@ import { createServerClient } from '@/lib/supabase/server'
 
 // Get user's vocabulary words
 export async function getUserVocabulary(userId: string) {
-    const supabase = await createServerClient()
+    const supabase = await createClient()
 
     const { data, error } = await supabase
         .from('user_words')
@@ -51,7 +51,7 @@ export async function addVocabularyWord(
     pageNumber?: number,
     level?: 'beginner' | 'intermediate' | 'advanced'
 ) {
-    const supabase = await createServerClient()
+    const supabase = await createClient()
 
     // Check if word already exists
     const { data: existing } = await supabase
@@ -95,7 +95,7 @@ export async function addVocabularyWord(
 
 // Delete word from vocabulary
 export async function deleteVocabularyWord(wordId: string) {
-    const supabase = await createServerClient()
+    const supabase = await createClient()
 
     const { error } = await supabase
         .from('user_words')
@@ -108,7 +108,7 @@ export async function deleteVocabularyWord(wordId: string) {
 
 // Get vocabulary statistics
 export async function getVocabularyStats(userId: string) {
-    const supabase = await createServerClient()
+    const supabase = await createClient()
 
     const { data: words, error } = await supabase
         .from('user_words')
@@ -139,7 +139,7 @@ export async function getWordsByStatus(
     userId: string,
     status: 'new' | 'learning' | 'reviewing' | 'mastered'
 ) {
-    const supabase = await createServerClient()
+    const supabase = await createClient()
 
     const { data, error } = await supabase
         .from('user_words')
@@ -166,7 +166,7 @@ export async function getWordsByStatus(
 
 // Get words struggling with (< 50% accuracy)
 export async function getStrugglingWords(userId: string) {
-    const supabase = await createServerClient()
+    const supabase = await createClient()
 
     const { data, error } = await supabase
         .from('user_words')
@@ -188,7 +188,7 @@ export async function getStrugglingWords(userId: string) {
 
 // Search vocabulary
 export async function searchVocabulary(userId: string, query: string) {
-    const supabase = await createServerClient()
+    const supabase = await createClient()
 
     const { data, error } = await supabase
         .from('user_words')
@@ -203,7 +203,7 @@ export async function searchVocabulary(userId: string, query: string) {
 
 // Get words by book
 export async function getVocabularyByBook(userId: string, bookId: string) {
-    const supabase = await createServerClient()
+    const supabase = await createClient()
 
     const { data, error } = await supabase
         .from('user_words')
@@ -233,7 +233,7 @@ export async function exportVocabularyToCSV(userId: string) {
             word.status,
             word.review_count,
             word.review_count > 0 ? `${Math.round((word.correct_count / word.review_count) * 100)}%` : '0%',
-            word.books?.title || '',
+            (Array.isArray(word.books) ? word.books[0]?.title : (word.books as { title?: string })?.title) || '',
             new Date(word.created_at).toLocaleDateString('fa-IR'),
         ].join(','))
     ].join('\n')
@@ -246,7 +246,7 @@ export async function bulkImportWords(
     userId: string,
     words: Array<{ word: string; definition: string; level?: string }>
 ) {
-    const supabase = await createServerClient()
+    const supabase = await createClient()
 
     const wordsToInsert = words.map(w => ({
         user_id: userId,

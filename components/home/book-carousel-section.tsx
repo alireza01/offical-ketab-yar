@@ -9,10 +9,11 @@ import Link from 'next/link'
 import { useCallback, useEffect, useState } from 'react'
 
 interface Book {
-    id: string
+    id?: string
+    _id?: string
     slug: string
-    title: string
-    author?: string
+    title: string | { en: string; fa: string }
+    author?: string | { name: string; slug: string }
     author_id?: string
     authors?: { name: string }
     cover_image?: string | null
@@ -151,15 +152,16 @@ export function BookCarouselSection({
                         <p className="text-sm md:text-base text-muted-foreground leading-relaxed">{description}</p>
                     </div>
 
-                    <Link href={viewAllLink} className="flex-shrink-0">
-                        <Button
-                            variant="outline"
-                            className="group border-2 border-gold-600/30 hover:border-gold-600 hover:bg-gold-600/10 hover:text-gold-900 dark:hover:text-gold-100 dark:hover:bg-gold-500/10 transition-all duration-300 whitespace-nowrap"
-                        >
+                    <Button
+                        variant="outline"
+                        className="group border-2 border-gold-600/30 hover:border-gold-600 hover:bg-gold-600/10 hover:text-gold-900 dark:hover:text-gold-100 dark:hover:bg-gold-500/10 transition-all duration-300 whitespace-nowrap flex-shrink-0"
+                        asChild
+                    >
+                        <Link href={viewAllLink}>
                             <span className="ml-2">{viewAllText}</span>
                             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                        </Button>
-                    </Link>
+                        </Link>
+                    </Button>
                 </motion.div>
 
                 {/* Carousel Container - Fixed Hover Clipping */}
@@ -222,7 +224,7 @@ export function BookCarouselSection({
                                     <BookCard
                                         book={book}
                                         showReadCount={showReadCount}
-                                        progress={progress?.[book.id]}
+                                        progress={progress?.[book.id || book._id || '']}
                                     />
                                 </motion.div>
                             ))}

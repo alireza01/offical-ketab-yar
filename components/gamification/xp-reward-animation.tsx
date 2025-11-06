@@ -16,7 +16,7 @@ export function XPRewardAnimation({ amount, onComplete }: XPRewardAnimationProps
     // Play sound effect using sound utility (Agent 3 - Psychology)
     if (typeof window !== 'undefined') {
       import('@/lib/utils/sound-effects').then(({ soundEffects }) => {
-        soundEffects.xpGain(amount)
+        soundEffects.xp()
       }).catch(() => {
         // Silently fail if sound system not available
       })

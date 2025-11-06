@@ -4,17 +4,23 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { Slider } from '@/components/ui/slider'
-import type { MockBook } from '@/lib/dev/mock-data'
 import { cn } from '@/lib/utils'
 import { AnimatePresence, motion } from 'framer-motion'
 import { ArrowLeft, ArrowRight, ChevronRight, Highlighter, MessageSquare, Moon, Settings, Sun, Type, X } from 'lucide-react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
+import { AIChatPanel } from './ai-chat-panel'
+import { FloatingAIButton } from './floating-ai-button'
 import { HighlightsPanel } from './highlights-panel'
 import { TextSelectionMenu } from './text-selection-menu'
 
 interface ReaderProps {
-  book: MockBook
+  book: {
+    content: string[]
+    title: string
+    slug: string
+    author?: string
+  }
 }
 
 export function ProfessionalReader({ book }: ReaderProps) {
@@ -22,6 +28,7 @@ export function ProfessionalReader({ book }: ReaderProps) {
   const [isTransitioning, setIsTransitioning] = useState(false)
   const [showSettings, setShowSettings] = useState(false)
   const [showChat, setShowChat] = useState(false)
+  const [isMobile, setIsMobile] = useState(false)
   const [fontSize, setFontSize] = useState(20)
   const [lineHeight, setLineHeight] = useState(1.8)
   const [letterSpacing, setLetterSpacing] = useState(0)
@@ -42,6 +49,16 @@ export function ProfessionalReader({ book }: ReaderProps) {
   const pageRef = useRef<HTMLDivElement>(null)
 
   const totalPages = book.content.length
+
+  // Detect mobile
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768)
+    }
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
 
   const goToPage = useCallback((page: number) => {
     if (page < 0 || page >= totalPages || isTransitioning) return
@@ -105,7 +122,7 @@ export function ProfessionalReader({ book }: ReaderProps) {
 
       try {
         selectedRange.surroundContents(span)
-      } catch (e) {
+      } catch {
         // If surroundContents fails, use alternative method
         console.log('Using alternative highlight method')
       }
@@ -213,7 +230,7 @@ export function ProfessionalReader({ book }: ReaderProps) {
               <p className={cn(
                 "text-sm mt-0.5",
                 theme === 'dark' ? 'text-gold-300' : 'text-gold-700'
-              )}>{book.authors?.name || 'نویسنده نامشخص'}</p>
+              )}>نویسنده نامشخص</p>
             </div>
           </div>
 
@@ -557,51 +574,34 @@ export function ProfessionalReader({ book }: ReaderProps) {
         </div>
       )}
 
-      {/* Chat Panel */}
-      {showChat && (
-        <div className={cn(
-          "fixed inset-y-0 left-0 w-96 border-r shadow-2xl z-50 flex flex-col transition-all duration-700 animate-slide-in-left",
-          theme === 'light' && "bg-gradient-to-br from-gold-50 to-amber-50 border-gold-200",
-          theme === 'sepia' && "bg-gradient-to-br from-amber-100 to-amber-50 border-amber-300",
-          theme === 'dark' && "bg-gradient-to-br from-[#0f0e0c] to-[#1a1612] border-gold-700"
-        )}>
-          <div className="p-4 border-b flex items-center justify-between">
-            <h2 className="text-xl font-bold">چت هوشمند</h2>
-            <Button variant="ghost" size="sm" onClick={() => setShowChat(false)}>
-              <X className="h-5 w-5" />
-            </Button>
-          </div>
-
-          <div className="flex-1 p-4 overflow-y-auto">
-            {selectedText && (
-              <div className="p-3 bg-muted rounded-lg mb-4">
-                <p className="text-xs font-medium mb-1">متن انتخابی:</p>
-                <p className="text-sm">{selectedText}</p>
-              </div>
-            )}
-            <div className="text-center text-muted-foreground py-8">
-              <MessageSquare className="h-12 w-12 mx-auto mb-4 opacity-50" />
-              <p>سوال خود را بپرسید</p>
-            </div>
-          </div>
-
-          <div className={cn(
-            "p-4 border-t",
-            theme === 'dark' ? "border-gold-700" : "border-gold-200"
-          )}>
-            <input
-              type="text"
-              placeholder="سوال بپرسید..."
-              className={cn(
-                "w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold-500 focus:border-gold-500 transition-all",
-                theme === 'dark'
-                  ? "border-gold-700 bg-[#1a1612] text-[#e8e6e3]"
-                  : "border-gold-300 bg-white"
-              )}
-            />
-          </div>
-        </div>
+      {/* Floating AI Button */}
+      {!showChat && (
+        <FloatingAIButton
+          onClick={() => setShowChat(true)}
+          theme={theme}
+          hasUnreadContext={!!selectedText}
+        />
       )}
+
+      {/* AI Chat Panel */}
+      <AnimatePresence>
+        {showChat && (
+          <AIChatPanel
+            bookTitle={book.title}
+            bookAuthor={book.author}
+            currentPage={currentPage + 1}
+            currentPageText={book.content[currentPage] || ''}
+            previousPages={book.content.slice(Math.max(0, currentPage - 5), currentPage)}
+            selectedText={selectedText}
+            theme={theme}
+            onClose={() => {
+              setShowChat(false)
+              setSelectedText('')
+            }}
+            isMobile={isMobile}
+          />
+        )}
+      </AnimatePresence>
 
       {/* Highlights Panel - Organized by Page */}
       <AnimatePresence>

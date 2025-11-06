@@ -12,11 +12,7 @@ import { BookOpen, Save, Type } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
 
-interface ReadingSettingsProps {
-    userId: string
-}
-
-export default function ReadingSettings({ userId }: ReadingSettingsProps) {
+export default function ReadingSettings() {
     const [fontSize, setFontSize] = useState([16])
     const [lineHeight, setLineHeight] = useState([1.6])
     const [fontFamily, setFontFamily] = useState('vazirmatn')

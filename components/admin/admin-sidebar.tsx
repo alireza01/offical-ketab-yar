@@ -6,6 +6,7 @@ import { motion } from 'framer-motion'
 import {
   BarChart3,
   BookOpen,
+  ExternalLink,
   Home,
   LayoutDashboard,
   LogOut,
@@ -22,11 +23,6 @@ const navItems = [
     icon: LayoutDashboard,
   },
   {
-    title: 'کتاب‌ها',
-    href: '/admin/books',
-    icon: BookOpen,
-  },
-  {
     title: 'کاربران',
     href: '/admin/users',
     icon: Users,
@@ -37,9 +33,15 @@ const navItems = [
     icon: BarChart3,
   },
   {
-    title: 'تنظیمات',
-    href: '/admin/settings',
+    title: 'کلیدهای AI',
+    href: '/admin/ai-keys',
     icon: Settings,
+  },
+  {
+    title: 'CMS (کتاب‌ها و بلاگ)',
+    href: '/Studio',
+    icon: BookOpen,
+    external: true,
   },
 ]
 
@@ -72,6 +74,22 @@ export function AdminSidebar() {
         {navItems.map((item) => {
           const Icon = item.icon
           const isActive = pathname === item.href || pathname?.startsWith(item.href + '/')
+
+          if (item.external) {
+            return (
+              <a
+                key={item.href}
+                href={item.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 group relative hover:bg-muted text-muted-foreground hover:text-foreground"
+              >
+                <Icon className="h-5 w-5 transition-transform group-hover:scale-110" />
+                <span className="font-medium flex-1">{item.title}</span>
+                <ExternalLink className="h-4 w-4" />
+              </a>
+            )
+          }
 
           return (
             <Link

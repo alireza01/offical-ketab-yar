@@ -30,12 +30,12 @@ export function TrendingBooks() {
       const books = await getMostReadBooks(6)
 
       return books.map((book) => ({
-        id: book.id,
+        id: book._id,
         slug: book.slug,
-        title: book.title,
-        author: book.authors?.name || 'Unknown Author',
-        coverImage: book.cover_image || '/images/placeholder-book.jpg',
-        rating: book.rating || 0,
+        title: typeof book.title === 'string' ? book.title : book.title.en,
+        author: typeof book.author === 'string' ? book.author : book.author.name,
+        coverImage: book.coverImage || '/images/placeholder-book.jpg',
+        rating: 0, // TODO: Implement ratings
         genre: book.genres || []
       }))
     },

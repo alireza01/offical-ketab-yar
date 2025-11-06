@@ -4,9 +4,8 @@ import { BookGridSkeleton } from '@/components/skeletons/book-card-skeleton'
 import type { Metadata } from 'next'
 import { Suspense } from 'react'
 
-// Force static generation for SEO (Agent 1 & 2)
-export const dynamic = 'force-static'
-export const revalidate = 1800 // Revalidate every 30 minutes
+// Force dynamic rendering (contains client components)
+export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
   title: 'کتابخانه کتاب‌های انگلیسی | بیش از 1000 کتاب رایگان | کتاب‌یار',

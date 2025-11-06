@@ -1,11 +1,13 @@
 'use client'
 
+import { useGamificationContext } from '@/components/gamification/gamification-provider'
 import { ThemeToggle } from '@/components/theme-toggle'
 import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
+import { useAuth } from '@/hooks/use-auth'
 import { cn } from '@/lib/utils'
 import { AnimatePresence, motion } from 'framer-motion'
-import { BookMarked, BookOpen, Flame, LayoutDashboard, Library, Menu, Settings, Sparkles, Trophy, X, Zap } from 'lucide-react'
+import { BookMarked, BookOpen, Flame, LayoutDashboard, Library, Menu, Settings, Sparkles, X, Zap } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useState } from 'react'
@@ -13,24 +15,18 @@ import { useState } from 'react'
 export function SiteHeader() {
   const pathname = usePathname()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const { user } = useAuth()
+  const { level, xp, currentStreak } = useGamificationContext()
 
-  // TODO: Replace with actual user data from auth context
-  const userStats = {
-    streak: 7,
-    xp: 450,
-    level: 5,
-    xpToNextLevel: 500,
-    isLoggedIn: false, // Change to true when user is logged in
-  }
-
-  const xpProgress = (userStats.xp / userStats.xpToNextLevel) * 100
+  // Calculate XP progress to next level
+  const xpForNextLevel = level * 100
+  const xpProgress = (xp / xpForNextLevel) * 100
 
   const navItems = [
     { href: '/', label: 'خانه', icon: BookOpen },
     { href: '/library', label: 'کتابخانه', icon: Library },
     { href: '/dashboard', label: 'داشبورد', icon: LayoutDashboard },
     { href: '/vocabulary', label: 'واژگان', icon: BookMarked },
-    { href: '/review', label: 'مرور', icon: Trophy },
     { href: '/settings', label: 'تنظیمات', icon: Settings },
   ]
 
@@ -88,7 +84,7 @@ export function SiteHeader() {
           {/* Right Actions */}
           <div className="flex items-center gap-3">
             {/* Gamification Stats - Only show when logged in */}
-            {userStats.isLoggedIn && (
+            {user && (
               <div className="hidden lg:flex items-center gap-2">
                 {/* Streak Counter */}
                 <motion.div
@@ -110,7 +106,7 @@ export function SiteHeader() {
                     <Flame className="h-4 w-4 text-orange-500" />
                   </motion.div>
                   <span className="text-sm font-bold text-orange-600 dark:text-orange-400">
-                    {userStats.streak}
+                    {currentStreak}
                   </span>
                 </motion.div>
 
@@ -123,7 +119,7 @@ export function SiteHeader() {
                   <Zap className="h-4 w-4 text-gold-600" />
                   <div className="flex flex-col gap-0.5">
                     <span className="text-xs font-medium text-muted-foreground leading-none">
-                      سطح {userStats.level}
+                      سطح {level}
                     </span>
                     <Progress
                       value={xpProgress}
@@ -131,7 +127,7 @@ export function SiteHeader() {
                     />
                   </div>
                   <span className="text-xs font-bold text-gold-600">
-                    {userStats.xp}
+                    {xp}
                   </span>
                 </motion.div>
               </div>
@@ -139,24 +135,28 @@ export function SiteHeader() {
 
             <ThemeToggle />
 
-            {!userStats.isLoggedIn ? (
+            {!user ? (
               <>
                 <motion.div whileTap={{ scale: 0.97 }}>
                   <Button
                     variant="outline"
                     size="sm"
+                    asChild
                     className="hidden sm:flex rounded-xl border-2 border-gold-600/30 hover:border-gold-600 hover:bg-gold-600/10"
                   >
-                    ورود
+                    <Link href="/auth/login">ورود</Link>
                   </Button>
                 </motion.div>
                 <motion.div whileTap={{ scale: 0.97 }}>
                   <Button
                     size="sm"
+                    asChild
                     className="hidden sm:flex gradient-gold text-white shadow-gold rounded-xl"
                   >
-                    <Sparkles className="h-4 w-4 ml-2" />
-                    اشتراک ویژه
+                    <Link href="/auth/signup">
+                      <Sparkles className="h-4 w-4 ml-2" />
+                      اشتراک ویژه
+                    </Link>
                   </Button>
                 </motion.div>
               </>
@@ -164,10 +164,13 @@ export function SiteHeader() {
               <motion.div whileTap={{ scale: 0.97 }}>
                 <Button
                   size="sm"
+                  asChild
                   className="hidden sm:flex gradient-gold text-white shadow-gold rounded-xl"
                 >
-                  <Sparkles className="h-4 w-4 ml-2" />
-                  ارتقا به پرمیوم
+                  <Link href="/subscription">
+                    <Sparkles className="h-4 w-4 ml-2" />
+                    ارتقا به پرمیوم
+                  </Link>
                 </Button>
               </motion.div>
             )}
@@ -222,23 +225,28 @@ export function SiteHeader() {
                   </motion.div>
                 )
               })}
-              <motion.div
-                className="pt-4 space-y-2"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.3 }}
-              >
-                <Button
-                  variant="outline"
-                  className="w-full rounded-xl border-2 border-gold-600/30 hover:border-gold-600 hover:bg-gold-600/10"
+              {!user && (
+                <motion.div
+                  className="pt-4 space-y-2"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.3 }}
                 >
-                  ورود
-                </Button>
-                <Button className="w-full gradient-gold text-white shadow-gold rounded-xl">
-                  <Sparkles className="h-4 w-4 ml-2" />
-                  اشتراک ویژه
-                </Button>
-              </motion.div>
+                  <Button
+                    variant="outline"
+                    asChild
+                    className="w-full rounded-xl border-2 border-gold-600/30 hover:border-gold-600 hover:bg-gold-600/10"
+                  >
+                    <Link href="/auth/login">ورود</Link>
+                  </Button>
+                  <Button asChild className="w-full gradient-gold text-white shadow-gold rounded-xl">
+                    <Link href="/auth/signup">
+                      <Sparkles className="h-4 w-4 ml-2" />
+                      اشتراک ویژه
+                    </Link>
+                  </Button>
+                </motion.div>
+              )}
             </nav>
           </motion.div>
         )}

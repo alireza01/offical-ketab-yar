@@ -34,6 +34,12 @@ const nextConfig = {
   
   // Webpack optimizations (fallback for webpack mode)
   webpack: (config, { isServer }) => {
+    // Fix Sanity date-fns conflict
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      'date-fns': require.resolve('date-fns'),
+    }
+    
     // Optimize bundle size
     if (!isServer) {
       config.optimization.splitChunks = {

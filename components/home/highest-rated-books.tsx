@@ -1,10 +1,10 @@
-import { getHighestRatedBooks } from '@/lib/data'
+import { getTrendingBooks } from '@/lib/data'
 import { Star } from 'lucide-react'
 import { BookCarouselSection } from './book-carousel-section'
 
 export async function HighestRatedBooks() {
     try {
-        const books = await getHighestRatedBooks(12)
+        const books = await getTrendingBooks(12)
 
         if (!books || books.length === 0) {
             return null

@@ -28,8 +28,17 @@ import {
 import Image from 'next/image'
 import { useEffect, useState } from 'react'
 
+interface OfflineBook {
+    slug: string
+    title: { en: string; fa: string }
+    author: { name: string; slug: string }
+    coverImage: string
+    totalChapters: number
+    downloadedAt: string
+}
+
 export function OfflineSettingsClient() {
-    const [offlineBooks, setOfflineBooks] = useState<any[]>([])
+    const [offlineBooks, setOfflineBooks] = useState<OfflineBook[]>([])
     const [storageInfo, setStorageInfo] = useState({
         usage: 0,
         quota: 0,
@@ -52,7 +61,13 @@ export function OfflineSettingsClient() {
                 getStorageUsage(),
             ])
             setOfflineBooks(books)
-            setStorageInfo(storage)
+            if (storage) {
+                setStorageInfo({
+                    usage: storage.usage,
+                    quota: storage.quota,
+                    percentage: storage.percentUsed
+                })
+            }
         } catch (error) {
             console.error('Failed to load offline data:', error)
             toast({
@@ -73,7 +88,8 @@ export function OfflineSettingsClient() {
                 description: 'کتاب از حافظه آفلاین حذف شد',
             })
             loadData()
-        } catch (error) {
+        } catch (err) {
+            console.error('Failed to delete offline book:', err)
             toast({
                 title: 'خطا',
                 description: 'حذف کتاب با مشکل مواجه شد',
@@ -225,7 +241,7 @@ export function OfflineSettingsClient() {
                         <div className="space-y-4">
                             {offlineBooks.map((book, index) => (
                                 <motion.div
-                                    key={book.bookId}
+                                    key={book.slug}
                                     initial={{ opacity: 0, y: 20 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ delay: index * 0.1 }}
@@ -233,8 +249,8 @@ export function OfflineSettingsClient() {
                                 >
                                     <div className="relative h-16 w-12 flex-shrink-0 overflow-hidden rounded">
                                         <Image
-                                            src={book.metadata.coverUrl}
-                                            alt={book.metadata.title}
+                                            src={book.coverImage}
+                                            alt={book.title.fa || book.title.en}
                                             fill
                                             className="object-cover"
                                         />
@@ -242,10 +258,10 @@ export function OfflineSettingsClient() {
 
                                     <div className="flex-1 min-w-0">
                                         <h3 className="font-semibold truncate">
-                                            {book.metadata.title}
+                                            {book.title.fa || book.title.en}
                                         </h3>
                                         <p className="text-sm text-muted-foreground truncate">
-                                            {book.metadata.author}
+                                            {book.author.name}
                                         </p>
                                         <p className="text-xs text-muted-foreground">
                                             دانلود شده:{' '}
@@ -256,7 +272,7 @@ export function OfflineSettingsClient() {
                                     <Button
                                         variant="ghost"
                                         size="icon"
-                                        onClick={() => handleDeleteBook(book.bookId)}
+                                        onClick={() => handleDeleteBook(book.slug)}
                                         className="flex-shrink-0 text-destructive hover:text-destructive"
                                     >
                                         <Trash2 className="h-4 w-4" />

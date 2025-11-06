@@ -15,7 +15,7 @@ import { LevelUpCelebration } from './level-badge'
 import { StreakCelebration } from './streak-flame'
 import { XPRewardAnimation } from './xp-reward-animation'
 
-interface GamificationContextValue extends ReturnType<typeof useGamification> { }
+type GamificationContextValue = ReturnType<typeof useGamification>
 
 const GamificationContext = createContext<GamificationContextValue | null>(null)
 

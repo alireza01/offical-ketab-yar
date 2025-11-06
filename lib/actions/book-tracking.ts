@@ -1,6 +1,6 @@
 'use server'
 
-import { createServerClient } from '@/lib/supabase/server'
+import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
 
 /**
@@ -13,7 +13,7 @@ export async function updateReadingProgress(
     totalPages: number
 ) {
     try {
-        const supabase = await createServerClient()
+        const supabase = await createClient()
 
         // Get current user
         const {
@@ -75,7 +75,7 @@ export async function updateReadingProgress(
  */
 export async function startReading(bookId: string, totalPages: number) {
     try {
-        const supabase = await createServerClient()
+        const supabase = await createClient()
 
         const {
             data: { user },
@@ -132,7 +132,7 @@ export async function startReading(bookId: string, totalPages: number) {
  */
 export async function getReadingProgress(bookId: string) {
     try {
-        const supabase = await createServerClient()
+        const supabase = await createClient()
 
         const {
             data: { user },
@@ -168,7 +168,7 @@ export async function getReadingProgress(bookId: string) {
  */
 export async function getCurrentlyReading() {
     try {
-        const supabase = await createServerClient()
+        const supabase = await createClient()
 
         const {
             data: { user },
@@ -208,7 +208,7 @@ export async function getCurrentlyReading() {
  */
 export async function getCompletedBooks() {
     try {
-        const supabase = await createServerClient()
+        const supabase = await createClient()
 
         const {
             data: { user },
@@ -247,7 +247,7 @@ export async function getCompletedBooks() {
  */
 export async function hasCompletedBook(bookId: string) {
     try {
-        const supabase = await createServerClient()
+        const supabase = await createClient()
 
         const {
             data: { user },
@@ -282,7 +282,7 @@ export async function hasCompletedBook(bookId: string) {
  */
 export async function getUserReadingStats() {
     try {
-        const supabase = await createServerClient()
+        const supabase = await createClient()
 
         const {
             data: { user },
@@ -313,7 +313,7 @@ export async function getUserReadingStats() {
             .eq('user_id', user.id)
 
         const totalPagesRead = progressData?.reduce(
-            (sum, p) => sum + (p.current_page || 0),
+            (sum: number, p: { current_page: number | null }) => sum + (p.current_page || 0),
             0
         ) || 0
 
@@ -332,7 +332,7 @@ export async function getUserReadingStats() {
 
             const currentDate = new Date(today)
             const activityDates = new Set(
-                recentActivity.map(a => {
+                recentActivity.map((a: { last_read_at: string }) => {
                     const date = new Date(a.last_read_at)
                     date.setHours(0, 0, 0, 0)
                     return date.getTime()
@@ -365,7 +365,7 @@ export async function getUserReadingStats() {
  */
 export async function incrementBookView(bookId: string) {
     try {
-        const supabase = await createServerClient()
+        const supabase = await createClient()
 
         // Get user if authenticated
         const {
@@ -396,7 +396,7 @@ export async function incrementBookView(bookId: string) {
  */
 export async function getBookViewStats(bookId: string) {
     try {
-        const supabase = await createServerClient()
+        const supabase = await createClient()
 
         const { data, error } = await supabase
             .from('books')

@@ -1,7 +1,7 @@
 'use client'
 
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { getBooks } from '@/lib/data'
+import { getBooks, type BookListItem } from '@/lib/data'
 import { useQuery } from '@tanstack/react-query'
 import { motion } from 'framer-motion'
 import { AlertCircle } from 'lucide-react'
@@ -23,10 +23,11 @@ const item = {
 }
 
 // Agent 2 (Performance): TanStack Query for caching and optimistic updates
-// Agent 0 (Investigation): Using unified data API that handles mock/real data automatically
-async function fetchBooks() {
+// Agent 0 (Investigation): Using unified data API (Sanity CMS)
+async function fetchBooks(): Promise<BookListItem[]> {
   const books = await getBooks()
-  return books
+  // Convert to plain objects to avoid class instance issues
+  return JSON.parse(JSON.stringify(books)) as BookListItem[]
 }
 
 export function BookGrid() {
@@ -84,8 +85,8 @@ export function BookGrid() {
       animate="show"
       className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-6"
     >
-      {books.map((book) => (
-        <motion.div key={book.id} variants={item}>
+      {books.map((book: BookListItem) => (
+        <motion.div key={book._id} variants={item}>
           <BookCard book={book} />
         </motion.div>
       ))}

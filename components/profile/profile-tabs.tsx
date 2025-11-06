@@ -2,6 +2,7 @@
 
 import { Skeleton } from '@/components/ui/skeleton'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import type { User } from '@supabase/supabase-js'
 import { BookOpen, History, Settings, Trophy } from 'lucide-react'
 import dynamic from 'next/dynamic'
 import { useState } from 'react'
@@ -13,20 +14,38 @@ const ReadingHistory = dynamic(() => import('./reading-history').then(mod => ({ 
     ssr: false,
 })
 
-const ProfileAchievements = dynamic<{ userId: string; userStats: any }>(() => import('./profile-achievements'), {
+const ProfileAchievements = dynamic(() => import('./profile-achievements'), {
     loading: () => <Skeleton className="h-96 w-full" />,
     ssr: false,
 })
 
-const ProfileSettings = dynamic<{ user: any; profile: any }>(() => import('./profile-settings'), {
+const ProfileSettings = dynamic(() => import('./profile-settings'), {
     loading: () => <Skeleton className="h-96 w-full" />,
     ssr: false,
 })
 
 interface ProfileTabsProps {
-    user: any
-    profile: any
-    userStats: any
+    user: User
+    profile: {
+        id: string
+        username?: string
+        full_name?: string
+        avatar_url?: string
+        bio?: string
+        website?: string
+        level?: string
+        created_at?: string
+        updated_at?: string
+    }
+    userStats: {
+        xp: number
+        level: number
+        current_streak: number
+        longest_streak: number
+        total_books_read: number
+        total_pages_read: number
+        total_reading_time: number
+    }
 }
 
 export function ProfileTabs({ user, profile, userStats }: ProfileTabsProps) {
@@ -76,7 +95,17 @@ export function ProfileTabs({ user, profile, userStats }: ProfileTabsProps) {
 
             {/* Settings Tab */}
             <TabsContent value="settings" className="mt-6">
-                <ProfileSettings user={user} profile={profile} />
+                <ProfileSettings
+                    user={user}
+                    profile={{
+                        id: profile.id,
+                        username: profile.username ?? null,
+                        full_name: profile.full_name ?? null,
+                        avatar_url: profile.avatar_url ?? null,
+                        created_at: profile.created_at ?? new Date().toISOString(),
+                        updated_at: profile.updated_at ?? new Date().toISOString(),
+                    }}
+                />
             </TabsContent>
         </Tabs>
     )

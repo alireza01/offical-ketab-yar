@@ -1,13 +1,13 @@
 // API route for creating ZarinPal payment
 // Agent 4: Payment API endpoint for Iranian market
 
-import { createServerClient } from '@/lib/supabase/server'
+import { createClient } from '@/lib/supabase/server'
 import { createPaymentRequest } from '@/lib/zarinpal/zarinpal-client'
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function POST(request: NextRequest) {
     try {
-        const supabase = await createServerClient()
+        const supabase = await createClient()
 
         // Check authentication
         const { data: { user } } = await supabase.auth.getUser()

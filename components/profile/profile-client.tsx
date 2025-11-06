@@ -2,18 +2,40 @@
 
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { createClient } from '@/lib/supabase/client'
+import type { User } from '@supabase/supabase-js'
 import { AlertCircle } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { ProfileHeader } from './profile-header'
 import { ProfileTabs } from './profile-tabs'
 
+interface Profile {
+    id: string
+    username?: string
+    full_name?: string
+    avatar_url?: string
+    bio?: string
+    website?: string
+    level?: string
+    created_at: string
+}
+
+interface UserStats {
+    xp: number
+    level: number
+    current_streak: number
+    longest_streak: number
+    total_books_read: number
+    total_pages_read: number
+    total_reading_time: number
+}
+
 export default function ProfileClient() {
     const router = useRouter()
     const supabase = createClient()
-    const [user, setUser] = useState<any>(null)
-    const [profile, setProfile] = useState<any>(null)
-    const [userStats, setUserStats] = useState<any>(null)
+    const [user, setUser] = useState<User | null>(null)
+    const [profile, setProfile] = useState<Profile | null>(null)
+    const [userStats, setUserStats] = useState<UserStats | null>(null)
     const [isLoading, setIsLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
 
@@ -92,14 +114,14 @@ export default function ProfileClient() {
             <ProfileHeader
                 user={user}
                 profile={profile}
-                userStats={userStats}
+                userStats={userStats || { xp: 0, level: 1, current_streak: 0, longest_streak: 0, total_books_read: 0, total_pages_read: 0, total_reading_time: 0 }}
             />
 
             {/* Agent 3: Tabbed interface for organization */}
             <ProfileTabs
                 user={user}
                 profile={profile}
-                userStats={userStats}
+                userStats={userStats || { xp: 0, level: 1, current_streak: 0, longest_streak: 0, total_books_read: 0, total_pages_read: 0, total_reading_time: 0 }}
             />
         </div>
     )

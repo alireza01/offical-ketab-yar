@@ -4,9 +4,8 @@ import { PricingFAQ } from '@/components/pricing/pricing-faq'
 import { PricingTestimonials } from '@/components/pricing/pricing-testimonials'
 import type { Metadata } from 'next'
 
-// Force static generation for SEO (Agent 1 & 2)
-export const dynamic = 'force-static'
-export const revalidate = 3600 // Revalidate every hour
+// Force dynamic rendering (contains client components)
+export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
   title: 'قیمت‌گذاری و اشتراک | شروع رایگان | تخفیف ویژه 30% | کتاب‌یار',

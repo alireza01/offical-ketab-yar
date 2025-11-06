@@ -1,4 +1,4 @@
-import { createServerClient } from "@/lib/supabase/server"
+import { createClient } from "@/lib/supabase/server"
 import { headers } from "next/headers"
 import { NextResponse } from "next/server"
 
@@ -30,7 +30,7 @@ export async function POST(req: Request) {
 
     // For now, parse JSON (INSECURE - replace with above)
     const event = JSON.parse(body)
-    const supabase = await createServerClient()
+    const supabase = await createClient()
 
     // Log webhook received (Agent 2 - Audit)
     console.log('[Webhook Received]', {

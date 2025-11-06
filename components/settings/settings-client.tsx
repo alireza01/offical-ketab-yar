@@ -2,6 +2,7 @@
 
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { createClient } from '@/lib/supabase/client'
+import type { User } from '@supabase/supabase-js'
 import { AlertCircle } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
@@ -10,7 +11,7 @@ import { SettingsTabs } from './settings-tabs'
 export default function SettingsClient() {
     const router = useRouter()
     const supabase = createClient()
-    const [user, setUser] = useState<any>(null)
+    const [user, setUser] = useState<User | null>(null)
     const [isLoading, setIsLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
 
@@ -63,7 +64,7 @@ export default function SettingsClient() {
                     تنظیمات خواندن، اعلان‌ها و حریم خصوصی خود را مدیریت کنید
                 </p>
             </div>
-            <SettingsTabs userId={user.id} userEmail={user.email} />
+            <SettingsTabs userId={user.id} userEmail={user.email || ''} />
         </div>
     )
 }

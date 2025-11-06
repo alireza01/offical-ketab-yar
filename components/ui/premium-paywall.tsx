@@ -7,7 +7,8 @@ import { Badge } from "./badge"
 import { Button } from "./button"
 
 interface PremiumPaywallProps {
-    trigger: "vocabulary-limit" | "premium-book" | "advanced-feature"
+    trigger: "vocabulary-limit" | "premium-book" | "advanced-feature" | "book_locked"
+    isOpen?: boolean
     currentCount?: number
     limit?: number
     bookTitle?: string
@@ -24,6 +25,11 @@ const triggerMessages = {
         cta: "Upgrade to save unlimited words and supercharge your learning.",
     },
     "premium-book": {
+        title: "Premium Content",
+        description: "This book is available for Premium members only.",
+        cta: "Unlock thousands of bestsellers with Premium.",
+    },
+    "book_locked": {
         title: "Premium Content",
         description: "This book is available for Premium members only.",
         cta: "Unlock thousands of bestsellers with Premium.",
@@ -46,15 +52,18 @@ const premiumFeatures = [
 
 export function PremiumPaywall({
     trigger,
+    isOpen = true,
     currentCount,
     limit,
     bookTitle,
-    featureName,
+    featureName: _featureName,
     onUpgrade,
     onClose,
     className,
 }: PremiumPaywallProps) {
     const message = triggerMessages[trigger]
+
+    if (!isOpen) return null
 
     return (
         <motion.div

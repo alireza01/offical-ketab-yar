@@ -1,5 +1,5 @@
 import { applyRateLimit } from '@/lib/rate-limit';
-import { createServerClient } from '@/lib/supabase/server';
+import { createClient } from '@/lib/supabase/server';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 
@@ -43,7 +43,7 @@ export async function POST(request: Request) {
     }
 
     const { email, password } = validation.data;
-    const supabase = await createServerClient();
+    const supabase = await createClient();
 
     // Check if registration is allowed
     const { data: settings } = await supabase

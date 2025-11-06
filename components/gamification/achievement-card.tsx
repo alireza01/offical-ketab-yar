@@ -16,7 +16,7 @@ interface AchievementCardProps {
     onUnlock?: (achievement: AchievementWithProgress) => void
 }
 
-export function AchievementCard({ achievement, className, onUnlock }: AchievementCardProps) {
+export function AchievementCard({ achievement, className }: AchievementCardProps) {
     const isEarned = achievement.earned
     const progress = achievement.progress
     const progressPercentage = achievement.progress_percentage

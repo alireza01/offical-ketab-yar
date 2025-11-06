@@ -6,7 +6,12 @@ import { motion } from 'framer-motion'
 import { BookOpen, Clock, Flame, TrendingUp } from 'lucide-react'
 
 interface ProfileStatsProps {
-    userStats: any
+    userStats: {
+        total_books_read: number
+        total_pages_read: number
+        total_reading_time: number
+        longest_streak: number
+    }
 }
 
 export function ProfileStats({ userStats }: ProfileStatsProps) {

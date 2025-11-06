@@ -16,10 +16,10 @@ export const dynamic = 'force-dynamic'
 // Generate static params for all books (for build optimization)
 export async function generateStaticParams() {
   try {
-    const books = await sanityClient.fetch(
+    const books = await sanityClient.fetch<Array<{ slug: string }>>(
       groq`*[_type == "book" && !(_id in path("drafts.**"))] { "slug": slug.current }`
     )
-    return books.map((book: any) => ({ slug: book.slug }))
+    return books.map((book) => ({ slug: book.slug }))
   } catch (error) {
     console.error('Error generating static params:', error)
     return []

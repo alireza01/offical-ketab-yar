@@ -8,7 +8,8 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
 import { Skeleton } from '@/components/ui/skeleton'
-import { createBrowserClient } from '@/lib/supabase/client'
+import { createClient } from '@/lib/supabase/client'
+import type { User } from '@supabase/supabase-js'
 import { useQuery } from '@tanstack/react-query'
 import { AnimatePresence, motion } from 'framer-motion'
 import {
@@ -66,9 +67,9 @@ interface DashboardData {
 }
 
 export function DashboardEnhanced() {
-    const [user, setUser] = useState<any>(null)
+    const [user, setUser] = useState<User | null>(null)
     const [showXPAnimation, setShowXPAnimation] = useState(false)
-    const supabase = createBrowserClient()
+    const supabase = createClient()
 
     // Get current user
     useEffect(() => {
@@ -146,29 +147,36 @@ export function DashboardEnhanced() {
                     books_this_week: 0,
                     pages_this_week: 0
                 },
-                currentlyReading: (booksRes.data || []).map((item: any) => ({
-                    id: item.id,
-                    progress_percentage: item.progress_percentage,
-                    current_page: item.current_page,
-                    updated_at: item.updated_at,
-                    books: {
-                        id: item.books.id,
-                        title: item.books.title,
-                        slug: item.books.slug,
-                        cover_image_url: item.books.cover_image_url,
-                        total_pages: item.books.total_pages,
-                        authors: Array.isArray(item.books.authors)
-                            ? item.books.authors[0]
-                            : item.books.authors
+                currentlyReading: (booksRes.data || []).map((item) => {
+                    const books = Array.isArray(item.books) ? item.books[0] : item.books
+                    const authors = Array.isArray(books.authors) ? books.authors[0] : books.authors
+
+                    return {
+                        id: item.id,
+                        progress_percentage: item.progress_percentage,
+                        current_page: item.current_page,
+                        updated_at: item.updated_at,
+                        books: {
+                            id: books.id,
+                            title: books.title,
+                            slug: books.slug,
+                            cover_image_url: books.cover_image_url,
+                            total_pages: books.total_pages,
+                            authors
+                        }
                     }
-                })),
-                recentAchievements: achievementsRes.data?.map((a: any) => ({
-                    id: a.id,
-                    name: a.achievements.name,
-                    description: a.achievements.description,
-                    icon: a.achievements.icon,
-                    earned_at: a.earned_at
-                })) || []
+                }),
+                recentAchievements: achievementsRes.data?.map((a) => {
+                    const achievements = Array.isArray(a.achievements) ? a.achievements[0] : a.achievements
+
+                    return {
+                        id: a.id,
+                        name: achievements.name,
+                        description: achievements.description,
+                        icon: achievements.icon,
+                        earned_at: a.earned_at
+                    }
+                }) || []
             }
         },
         enabled: !!user?.id,
@@ -472,7 +480,7 @@ export function DashboardEnhanced() {
 
 // Stat Card Component
 interface StatCardProps {
-    icon: any
+    icon: React.ComponentType<{ className?: string }>
     label: string
     value: number | string
     subtitle?: string
@@ -545,7 +553,7 @@ function DailyGoal({ target, current, unit }: DailyGoalProps) {
 
 // Empty State Component
 interface EmptyStateProps {
-    icon: any
+    icon: React.ComponentType<{ className?: string }>
     title: string
     description: string
     actionLabel: string

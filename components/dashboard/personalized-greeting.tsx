@@ -16,7 +16,6 @@ export function PersonalizedGreeting({ userName, streakDays = 0, level = 1, xp =
     const [greeting, setGreeting] = useState('')
     const [icon, setIcon] = useState<React.ReactNode>(null)
     const [motivationalMessage, setMotivationalMessage] = useState('')
-    const [insightMessage, setInsightMessage] = useState('')
 
     useEffect(() => {
         const hour = new Date().getHours()
@@ -67,22 +66,6 @@ export function PersonalizedGreeting({ userName, streakDays = 0, level = 1, xp =
 
         setMotivationalMessage(messages[Math.floor(Math.random() * messages.length)])
 
-        // Personalized insights (Agent 3: Data-driven motivation)
-        const insights = []
-
-        if (booksRead > 0) {
-            insights.push(`شما ${booksRead} کتاب خوانده‌اید! 📚`)
-        }
-
-        if (xp > 1000) {
-            insights.push(`${xp} امتیاز! شما در 10% برتر کاربران هستید! ⭐`)
-        } else if (xp > 500) {
-            insights.push(`${xp} امتیاز! به 1000 امتیاز نزدیک می‌شوید! 🎯`)
-        }
-
-        if (insights.length > 0) {
-            setInsightMessage(insights[Math.floor(Math.random() * insights.length)])
-        }
     }, [streakDays, level, xp, booksRead])
 
     return (

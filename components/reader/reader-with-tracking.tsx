@@ -4,10 +4,14 @@ import { incrementBookView } from '@/lib/actions/book-tracking'
 import { useEffect } from 'react'
 import { ProfessionalReader } from './professional-reader'
 
-import type { MockBook } from '@/lib/dev/mock-data'
-
 interface ReaderWithTrackingProps {
-    book: MockBook
+    book: {
+        id?: string
+        _id?: string
+        content: string[]
+        title: string
+        slug: string
+    }
 }
 
 export function ReaderWithTracking({ book }: ReaderWithTrackingProps) {
@@ -15,14 +19,17 @@ export function ReaderWithTracking({ book }: ReaderWithTrackingProps) {
         // Track view when reader opens
         async function trackView() {
             try {
-                await incrementBookView(book.id)
+                const bookId = book.id || book._id
+                if (bookId) {
+                    await incrementBookView(bookId)
+                }
             } catch (error) {
                 console.error('Error tracking book view:', error)
             }
         }
 
         trackView()
-    }, [book.id])
+    }, [book.id, book._id])
 
     return <ProfessionalReader book={book} />
 }

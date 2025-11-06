@@ -9,12 +9,11 @@ import { createClient } from '@/lib/supabase/client'
 import { motion } from 'framer-motion'
 import { AlertCircle, CheckCircle, KeyRound, Loader2, Lock } from 'lucide-react'
 import Link from 'next/link'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
 export default function ResetPasswordForm() {
     const router = useRouter()
-    const searchParams = useSearchParams()
     const supabase = createClient()
 
     const [password, setPassword] = useState('')
@@ -65,8 +64,8 @@ export default function ResetPasswordForm() {
                 router.push('/auth/login')
             }, 3000)
         } catch (err) {
-            const errorMessage = err instanceof Error ? err.message : 'خطایی رخ داد'
             setError('خطا در تنظیم رمز عبور. لطفاً دوباره تلاش کنید.')
+            console.error('Password reset error:', err)
         } finally {
             setIsLoading(false)
         }

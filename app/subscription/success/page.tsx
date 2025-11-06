@@ -16,6 +16,9 @@ export const metadata: Metadata = {
     },
 }
 
+// Force dynamic rendering
+export const dynamic = 'force-dynamic'
+
 export default function SubscriptionSuccessPage() {
     return (
         <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-b from-background via-muted/30 to-background">

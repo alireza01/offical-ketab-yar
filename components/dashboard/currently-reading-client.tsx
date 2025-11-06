@@ -3,7 +3,7 @@
 import { BookCard } from '@/components/books/book-card'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
-import { createBrowserClient } from '@/lib/supabase/client'
+import { createClient } from '@/lib/supabase/client'
 import { useQuery } from '@tanstack/react-query'
 import { motion } from 'framer-motion'
 import { BookOpen } from 'lucide-react'
@@ -13,7 +13,7 @@ interface CurrentlyReadingProps {
 }
 
 export default function CurrentlyReading({ userId }: CurrentlyReadingProps) {
-    const supabase = createBrowserClient()
+    const supabase = createClient()
 
     const { data: currentlyReading, isLoading } = useQuery({
         queryKey: ['currently-reading', userId],
@@ -94,7 +94,7 @@ export default function CurrentlyReading({ userId }: CurrentlyReadingProps) {
                 </CardHeader>
                 <CardContent>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        {currentlyReading.map((item: any, index: number) => (
+                        {currentlyReading.map((item, index: number) => (
                             <motion.div
                                 key={item.id}
                                 initial={{ opacity: 0, y: 20 }}

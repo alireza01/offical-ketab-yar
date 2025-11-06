@@ -18,10 +18,10 @@ export const revalidate = 3600 // Revalidate every hour
 // Generate static params for all authors
 export async function generateStaticParams() {
     try {
-        const authors = await sanityClient.fetch(
+        const authors = await sanityClient.fetch<Array<{ slug: string }>>(
             groq`*[_type == "author" && !(_id in path("drafts.**"))] { "slug": slug.current }`
         )
-        return authors.map((author: any) => ({ slug: author.slug }))
+        return authors.map((author) => ({ slug: author.slug }))
     } catch (error) {
         console.error('Error generating static params:', error)
         return []

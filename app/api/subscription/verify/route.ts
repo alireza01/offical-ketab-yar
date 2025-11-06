@@ -2,7 +2,7 @@
 // Agent 4: Payment verification endpoint
 
 import { upgradeSubscription } from '@/lib/subscription/subscription-manager'
-import { createServerClient } from '@/lib/supabase/server'
+import { createClient } from '@/lib/supabase/server'
 import { getPlanPrice, verifyPayment } from '@/lib/zarinpal/zarinpal-client'
 import { NextRequest, NextResponse } from 'next/server'
 
@@ -25,7 +25,7 @@ export async function GET(request: NextRequest) {
             )
         }
 
-        const supabase = await createServerClient()
+        const supabase = await createClient()
 
         // Get payment session from database
         const { data: paymentSession } = await supabase

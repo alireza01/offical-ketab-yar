@@ -24,12 +24,58 @@ export async function getUserVocabulary(userId?: string) {
   return data
 }
 
-// Add word to vocabulary
+// Check vocabulary limit (Agent 3: Freemium psychology)
+export async function checkVocabularyLimit(userId?: string) {
+  const supabase = createClient()
+
+  if (!userId) {
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) throw new Error('User not authenticated')
+    userId = user.id
+  }
+
+  // Get user's subscription tier
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('subscription_tier')
+    .eq('id', userId)
+    .single()
+
+  const isPremium = profile?.subscription_tier && profile.subscription_tier !== 'free'
+
+  // Get current word count
+  const { count, error } = await supabase
+    .from('vocabulary')
+    .select('*', { count: 'exact', head: true })
+    .eq('user_id', userId)
+
+  if (error) throw error
+
+  const FREE_LIMIT = 20 // Agent 3: Strategic limit for conversion
+  const currentCount = count || 0
+
+  return {
+    isPremium,
+    currentCount,
+    limit: isPremium ? Infinity : FREE_LIMIT,
+    canAddMore: isPremium || currentCount < FREE_LIMIT,
+    remaining: isPremium ? Infinity : Math.max(0, FREE_LIMIT - currentCount),
+  }
+}
+
+// Add word to vocabulary (with limit check)
 export async function addVocabularyWord(word: Omit<VocabularyInsert, 'user_id'>) {
   const supabase = createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
   if (!user) throw new Error('User not authenticated')
+
+  // Agent 3: Check limit before adding
+  const limitCheck = await checkVocabularyLimit(user.id)
+
+  if (!limitCheck.canAddMore) {
+    throw new Error('VOCABULARY_LIMIT_REACHED')
+  }
 
   const { data, error } = await supabase
     .from('vocabulary')
@@ -41,7 +87,7 @@ export async function addVocabularyWord(word: Omit<VocabularyInsert, 'user_id'>)
     .single()
 
   if (error) throw error
-  return data
+  return { data, limitCheck }
 }
 
 // Update vocabulary word

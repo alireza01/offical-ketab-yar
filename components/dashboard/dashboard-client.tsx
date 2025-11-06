@@ -4,7 +4,8 @@ import { LevelBadge } from '@/components/gamification/level-badge'
 import { StreakFlame } from '@/components/gamification/streak-flame'
 import { Card, CardContent } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
-import { createBrowserClient } from '@/lib/supabase/client'
+import { createClient } from '@/lib/supabase/client'
+import type { User } from '@supabase/supabase-js'
 import { useQuery } from '@tanstack/react-query'
 import { motion } from 'framer-motion'
 import { useEffect, useState } from 'react'
@@ -22,8 +23,8 @@ interface UserProfile {
 }
 
 export function DashboardClient() {
-    const [user, setUser] = useState<any>(null)
-    const supabase = createBrowserClient()
+    const [user, setUser] = useState<User | null>(null)
+    const supabase = createClient()
 
     // Get current user
     useEffect(() => {
@@ -142,8 +143,8 @@ export function DashboardClient() {
 
             {/* Dashboard Content */}
             <div className="grid gap-6">
-                <ReadingStatsClient userId={user.id} profile={profile} />
-                <CurrentlyReading userId={user.id} />
+                <ReadingStatsClient profile={profile} />
+                <CurrentlyReading userId={user?.id || ''} />
                 <div>
                     <h2 className="text-2xl font-bold mb-4">کتاب‌های پیشنهادی</h2>
                     <RecommendedBooks />

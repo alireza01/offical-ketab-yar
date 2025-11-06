@@ -19,3 +19,5 @@ export type Vocabulary = Tables<"vocabulary">
 export type Bookmark = Tables<"bookmarks">
 export type Highlight = Tables<"highlights">
 export type Category = Tables<"categories">
+export type Author = Tables<"authors">
+export type Review = Tables<"reviews">

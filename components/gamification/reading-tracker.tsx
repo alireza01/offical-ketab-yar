@@ -18,7 +18,6 @@ interface ReadingTrackerProps {
 }
 
 export function ReadingTracker({
-    bookId,
     currentPage,
     totalPages,
     isReading,

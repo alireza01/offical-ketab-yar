@@ -36,7 +36,7 @@ export default function NotificationSettings({ userId, userEmail }: Notification
         }
     }, [userId])
 
-    const handleChange = (key: string, value: any) => {
+    const handleChange = (key: string, value: string | boolean) => {
         setSettings(prev => ({ ...prev, [key]: value }))
         setHasChanges(true)
     }

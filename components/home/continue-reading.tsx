@@ -1,6 +1,19 @@
-import { getUserReadingProgress } from '@/lib/data'
+import { getUserReadingProgress } from '@/lib/supabase/queries/reading-progress'
 import { BookOpen } from 'lucide-react'
 import { BookCarouselSection } from './book-carousel-section'
+
+interface ReadingProgressItem {
+    book_id: string
+    progress_percentage: number
+    book: {
+        id: string
+        title: string
+        author: string
+        cover_url: string | null
+        slug: string
+        genres: string[] | null
+    } | null
+}
 
 export async function ContinueReading() {
     try {
@@ -14,8 +27,8 @@ export async function ContinueReading() {
         }
 
         // Try to get user from Supabase
-        const { createServerClient } = await import('@/lib/supabase/server')
-        const supabase = await createServerClient()
+        const { createClient } = await import('@/lib/supabase/server')
+        const supabase = await createClient()
 
         const {
             data: { user },
@@ -25,18 +38,25 @@ export async function ContinueReading() {
             return null
         }
 
-        const readingProgress = await getUserReadingProgress(user.id)
+        const readingProgress = await getUserReadingProgress(user.id) as ReadingProgressItem[]
 
         if (!readingProgress || readingProgress.length === 0) {
             return null
         }
 
         // Extract books and progress
-        const books = readingProgress.map((p) => p.books).filter((b): b is NonNullable<typeof b> => b !== null && b !== undefined)
+        const books = readingProgress
+            .map((p: ReadingProgressItem) => p.book)
+            .filter((b): b is NonNullable<typeof b> => b !== null && b !== undefined)
+            .map(book => ({
+                ...book,
+                genres: book.genres || undefined
+            }))
+
         const progressMap = readingProgress.reduce(
-            (acc: Record<string, number>, p) => {
-                if (p.books?.id) {
-                    acc[p.books.id] = p.progress_percentage
+            (acc: Record<string, number>, p: ReadingProgressItem) => {
+                if (p.book?.id) {
+                    acc[p.book.id] = p.progress_percentage
                 }
                 return acc
             },

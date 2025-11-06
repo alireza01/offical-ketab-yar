@@ -136,7 +136,7 @@ export async function verifyPayment(
 /**
  * Get payment status (for checking payment state)
  */
-export async function getPaymentStatus(authority: string): Promise<string> {
+export async function getPaymentStatus(_authority: string): Promise<string> {
     // This can be used to check payment status without verification
     // Useful for showing payment status to user
     return 'pending'

@@ -208,17 +208,17 @@ export function SiteFooter() {
           </div>
         </div>
 
-        {/* Bottom Bar - Fixed Overflow */}
+        {/* Bottom Bar - Mobile Optimized */}
         <motion.div
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5, delay: 0.3 }}
-          className="flex flex-col items-center justify-center gap-3 text-center pb-4"
+          className="flex flex-col items-center justify-center gap-4 text-center pb-4 px-4"
         >
           {/* Made with Love */}
           <motion.div
-            className="flex items-center gap-2 text-sm text-muted-foreground flex-wrap justify-center"
+            className="flex items-center gap-2 text-sm text-muted-foreground justify-center"
             whileHover={{ scale: 1.05 }}
           >
             <span>ساخته شده با</span>
@@ -247,10 +247,10 @@ export function SiteFooter() {
           </motion.div>
 
           {/* Copyright */}
-          <p className="text-sm text-muted-foreground flex items-center gap-2 flex-wrap justify-center px-4">
-            <span>© {new Date().getFullYear()} کتاب‌یار.</span>
-            <span className="text-gold-600/70">•</span>
-            <span>تمامی حقوق محفوظ است.</span>
+          <p className="text-sm text-muted-foreground text-center leading-relaxed">
+            <span className="inline-block">© {new Date().getFullYear()} کتاب‌یار.</span>
+            <span className="text-gold-600/70 mx-2">•</span>
+            <span className="inline-block">تمامی حقوق محفوظ است.</span>
           </p>
         </motion.div>
       </div>

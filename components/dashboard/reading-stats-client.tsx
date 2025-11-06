@@ -5,11 +5,13 @@ import { motion } from 'framer-motion'
 import { BookOpen, Clock, Flame, TrendingUp } from 'lucide-react'
 
 interface ReadingStatsClientProps {
-    userId: string
-    profile: any
+    profile: {
+        xp?: number
+        current_streak?: number
+    }
 }
 
-export default function ReadingStatsClient({ userId, profile }: ReadingStatsClientProps) {
+export default function ReadingStatsClient({ profile }: ReadingStatsClientProps) {
     // Mock stats - will be replaced with real data
     const stats = [
         {

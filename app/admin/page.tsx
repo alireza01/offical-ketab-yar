@@ -1,13 +1,13 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
-import { createServerClient } from '@/lib/supabase/server'
+import { createClient } from '@/lib/supabase/server'
 import { BookOpen, DollarSign, TrendingUp, Users } from 'lucide-react'
 import { Suspense } from 'react'
 
 export const dynamic = 'force-dynamic'
 
 async function getAdminStats() {
-  const supabase = await createServerClient()
+  const supabase = await createClient()
 
   const [
     { count: totalBooks },
@@ -117,53 +117,99 @@ export default function AdminDashboard() {
         <AdminStats />
       </Suspense>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-        <Card className="col-span-4">
-          <CardHeader>
-            <CardTitle>Recent Activity</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-muted-foreground text-sm">
-              Activity tracking coming soon...
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card className="col-span-3">
-          <CardHeader>
-            <CardTitle>Quick Actions</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2">
+      <Card>
+        <CardHeader>
+          <CardTitle>Quick Actions</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-4">
             <a
-              href="/admin/books/new"
-              className="hover:bg-accent block rounded-lg p-3 transition-colors"
+              href="/Studio"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:bg-accent block rounded-lg p-4 transition-colors border"
             >
-              <div className="font-medium">Add New Book</div>
+              <div className="font-medium">📚 Manage Books</div>
               <div className="text-muted-foreground text-sm">
-                Publish a new book to the library
+                Add/edit books in Sanity CMS
+              </div>
+            </a>
+            <a
+              href="/Studio"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:bg-accent block rounded-lg p-4 transition-colors border"
+            >
+              <div className="font-medium">✍️ Manage Blog</div>
+              <div className="text-muted-foreground text-sm">
+                Create blog posts in Sanity CMS
               </div>
             </a>
             <a
               href="/admin/users"
-              className="hover:bg-accent block rounded-lg p-3 transition-colors"
+              className="hover:bg-accent block rounded-lg p-4 transition-colors border"
             >
-              <div className="font-medium">Manage Users</div>
+              <div className="font-medium">👥 Manage Users</div>
               <div className="text-muted-foreground text-sm">
-                View and manage user accounts
+                Ban/unban, create test users
               </div>
             </a>
             <a
-              href="/admin/analytics"
-              className="hover:bg-accent block rounded-lg p-3 transition-colors"
+              href="/admin/ai-keys"
+              className="hover:bg-accent block rounded-lg p-4 transition-colors border"
             >
-              <div className="font-medium">View Analytics</div>
+              <div className="font-medium">🤖 AI Keys</div>
               <div className="text-muted-foreground text-sm">
-                Check platform statistics
+                Manage Gemini API keys
               </div>
             </a>
-          </CardContent>
-        </Card>
-      </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card className="bg-gradient-to-br from-gold-50 to-gold-100 dark:from-gold-950 dark:to-gold-900 border-gold-200 dark:border-gold-800">
+        <CardContent className="pt-6">
+          <h3 className="text-lg font-semibold mb-3">📌 Admin Panel Features</h3>
+          <div className="grid gap-2 md:grid-cols-2">
+            <div className="space-y-1">
+              <h4 className="font-medium text-sm">✅ User Management</h4>
+              <ul className="text-xs text-muted-foreground space-y-0.5">
+                <li>• Ban/unban users with reason tracking</li>
+                <li>• Create test users with unlimited access</li>
+                <li>• Make users admin or remove admin role</li>
+                <li>• Export user data to CSV</li>
+              </ul>
+            </div>
+            <div className="space-y-1">
+              <h4 className="font-medium text-sm">✅ Content Management</h4>
+              <ul className="text-xs text-muted-foreground space-y-0.5">
+                <li>• Manage books via Sanity CMS</li>
+                <li>• Create blog posts with rich editor</li>
+                <li>• Manage authors and genres</li>
+                <li>• All content is bilingual (EN/FA)</li>
+              </ul>
+            </div>
+            <div className="space-y-1">
+              <h4 className="font-medium text-sm">✅ Analytics & Stats</h4>
+              <ul className="text-xs text-muted-foreground space-y-0.5">
+                <li>• Real-time platform statistics</li>
+                <li>• User growth and conversion rates</li>
+                <li>• Revenue estimation</li>
+                <li>• Export stats to CSV</li>
+              </ul>
+            </div>
+            <div className="space-y-1">
+              <h4 className="font-medium text-sm">✅ AI System</h4>
+              <ul className="text-xs text-muted-foreground space-y-0.5">
+                <li>• Manage multiple Gemini API keys</li>
+                <li>• Automatic key rotation</li>
+                <li>• Usage and error tracking</li>
+                <li>• Fallback system for reliability</li>
+              </ul>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   )
 }

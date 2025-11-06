@@ -1,3 +1,4 @@
+import type { BilingualParagraph, SanityImage } from '@/lib/sanity/types'
 import { DBSchema, IDBPDatabase, openDB } from 'idb'
 
 // Database schema
@@ -19,7 +20,7 @@ interface KetabYarDB extends DBSchema {
             bookSlug: string
             chapterNumber: number
             title: { en: string; fa: string }
-            content: any[]
+            content: (BilingualParagraph | SanityImage)[]
             downloadedAt: string
         }
         indexes: { bookSlug: string }
@@ -85,7 +86,8 @@ export async function deleteBook(slug: string) {
     const tx = db.transaction('chapters', 'readwrite')
 
     for (const chapter of chapters) {
-        await tx.store.delete([chapter.bookSlug, chapter.chapterNumber])
+        // Use IDBKeyRange for composite keys
+        await tx.store.delete(IDBKeyRange.only([chapter.bookSlug, chapter.chapterNumber]))
     }
 
     await tx.done
@@ -96,7 +98,7 @@ export async function saveChapter(chapter: {
     bookSlug: string
     chapterNumber: number
     title: { en: string; fa: string }
-    content: any[]
+    content: (BilingualParagraph | SanityImage)[]
 }) {
     const db = await getDB()
     await db.put('chapters', {
@@ -107,7 +109,7 @@ export async function saveChapter(chapter: {
 
 export async function getChapter(bookSlug: string, chapterNumber: number) {
     const db = await getDB()
-    return db.get('chapters', [bookSlug, chapterNumber])
+    return db.get('chapters', IDBKeyRange.only([bookSlug, chapterNumber]))
 }
 
 export async function getAllChaptersForBook(bookSlug: string) {
@@ -155,7 +157,7 @@ export async function saveBookOffline(
     bookSlug: string,
     content: { en: string; fa: string },
     metadata: { title: string; author: string; coverUrl: string },
-    userId: string
+    _userId: string
 ) {
     // This is a simplified version - in reality you'd parse the content into chapters
     // For now, we'll just save the metadata
@@ -166,4 +168,20 @@ export async function saveBookOffline(
         coverImage: metadata.coverUrl,
         totalChapters: 1,
     })
+}
+
+// Alias exports for compatibility
+export const initDB = getDB
+export const getOfflineBooks = getAllDownloadedBooks
+export const getStorageUsage = getStorageInfo
+
+// Sync queue functions (for offline sync)
+export async function getSyncQueue() {
+    // TODO: Implement sync queue storage
+    return []
+}
+
+export async function clearSyncQueue() {
+    // TODO: Implement sync queue clearing
+    return true
 }

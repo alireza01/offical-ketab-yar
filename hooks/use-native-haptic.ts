@@ -24,9 +24,9 @@ export function useNativeHaptic() {
 
         try {
             navigator.vibrate(patterns[style])
-        } catch (error) {
+        } catch (err) {
             // Silently fail if vibration is not supported
-            console.debug('Haptic feedback not supported:', error)
+            console.debug('Haptic feedback not supported:', err)
         }
     }
 
@@ -41,7 +41,7 @@ export function useIsStandalone() {
 
     const isStandalone =
         window.matchMedia('(display-mode: standalone)').matches ||
-        (window.navigator as any).standalone ||
+        (window.navigator as { standalone?: boolean }).standalone ||
         document.referrer.includes('android-app://')
 
     return isStandalone
@@ -69,7 +69,7 @@ export function useDeviceType() {
 export function useIsIOS() {
     if (typeof window === 'undefined') return false
 
-    return /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream
+    return /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as { MSStream?: unknown }).MSStream
 }
 
 /**

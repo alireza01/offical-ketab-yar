@@ -1,14 +1,26 @@
-import { getRecentlyAddedBooks } from '@/lib/data'
+import { getBooks } from '@/lib/data'
 import { Sparkles } from 'lucide-react'
 import { BookCarouselSection } from './book-carousel-section'
 
 export async function RecentlyAddedBooks() {
     try {
-        const books = await getRecentlyAddedBooks(12)
+        const sanityBooks = await getBooks()
 
-        if (!books || books.length === 0) {
+        if (!sanityBooks || sanityBooks.length === 0) {
             return null
         }
+
+        // Transform Sanity books to match BookCarouselSection expected format
+        const books = sanityBooks.map(book => ({
+            _id: book._id,
+            slug: book.slug,
+            title: typeof book.title === 'string' ? book.title : book.title.en,
+            author: typeof book.author === 'string' ? book.author : book.author.name,
+            coverImage: book.coverImage,
+            genres: book.genres,
+            level: book.level,
+            isPremium: book.isPremium,
+        }))
 
         return (
             <BookCarouselSection
