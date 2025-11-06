@@ -1,68 +1,45 @@
-import { ReaderWithTracking } from '@/components/reader/reader-with-tracking'
-import { getBookBySlug, getBookContent } from '@/lib/data'
-import { Metadata } from 'next'
+import { BookReader } from '@/components/reader/book-reader'
+import { sanityClient } from '@/lib/sanity/client'
+import { bookWithFirstChapterQuery } from '@/lib/sanity/queries'
+import { groq } from 'next-sanity'
 import { notFound } from 'next/navigation'
 
-// Force CSR for reader (Agent 2 - Performance)
-// This is a private, interactive page - no SEO needed
-export const dynamic = 'force-dynamic'
-
-interface ReadBookPageProps {
-  params: Promise<{ slug: string }>
+interface ReaderPageProps {
+  params: Promise<{
+    slug: string
+  }>
 }
 
-export async function generateMetadata({ params }: ReadBookPageProps): Promise<Metadata> {
+// Force CSR for reader (Agent 2 - Performance)
+export const dynamic = 'force-dynamic'
+
+// Generate static params for all books (for build optimization)
+export async function generateStaticParams() {
   try {
-    const { slug } = await params
-    const book = await getBookBySlug(slug)
-
-    if (!book) {
-      return {
-        title: 'Book Not Found | کتاب‌یار',
-      }
-    }
-
-    return {
-      title: `Reading: ${book.title} | کتاب‌یار`,
-      description: 'Immersive book reading experience',
-      robots: {
-        index: false, // Don't index reader pages (Agent 1 - SEO)
-        follow: false,
-      },
-    }
-  } catch {
-    return {
-      title: 'Book Not Found | کتاب‌یار',
-    }
+    const books = await sanityClient.fetch(
+      groq`*[_type == "book" && !(_id in path("drafts.**"))] { "slug": slug.current }`
+    )
+    return books.map((book: any) => ({ slug: book.slug }))
+  } catch (error) {
+    console.error('Error generating static params:', error)
+    return []
   }
 }
 
-export default async function ReadBookPage({ params }: ReadBookPageProps) {
-  const { slug } = await params
-
+export default async function ReaderPage({ params }: ReaderPageProps) {
   try {
-    const book = await getBookBySlug(slug)
+    const { slug } = await params
 
-    if (!book) {
+    // Fetch book with ONLY first chapter (Agent 2 - Performance optimization)
+    const book = await sanityClient.fetch(bookWithFirstChapterQuery, { slug })
+
+    if (!book || !book.firstChapter) {
       notFound()
     }
 
-    // Load content (Agent 2 - Performance: This happens on server, then hydrates on client)
-    const content = await getBookContent(book.id, 'en')
-
-    // Transform book data to match expected interface
-    const bookWithContent = {
-      ...book,
-      content: content.map(c => c.content)
-    }
-
-    return <ReaderWithTracking book={bookWithContent} />
+    return <BookReader book={book} />
   } catch (error) {
-    console.error('[Reader Error]', {
-      error: error instanceof Error ? error.message : 'Unknown error',
-      slug,
-      timestamp: new Date().toISOString(),
-    })
+    console.error('Error loading book:', error)
     notFound()
   }
 }
