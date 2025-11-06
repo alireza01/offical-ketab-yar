@@ -1,6 +1,7 @@
 import { ConditionalLayout } from "@/components/layout/conditional-layout"
 import { QueryProvider } from "@/components/providers/query-provider"
 import { ThemeProvider } from "@/components/providers/theme-provider"
+import { PWAWrapper } from "@/components/pwa/pwa-wrapper"
 import type { Metadata, Viewport } from "next"
 import { Inter, Vazirmatn } from "next/font/google"
 import { Toaster } from "sonner"
@@ -93,8 +94,16 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="fa" dir="rtl" suppressHydrationWarning>
-      <body className={`${inter.variable} ${vazirmatn.variable} font-vazirmatn antialiased min-h-screen flex flex-col`}>
+    <html lang="fa" dir="rtl" suppressHydrationWarning className="h-full w-full">
+      <head>
+        {/* PWA Meta Tags for Native App Feel */}
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta name="apple-mobile-web-app-title" content="کتاب‌یار" />
+        <meta name="format-detection" content="telephone=no" />
+      </head>
+      <body className={`${inter.variable} ${vazirmatn.variable} font-vazirmatn antialiased min-h-screen w-full flex flex-col`}>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
@@ -102,10 +111,21 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <QueryProvider>
-            <ConditionalLayout>
-              {children}
-            </ConditionalLayout>
-            <Toaster position="bottom-left" richColors />
+            <PWAWrapper>
+              <ConditionalLayout>
+                {children}
+              </ConditionalLayout>
+              <Toaster
+                position="bottom-center"
+                richColors
+                toastOptions={{
+                  className: 'bottom-nav-safe',
+                  style: {
+                    marginBottom: 'env(safe-area-inset-bottom)',
+                  }
+                }}
+              />
+            </PWAWrapper>
           </QueryProvider>
         </ThemeProvider>
       </body>

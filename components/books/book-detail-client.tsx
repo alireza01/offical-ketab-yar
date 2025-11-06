@@ -132,7 +132,7 @@ export function BookDetailClient({ book, author, reviews, relatedBooks }: BookDe
               {/* Genres */}
               <div className="flex flex-wrap gap-2">
                 {book.genres.map((genre: string) => (
-                  <Badge key={genre} variant="secondary" className="bg-gold-500/10 text-gold-700 hover:bg-gold-500/20">
+                  <Badge key={genre} variant="secondary" className="bg-gold-500/15 text-gold-800 dark:text-gold-700 hover:bg-gold-500/25 border-2 border-gold-500/30 font-semibold">
                     {genre}
                   </Badge>
                 ))}
@@ -189,26 +189,26 @@ export function BookDetailClient({ book, author, reviews, relatedBooks }: BookDe
 
           <TabsContent value="overview" className="space-y-8">
             {/* Summary */}
-            <Card>
+            <Card className="border-2 shadow-md dark:border-border dark:shadow-none">
               <CardContent className="pt-6">
-                <h2 className="text-2xl font-bold mb-4">درباره این کتاب</h2>
-                <p className="text-muted-foreground leading-relaxed">{book.summary}</p>
+                <h2 className="text-2xl font-bold mb-4 text-gray-900 dark:text-foreground">درباره این کتاب</h2>
+                <p className="text-gray-700 dark:text-muted-foreground leading-relaxed">{book.summary}</p>
               </CardContent>
             </Card>
 
             {/* Author Bio */}
             {author && (
-              <Card>
+              <Card className="border-2 shadow-md dark:border-border dark:shadow-none">
                 <CardContent className="pt-6">
-                  <h2 className="text-2xl font-bold mb-4">درباره نویسنده</h2>
+                  <h2 className="text-2xl font-bold mb-4 text-gray-900 dark:text-foreground">درباره نویسنده</h2>
                   <div className="flex gap-4">
                     <Avatar className="h-16 w-16">
                       <AvatarImage src={author.photo_url || undefined} alt={author.name} />
                       <AvatarFallback>{author.name[0]}</AvatarFallback>
                     </Avatar>
                     <div className="flex-1">
-                      <h3 className="font-semibold text-lg mb-2">{author.name}</h3>
-                      <p className="text-muted-foreground text-sm leading-relaxed">{author.bio}</p>
+                      <h3 className="font-semibold text-lg mb-2 text-gray-900 dark:text-foreground">{author.name}</h3>
+                      <p className="text-gray-700 dark:text-muted-foreground text-sm leading-relaxed">{author.bio}</p>
                     </div>
                   </div>
                 </CardContent>
@@ -243,7 +243,7 @@ export function BookDetailClient({ book, author, reviews, relatedBooks }: BookDe
           <TabsContent value="reviews" className="space-y-6" dir="rtl">
             {reviews.length > 0 ? (
               reviews.map((review) => (
-                <Card key={review.id} className="overflow-hidden">
+                <Card key={review.id} className="overflow-hidden border-2 shadow-md dark:border-border dark:shadow-none">
                   <CardContent className="pt-6">
                     <div className="flex gap-4 flex-row-reverse">
                       <Avatar className="flex-shrink-0">
@@ -271,7 +271,7 @@ export function BookDetailClient({ book, author, reviews, relatedBooks }: BookDe
                             ))}
                           </div>
                         </div>
-                        <p className="text-muted-foreground mb-3 text-right leading-relaxed">{review.comment}</p>
+                        <p className="text-gray-700 dark:text-muted-foreground mb-3 text-right leading-relaxed">{review.comment}</p>
                         <div className="flex items-center gap-4 text-sm flex-row-reverse">
                           <motion.button
                             whileHover={{ scale: 1.05 }}
@@ -346,9 +346,9 @@ export function BookDetailClient({ book, author, reviews, relatedBooks }: BookDe
           </TabsContent>
 
           <TabsContent value="details">
-            <Card>
+            <Card className="border-2 shadow-md dark:border-border dark:shadow-none">
               <CardContent className="pt-6">
-                <h2 className="text-2xl font-bold mb-6">جزئیات کتاب</h2>
+                <h2 className="text-2xl font-bold mb-6 text-gray-900 dark:text-foreground">جزئیات کتاب</h2>
                 <dl className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <dt className="text-sm font-medium text-muted-foreground">شابک (ISBN)</dt>

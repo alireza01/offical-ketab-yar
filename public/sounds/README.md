@@ -1,82 +1,86 @@
-# Sound Effects for Ketab-Yar
+# Sound Effects for Ketab-Yar Gamification
 
-This directory contains sound effects for gamification features (Agent 3 - Psychology).
+This folder contains sound effects for gamification features.
 
 ## Required Sound Files
 
-Place the following MP3 files in this directory:
+The following sound files should be placed in this directory:
 
-1. **xp-gain.mp3** - Short, pleasant "ding" sound (100-300ms)
-   - Plays when user earns XP
-   - Should be subtle and satisfying
+### Gamification Sounds
+- `xp-gain.mp3` - Short, pleasant "ping" sound for XP rewards (150-300ms)
+- `level-up.mp3` - Triumphant fanfare for level ups (1-2s)
+- `streak.mp3` - Energetic sound for streak milestones (500ms-1s)
+- `achievement.mp3` - Celebratory sound for achievement unlocks (1-2s)
+- `celebration.mp3` - Grand celebration sound for major milestones (2-3s)
 
-2. **level-up.mp3** - Triumphant fanfare (1-2 seconds)
-   - Plays when user reaches a new level
-   - Should feel rewarding and exciting
+### Reading Sounds
+- `page-turn.mp3` - Subtle page flip sound (200-400ms)
+- `bookmark.mp3` - Soft click for bookmarking (100-200ms)
 
-3. **streak.mp3** - Fire/flame sound effect (300-500ms)
-   - Plays when maintaining daily streak
-   - Should feel motivating
+### Feedback Sounds
+- `success.mp3` - Positive feedback sound (300-500ms)
+- `error.mp3` - Gentle error notification (300-500ms)
 
-4. **achievement.mp3** - Badge unlock sound (500ms-1s)
-   - Plays when earning a new achievement
-   - Should feel special and rare
+## Sound Guidelines (Agent 3 - Psychology)
 
-5. **celebration.mp3** - Full celebration sound (2-3 seconds)
-   - Plays when completing a book or major milestone
-   - Should feel epic and rewarding
+### Volume Levels
+- All sounds should be normalized to -6dB to -3dB
+- Default playback volume is 30% (0.3)
+- Users can adjust master volume in settings
 
-6. **page-turn.mp3** - Subtle paper rustle (200-400ms)
-   - Plays when turning pages (optional, can be disabled)
-   - Should be very subtle
+### Duration
+- Keep sounds short and non-intrusive
+- Maximum duration: 3 seconds
+- Ideal duration: 200ms - 1s for most sounds
 
-7. **bookmark.mp3** - Soft click/tap (100-200ms)
-   - Plays when adding a bookmark
-   - Should be quick and satisfying
+### Format
+- Format: MP3 (best browser compatibility)
+- Bitrate: 128kbps (good quality, small file size)
+- Sample Rate: 44.1kHz
 
-8. **error.mp3** - Gentle error tone (300-500ms)
-   - Plays on errors or failed actions
-   - Should not be harsh or annoying
-
-9. **success.mp3** - Positive confirmation (200-400ms)
-   - Plays on successful actions
-   - Should be pleasant and quick
-
-## Sound Guidelines (Agent 3 Psychology)
-
-- **Volume**: All sounds should be normalized to similar volume levels
-- **Duration**: Keep sounds short (< 2 seconds except celebration)
-- **Format**: MP3 format for broad browser support
-- **Quality**: 128kbps is sufficient, keeps file sizes small
-- **Tone**: Warm, positive, never harsh or annoying
-- **Frequency**: Avoid high-pitched sounds that might be irritating
+### Tone
+- Positive, uplifting, encouraging
+- Not annoying or jarring
+- Culturally neutral
 
 ## Free Sound Resources
 
-You can find free sound effects at:
-- **Freesound.org** - Community-uploaded sounds (CC licenses)
-- **Zapsplat.com** - Free sound effects library
-- **Mixkit.co** - Free sound effects and music
-- **Pixabay** - Free sound effects
+You can find free, high-quality sound effects from:
 
-## Implementation
+1. **Freesound.org** - https://freesound.org/
+   - Search for: "coin", "level up", "achievement", "success"
+   - Filter by: CC0 (Public Domain) license
 
-Sounds are managed by `/lib/utils/sound-effects.ts` and:
-- Fail gracefully if files are missing
-- Respect user preferences (can be disabled)
-- Are cached for performance
-- Have adjustable volume
+2. **Zapsplat** - https://www.zapsplat.com/
+   - Free sound effects library
+   - Requires attribution
 
-## User Controls
+3. **Mixkit** - https://mixkit.co/free-sound-effects/
+   - Free sound effects
+   - No attribution required
 
-Users can:
-- Enable/disable all sounds in settings
-- Adjust master volume
-- Sounds are disabled by default until user interacts with page (browser policy)
+4. **Web Audio API** (Fallback)
+   - If sound files are not available, the app will fail gracefully
+   - Consider generating simple beep sounds with Web Audio API
 
-## Performance Notes (Agent 2)
+## Implementation Notes
 
-- Sounds are lazy-loaded (not in initial bundle)
-- Audio elements are cached after first play
+- All sounds are optional and fail gracefully if not available
+- Sounds are cached after first load for performance
+- Users can disable sounds in settings
+- Sounds respect user's system volume and mute settings
+
+## Testing
+
+To test sounds:
+1. Place sound files in this directory
+2. Open the app and trigger gamification events
+3. Check browser console for any loading errors
+4. Adjust volume levels if needed
+
+## Performance (Agent 2)
+
 - Total size of all sounds should be < 500KB
-- Sounds don't block page rendering
+- Sounds are lazy-loaded (only when needed)
+- Audio cache prevents re-downloading
+- No impact on initial page load

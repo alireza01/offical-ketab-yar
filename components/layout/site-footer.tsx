@@ -91,9 +91,9 @@ export function SiteFooter() {
         />
       </div>
 
-      <div className="container relative mx-auto px-4 py-16">
+      <div className="container relative mx-auto px-4 py-16 pb-8">
         {/* Main Footer Content */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-12 mb-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-12 mb-12">
           {/* Brand Section */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -208,17 +208,17 @@ export function SiteFooter() {
           </div>
         </div>
 
-        {/* Bottom Bar */}
+        {/* Bottom Bar - Fixed Overflow */}
         <motion.div
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5, delay: 0.3 }}
-          className="flex flex-col items-center justify-center gap-3 text-center"
+          className="flex flex-col items-center justify-center gap-3 text-center pb-4"
         >
           {/* Made with Love */}
           <motion.div
-            className="flex items-center gap-2 text-sm text-muted-foreground"
+            className="flex items-center gap-2 text-sm text-muted-foreground flex-wrap justify-center"
             whileHover={{ scale: 1.05 }}
           >
             <span>ساخته شده با</span>
@@ -247,7 +247,7 @@ export function SiteFooter() {
           </motion.div>
 
           {/* Copyright */}
-          <p className="text-sm text-muted-foreground flex items-center gap-2">
+          <p className="text-sm text-muted-foreground flex items-center gap-2 flex-wrap justify-center px-4">
             <span>© {new Date().getFullYear()} کتاب‌یار.</span>
             <span className="text-gold-600/70">•</span>
             <span>تمامی حقوق محفوظ است.</span>

@@ -1,24 +1,26 @@
 'use client'
 
-import Link from 'next/link'
-import { motion } from 'framer-motion'
 import { Button } from '@/components/ui/button'
-import { BookOpen, Sparkles, ArrowLeft, Play, Star, TrendingUp } from 'lucide-react'
+import { motion } from 'framer-motion'
+import { ArrowLeft, BookOpen, Play, Sparkles, Star, TrendingUp } from 'lucide-react'
+import Link from 'next/link'
 
 export function HeroSection() {
 
   return (
-    <section className="relative min-h-[100vh] overflow-hidden bg-gradient-to-br from-gold-50 via-white to-gold-100/50 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950">
-      {/* Subtle background elements */}
+    <section className="relative min-h-[100vh] overflow-hidden bg-gradient-to-br from-gold-100/40 via-background to-gold-50/30 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950">
+      {/* Enhanced background elements - Agent 3 Psychology */}
       <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(201,169,97,0.08),transparent_50%)]" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,rgba(212,175,55,0.05),transparent_50%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(201,169,97,0.15),transparent_50%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,rgba(212,175,55,0.12),transparent_50%)]" />
+        {/* Subtle dot pattern for depth */}
+        <div className="absolute inset-0 bg-dot-pattern opacity-30" />
       </div>
 
-      <div className="container relative mx-auto px-4 pt-32 pb-20 md:pt-40 md:pb-32">
+      <div className="container relative mx-auto px-4 sm:px-6 pt-32 pb-20 md:pt-40 md:pb-32">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
-          {/* Left content */}
-          <div className="space-y-8 text-center lg:text-right">
+          {/* Left content - Fixed Text Overflow */}
+          <div className="space-y-8 text-center lg:text-right overflow-hidden">
             {/* Badge */}
             <div className="inline-block">
               <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-gold-500/10 border border-gold-500/20">
@@ -32,29 +34,29 @@ export function HeroSection() {
                 </div>
               </div>
             </div>
-            
+
             {/* Main heading */}
             <div className="space-y-4">
-              <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold tracking-tight leading-[1.1]">
+              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold tracking-tight leading-[1.1] break-words">
                 <span className="inline-block bg-gradient-to-r from-gold-600 via-gold-500 to-gold-600 bg-clip-text text-transparent">
                   کتاب‌یار
                 </span>
               </h1>
-              <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground/90">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-foreground/90 break-words">
                 همراه هوشمند مطالعه
               </h2>
             </div>
-            
-            {/* Description */}
-            <p className="text-lg md:text-xl text-muted-foreground leading-relaxed max-w-xl mx-auto lg:mx-0">
+
+            {/* Description - Fixed Overflow */}
+            <p className="text-base sm:text-lg md:text-xl text-muted-foreground leading-relaxed max-w-xl mx-auto lg:mx-0">
               تجربه‌ای متفاوت در دنیای کتاب با هوش مصنوعی Gemini، پشتیبانی دوزبانه و ورق زدن واقعی صفحات. یادگیری زبان انگلیسی هرگز این‌قدر لذت‌بخش نبوده
             </p>
-            
+
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-              <Button 
-                size="lg" 
-                className="group bg-gold-600 hover:bg-gold-700 text-white text-lg px-8 h-14 shadow-lg shadow-gold-500/20 hover:shadow-gold-500/30 transition-all duration-300" 
+              <Button
+                size="lg"
+                className="group bg-gold-600 hover:bg-gold-700 text-white text-lg px-8 h-14 shadow-lg shadow-gold-500/20 hover:shadow-gold-500/30 transition-all duration-300"
                 asChild
               >
                 <Link href="/library">
@@ -63,10 +65,10 @@ export function HeroSection() {
                   <ArrowLeft className="h-5 w-5 group-hover:-translate-x-1 transition-transform duration-200" />
                 </Link>
               </Button>
-              <Button 
-                size="lg" 
-                variant="outline" 
-                className="group text-lg px-8 h-14 border-2 border-gold-500/30 hover:border-gold-500 hover:bg-gold-50 dark:hover:bg-gold-950/30 transition-all duration-200" 
+              <Button
+                size="lg"
+                variant="outline"
+                className="group text-lg px-8 h-14 border-2 border-gold-600/40 hover:border-gold-600 hover:bg-gold-600/10 hover:text-gold-900 dark:hover:bg-gold-950/30 dark:hover:text-gold-100 transition-all duration-200"
                 asChild
               >
                 <Link href="/about">
@@ -131,7 +133,7 @@ export function HeroSection() {
                   <BookOpen className="h-20 w-20 text-white/90" />
                 </div>
               </motion.div>
-              
+
               <motion.div
                 className="absolute top-20 left-0 w-56 h-72 rounded-lg shadow-2xl overflow-hidden transform -rotate-6"
                 animate={{
@@ -148,7 +150,7 @@ export function HeroSection() {
                   <BookOpen className="h-24 w-24 text-white/90" />
                 </div>
               </motion.div>
-              
+
               <motion.div
                 className="absolute bottom-0 right-1/4 w-52 h-68 rounded-lg shadow-2xl overflow-hidden transform rotate-3"
                 animate={{

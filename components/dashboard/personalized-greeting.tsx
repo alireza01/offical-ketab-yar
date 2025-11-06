@@ -8,19 +8,22 @@ interface PersonalizedGreetingProps {
     userName?: string
     streakDays?: number
     level?: number
+    xp?: number
+    booksRead?: number
 }
 
-export function PersonalizedGreeting({ userName, streakDays = 0, level = 1 }: PersonalizedGreetingProps) {
+export function PersonalizedGreeting({ userName, streakDays = 0, level = 1, xp = 0, booksRead = 0 }: PersonalizedGreetingProps) {
     const [greeting, setGreeting] = useState('')
     const [icon, setIcon] = useState<React.ReactNode>(null)
     const [motivationalMessage, setMotivationalMessage] = useState('')
+    const [insightMessage, setInsightMessage] = useState('')
 
     useEffect(() => {
         const hour = new Date().getHours()
         let timeGreeting = ''
         let timeIcon: React.ReactNode = null
 
-        // Time-based greeting
+        // Time-based greeting (Agent 3: Personalization)
         if (hour >= 5 && hour < 12) {
             timeGreeting = 'صبح بخیر'
             timeIcon = <Sunrise className="w-6 h-6 text-orange-400" />
@@ -41,7 +44,7 @@ export function PersonalizedGreeting({ userName, streakDays = 0, level = 1 }: Pe
         setGreeting(timeGreeting)
         setIcon(timeIcon)
 
-        // Motivational messages based on streak and level
+        // Motivational messages based on streak and level (Agent 3: Psychology)
         const messages = []
 
         if (streakDays === 0) {
@@ -63,7 +66,24 @@ export function PersonalizedGreeting({ userName, streakDays = 0, level = 1 }: Pe
         }
 
         setMotivationalMessage(messages[Math.floor(Math.random() * messages.length)])
-    }, [streakDays, level])
+
+        // Personalized insights (Agent 3: Data-driven motivation)
+        const insights = []
+
+        if (booksRead > 0) {
+            insights.push(`شما ${booksRead} کتاب خوانده‌اید! 📚`)
+        }
+
+        if (xp > 1000) {
+            insights.push(`${xp} امتیاز! شما در 10% برتر کاربران هستید! ⭐`)
+        } else if (xp > 500) {
+            insights.push(`${xp} امتیاز! به 1000 امتیاز نزدیک می‌شوید! 🎯`)
+        }
+
+        if (insights.length > 0) {
+            setInsightMessage(insights[Math.floor(Math.random() * insights.length)])
+        }
+    }, [streakDays, level, xp, booksRead])
 
     return (
         <motion.div

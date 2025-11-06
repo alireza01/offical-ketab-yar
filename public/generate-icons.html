@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generate PWA Icons - Ketab-Yar</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #C9A961;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+        }
+        button {
+            background: #C9A961;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px 5px;
+        }
+        button:hover {
+            background: #B8956A;
+        }
+        .preview {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 15px;
+            margin-top: 30px;
+        }
+        .preview-item {
+            text-align: center;
+        }
+        .preview-item canvas {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            width: 100%;
+            height: auto;
+        }
+        .preview-item p {
+            margin: 5px 0;
+            font-size: 12px;
+            color: #666;
+        }
+        .instructions {
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 5px;
+            margin-top: 20px;
+            border-left: 4px solid #C9A961;
+        }
+        .instructions h3 {
+            margin-top: 0;
+            color: #C9A961;
+        }
+        .instructions ol {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        .instructions li {
+            margin: 8px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎨 PWA Icon Generator</h1>
+        <p class="subtitle">Generate all required PWA icons for Ketab-Yar</p>
+        
+        <button onclick="generateIcons()">Generate All Icons</button>
+        <button onclick="downloadAll()">Download All as ZIP</button>
+        
+        <div class="preview" id="preview"></div>
+        
+        <div class="instructions">
+            <h3>📋 Instructions:</h3>
+            <ol>
+                <li>Click "Generate All Icons" to create placeholder icons</li>
+                <li>Right-click each icon and "Save image as..." to download</li>
+                <li>Save them in the <code>public/</code> folder with exact names shown</li>
+                <li>Or click "Download All as ZIP" (requires JSZip library)</li>
+                <li>Replace with professional icons before production launch</li>
+            </ol>
+            <p><strong>Note:</strong> These are placeholder icons. For production, create professional icons with your logo.</p>
+        </div>
+    </div>
+
+    <script>
+        const sizes = [72, 96, 128, 144, 152, 192, 384, 512];
+        const canvases = {};
+
+        function generateIcons() {
+            const preview = document.getElementById('preview');
+            preview.innerHTML = '';
+
+            sizes.forEach(size => {
+                const canvas = document.createElement('canvas');
+                canvas.width = size;
+                canvas.height = size;
+                const ctx = canvas.getContext('2d');
+
+                // Background
+                ctx.fillStyle = '#C9A961';
+                ctx.fillRect(0, 0, size, size);
+
+                // Text
+                ctx.fillStyle = 'white';
+                ctx.font = `bold ${size * 0.5}px Arial`;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText('ک', size / 2, size / 2);
+
+                // Store canvas
+                canvases[size] = canvas;
+
+                // Create preview
+                const previewItem = document.createElement('div');
+                previewItem.className = 'preview-item';
+                
+                const previewCanvas = canvas.cloneNode();
+                const previewCtx = previewCanvas.getContext('2d');
+                previewCtx.drawImage(canvas, 0, 0);
+                
+                const filename = document.createElement('p');
+                filename.textContent = `icon-${size}x${size}.png`;
+                filename.style.fontWeight = 'bold';
+                
+                const downloadBtn = document.createElement('button');
+                downloadBtn.textContent = 'Download';
+                downloadBtn.style.padding = '5px 10px';
+                downloadBtn.style.fontSize = '12px';
+                downloadBtn.style.margin = '5px 0';
+                downloadBtn.onclick = () => downloadIcon(size);
+                
+                previewItem.appendChild(previewCanvas);
+                previewItem.appendChild(filename);
+                previewItem.appendChild(downloadBtn);
+                preview.appendChild(previewItem);
+            });
+
+            alert('✅ Icons generated! Right-click each icon to save, or click Download buttons.');
+        }
+
+        function downloadIcon(size) {
+            const canvas = canvases[size];
+            if (!canvas) {
+                alert('Please generate icons first!');
+                return;
+            }
+
+            canvas.toBlob(blob => {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `icon-${size}x${size}.png`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            });
+        }
+
+        function downloadAll() {
+            if (Object.keys(canvases).length === 0) {
+                alert('Please generate icons first!');
+                return;
+            }
+
+            alert('⚠️ Downloading all icons individually. Click OK to start.');
+            
+            sizes.forEach((size, index) => {
+                setTimeout(() => {
+                    downloadIcon(size);
+                }, index * 500); // Stagger downloads
+            });
+        }
+
+        // Auto-generate on load
+        window.onload = generateIcons;
+    </script>
+</body>
+</html>

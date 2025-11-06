@@ -1,16 +1,18 @@
 'use client'
 
-import { motion } from 'framer-motion'
-import Link from 'next/link'
 import { Button } from '@/components/ui/button'
+import { motion } from 'framer-motion'
 import { BookOpen, Sparkles } from 'lucide-react'
+import Link from 'next/link'
 
 export function CTASection() {
   return (
     <section className="relative py-20 overflow-hidden">
-      {/* Gradient background */}
-      <div className="absolute inset-0 bg-gradient-to-r from-gold-600 via-gold-500 to-gold-400" />
-      
+      {/* Enhanced gradient background - Agent 3 Psychology */}
+      <div className="absolute inset-0 bg-gradient-to-br from-gold-600 via-gold-500 to-gold-400" />
+      {/* Subtle pattern overlay for depth */}
+      <div className="absolute inset-0 bg-dot-pattern opacity-10" />
+
       {/* Animated shapes */}
       <motion.div
         className="absolute top-0 left-0 w-96 h-96 bg-white/10 rounded-full blur-3xl"
@@ -50,18 +52,18 @@ export function CTASection() {
             <span className="text-sm font-medium">به جمع 50,000+ خواننده بپیوندید</span>
           </div>
 
-          <h2 className="text-3xl md:text-5xl font-bold mb-4">
+          <h2 className="text-3xl md:text-5xl font-bold mb-4 drop-shadow-lg">
             آماده شروع مطالعه هستید؟
           </h2>
-          <p className="text-xl mb-8 opacity-90 leading-relaxed">
+          <p className="text-xl mb-8 opacity-95 leading-relaxed drop-shadow-md">
             به هزاران خواننده در حال بهبود مهارت‌های انگلیسی بپیوندید و تجربه مطالعه‌ای متفاوت را آغاز کنید
           </p>
-          
+
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button 
-              size="lg" 
-              variant="secondary" 
-              className="text-lg px-8 bg-white text-gold-700 hover:bg-gray-100 shadow-xl hover:shadow-2xl transition-all duration-300" 
+            <Button
+              size="lg"
+              variant="secondary"
+              className="text-lg px-8 bg-white text-gold-800 hover:bg-white/95 hover:text-gold-900 shadow-xl hover:shadow-2xl transition-all duration-300 font-semibold"
               asChild
             >
               <Link href="/library">
@@ -69,10 +71,10 @@ export function CTASection() {
                 مرور کتابخانه
               </Link>
             </Button>
-            <Button 
-              size="lg" 
-              variant="outline" 
-              className="text-lg px-8 border-2 border-white text-white hover:bg-white/10 backdrop-blur-sm transition-all duration-300" 
+            <Button
+              size="lg"
+              variant="outline"
+              className="text-lg px-8 border-2 border-white text-white hover:bg-white/20 hover:border-white hover:text-white backdrop-blur-sm transition-all duration-300 font-semibold"
               asChild
             >
               <Link href="/subscription">

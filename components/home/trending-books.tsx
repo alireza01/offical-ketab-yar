@@ -2,7 +2,7 @@
 
 import { BookCard } from '@/components/books/book-card'
 import { Button } from '@/components/ui/button'
-import { createClient } from '@/lib/supabase/client'
+import { getMostReadBooks } from '@/lib/data'
 import { useQuery } from '@tanstack/react-query'
 import { motion } from 'framer-motion'
 import { ArrowLeft, Flame, TrendingUp } from 'lucide-react'
@@ -23,44 +23,20 @@ const item = {
   show: { opacity: 1, scale: 1, y: 0 }
 }
 
-interface BookGenre {
-  genres: {
-    name: string
-  } | null
-}
-
-interface BookWithGenres {
-  id: string
-  slug: string
-  title: string
-  author: string
-  cover_url: string | null
-  rating: number | null
-  book_genres: BookGenre[] | null
-}
-
 export function TrendingBooks() {
   const { data: trendingBooks = [] } = useQuery({
     queryKey: ['trending-books'],
     queryFn: async () => {
-      const supabase = createClient()
-      const { data, error } = await supabase
-        .from('books')
-        .select('*, book_genres(genres(name))')
-        .eq('status', 'published')
-        .order('view_count', { ascending: false })
-        .limit(6)
-      
-      if (error) throw error
-      
-      return (data as unknown as BookWithGenres[] || []).map((book) => ({
+      const books = await getMostReadBooks(6)
+
+      return books.map((book) => ({
         id: book.id,
         slug: book.slug,
         title: book.title,
-        author: book.author,
-        coverImage: book.cover_url || '/images/placeholder-book.jpg',
+        author: book.authors?.name || 'Unknown Author',
+        coverImage: book.cover_image || '/images/placeholder-book.jpg',
         rating: book.rating || 0,
-        genre: book.book_genres?.map((bg) => bg.genres?.name).filter((name): name is string => Boolean(name)) || []
+        genre: book.genres || []
       }))
     },
   })
@@ -96,10 +72,10 @@ export function TrendingBooks() {
               محبوب‌ترین کتاب‌های این هفته که همه درباره‌شان صحبت می‌کنند
             </p>
           </div>
-          
-          <Button 
-            variant="outline" 
-            className="group hidden md:flex items-center gap-2 hover:bg-gold-50 dark:hover:bg-gold-950/20 hover:border-gold-500/50 transition-all duration-300" 
+
+          <Button
+            variant="outline"
+            className="group hidden md:flex items-center gap-2 hover:bg-gold-50 dark:hover:bg-gold-950/20 hover:border-gold-500/50 transition-all duration-300"
             asChild
           >
             <Link href="/library?sort=trending">
@@ -109,7 +85,7 @@ export function TrendingBooks() {
             </Link>
           </Button>
         </motion.div>
-        
+
         <motion.div
           variants={container}
           initial="hidden"

@@ -41,28 +41,47 @@ export function ThemeToggle() {
       variant="ghost"
       size="icon"
       onClick={toggleTheme}
-      className="relative overflow-hidden"
+      className="relative overflow-hidden rounded-xl group"
     >
+      {/* Background ripple effect */}
+      <motion.div
+        key={isDark ? "dark-bg" : "light-bg"}
+        initial={{ scale: 0, opacity: 0.5 }}
+        animate={{ scale: 2, opacity: 0 }}
+        transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
+        className={`absolute inset-0 rounded-full ${isDark ? 'bg-gold-500/20' : 'bg-gold-600/20'
+          }`}
+      />
+
+      {/* Icon with smooth morph */}
       <AnimatePresence mode="wait" initial={false}>
         {isDark ? (
           <motion.div
             key="moon"
-            initial={{ y: -30, opacity: 0, rotate: -90 }}
-            animate={{ y: 0, opacity: 1, rotate: 0 }}
-            exit={{ y: 30, opacity: 0, rotate: 90 }}
-            transition={{ duration: 0.3, ease: "easeInOut" }}
+            initial={{ scale: 0.6, rotate: -90, opacity: 0 }}
+            animate={{ scale: 1, rotate: 0, opacity: 1 }}
+            exit={{ scale: 0.6, rotate: 90, opacity: 0 }}
+            transition={{
+              duration: 0.15,
+              ease: [0.4, 0, 0.2, 1]
+            }}
+            className="absolute inset-0 flex items-center justify-center"
           >
-            <Moon className="h-[1.2rem] w-[1.2rem] text-gold-500" />
+            <Moon className="h-[1.2rem] w-[1.2rem] text-gold-500 group-hover:scale-110 transition-transform duration-200" />
           </motion.div>
         ) : (
           <motion.div
             key="sun"
-            initial={{ y: -30, opacity: 0, rotate: -90 }}
-            animate={{ y: 0, opacity: 1, rotate: 0 }}
-            exit={{ y: 30, opacity: 0, rotate: 90 }}
-            transition={{ duration: 0.3, ease: "easeInOut" }}
+            initial={{ scale: 0.6, rotate: -90, opacity: 0 }}
+            animate={{ scale: 1, rotate: 0, opacity: 1 }}
+            exit={{ scale: 0.6, rotate: 90, opacity: 0 }}
+            transition={{
+              duration: 0.15,
+              ease: [0.4, 0, 0.2, 1]
+            }}
+            className="absolute inset-0 flex items-center justify-center"
           >
-            <Sun className="h-[1.2rem] w-[1.2rem] text-gold-600" />
+            <Sun className="h-[1.2rem] w-[1.2rem] text-gold-600 group-hover:scale-110 group-hover:rotate-90 transition-all duration-200" />
           </motion.div>
         )}
       </AnimatePresence>

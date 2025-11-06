@@ -7,7 +7,7 @@ import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion'
 import { BookOpen, Eye, Heart, Star } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 interface BookCardProps {
   book: {
@@ -37,18 +37,24 @@ export function BookCard({ book, showReadCount, progress }: BookCardProps) {
   const bookGenre = book.genres || book.genre || []
   const bookAuthor = book.authors?.name || book.author || 'Unknown Author'
 
-  // 3D tilt effect
+  // Agent 2 (Performance): Simplified 3D effect - only on desktop, GPU-optimized
+  const [enable3D, setEnable3D] = useState(false)
   const x = useMotionValue(0)
   const y = useMotionValue(0)
 
-  const mouseXSpring = useSpring(x)
-  const mouseYSpring = useSpring(y)
+  const mouseXSpring = useSpring(x, { stiffness: 300, damping: 30 })
+  const mouseYSpring = useSpring(y, { stiffness: 300, damping: 30 })
 
-  const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ["7.5deg", "-7.5deg"])
-  const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-7.5deg", "7.5deg"])
+  const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ["5deg", "-5deg"])
+  const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-5deg", "5deg"])
+
+  // Agent 2: Only enable 3D on desktop (performance)
+  useEffect(() => {
+    setEnable3D(window.innerWidth > 768)
+  }, [])
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!ref.current) return
+    if (!ref.current || !enable3D) return
 
     const rect = ref.current.getBoundingClientRect()
     const width = rect.width
@@ -70,19 +76,19 @@ export function BookCard({ book, showReadCount, progress }: BookCardProps) {
   return (
     <motion.div
       ref={ref}
-      style={{
+      style={enable3D ? {
         rotateX,
         rotateY,
         transformStyle: "preserve-3d",
-      }}
+      } : {}}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
-      whileHover={{ scale: 1.05, z: 50 }}
+      whileHover={{ scale: 1.05 }}
       transition={{ duration: 0.3, ease: "easeOut" }}
-      className="perspective-1000"
+      className={enable3D ? "perspective-1000" : ""}
     >
       <Link href={`/books/${book.slug}`}>
-        <Card className="group relative overflow-hidden hover:shadow-2xl hover:shadow-gold-500/20 transition-all duration-500 border border-gold-500/20 hover:border-gold-500/40 cursor-pointer h-full bg-card/50 backdrop-blur-sm">
+        <Card className="group relative overflow-hidden hover:shadow-2xl hover:shadow-gold-500/20 transition-all duration-500 border-2 border-gray-200 hover:border-gold-500/50 cursor-pointer h-full bg-white dark:bg-card/50 dark:border-gold-500/20 dark:hover:border-gold-500/40 backdrop-blur-sm shadow-md hover:shadow-xl">
           {/* Shine effect */}
           <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
             <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-transparent translate-x-[-100%] translate-y-[-100%] group-hover:translate-x-[100%] group-hover:translate-y-[100%] transition-transform duration-1000" />
@@ -177,18 +183,18 @@ export function BookCard({ book, showReadCount, progress }: BookCardProps) {
             </div>
           </CardContent>
 
-          <CardFooter className="flex flex-col items-start p-4 gap-2.5 bg-gradient-to-b from-card to-card/80">
-            <h3 className="font-bold text-base line-clamp-2 group-hover:text-gold-600 transition-colors leading-snug">
+          <CardFooter className="flex flex-col items-start p-4 gap-2.5 bg-gradient-to-b from-white to-gray-50 dark:from-card dark:to-card/80 border-t-2 border-gray-100 dark:border-border/50">
+            <h3 className="font-bold text-base line-clamp-2 text-gray-900 group-hover:text-gold-600 dark:text-foreground transition-colors leading-snug">
               {book.title}
             </h3>
-            <p className="text-sm text-muted-foreground line-clamp-1 font-medium">{bookAuthor}</p>
+            <p className="text-sm text-gray-600 dark:text-muted-foreground line-clamp-1 font-medium">{bookAuthor}</p>
             {bookGenre.length > 0 && (
               <div className="flex flex-wrap gap-1.5 mt-1">
                 {bookGenre.slice(0, 2).map((g) => (
                   <Badge
                     key={g}
                     variant="secondary"
-                    className="text-xs px-2.5 py-0.5 bg-gold-500/10 text-gold-700 dark:text-gold-400 border border-gold-500/20 hover:bg-gold-500/20 transition-colors font-medium"
+                    className="text-xs px-2.5 py-0.5 bg-gold-500/15 text-gold-800 dark:text-gold-400 border-2 border-gold-500/30 hover:bg-gold-500/25 transition-colors font-semibold"
                   >
                     {g}
                   </Badge>

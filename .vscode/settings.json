@@ -20,8 +20,14 @@
     "**/package-lock.json": true
   },
   "tailwindCSS.experimental.classRegex": [
-    ["cva\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"],
-    ["cn\\(([^)]*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)"]
+    [
+      "cva\\(([^)]*)\\)",
+      "[\"'`]([^\"'`]*).*?[\"'`]"
+    ],
+    [
+      "cn\\(([^)]*)\\)",
+      "(?:'|\"|`)([^']*)(?:'|\"|`)"
+    ]
   ],
   "[typescript]": {
     "editor.defaultFormatter": "vscode.typescript-language-features"
@@ -31,9 +37,9 @@
   },
   "[json]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
-},
-"typescript.autoClosingTags": false,
-"[jsonc]": {
-  "editor.defaultFormatter": "vscode.json-language-features"
-}
+  },
+  "typescript.autoClosingTags": false,
+  "[jsonc]": {
+    "editor.defaultFormatter": "vscode.json-language-features"
+  }
 }

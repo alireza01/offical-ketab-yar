@@ -35,19 +35,20 @@ export function SiteHeader() {
   ]
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container mx-auto px-4">
-        <div className="flex h-16 items-center justify-between">
+    <header className="native-header">
+      <div className="w-full px-4 md:px-6 lg:px-8">
+        <div className="flex h-14 md:h-16 items-center justify-between">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2 font-bold text-xl group">
+          <Link href="/" className="flex items-center gap-2 md:gap-3 font-bold text-lg md:text-xl group">
             <motion.div
-              whileHover={{ rotate: 360 }}
-              transition={{ duration: 0.5 }}
-              className="w-8 h-8 bg-gradient-to-br from-gold-600 to-gold-400 rounded-lg flex items-center justify-center shadow-lg shadow-gold-500/30"
+              whileHover={{ rotate: 360, scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              transition={{ type: "spring", stiffness: 400, damping: 17 }}
+              className="w-9 h-9 md:w-10 md:h-10 gradient-gold rounded-xl md:rounded-2xl flex items-center justify-center shadow-gold"
             >
-              <BookOpen className="h-5 w-5 text-white" />
+              <BookOpen className="h-5 w-5 md:h-6 md:w-6 text-white" />
             </motion.div>
-            <span className="bg-gradient-to-r from-gold-600 to-gold-400 bg-clip-text text-transparent group-hover:from-gold-500 group-hover:to-gold-300 transition-all">
+            <span className="text-gradient-gold hidden sm:inline-block">
               کتاب‌یار
             </span>
           </Link>
@@ -58,28 +59,28 @@ export function SiteHeader() {
               const Icon = item.icon
               const isActive = pathname === item.href
               return (
-                <Button
-                  key={item.href}
-                  variant={isActive ? 'default' : 'ghost'}
-                  size="sm"
-                  asChild
-                  className={cn(
-                    'relative',
-                    isActive && 'bg-gradient-to-r from-gold-600 to-gold-500 hover:from-gold-700 hover:to-gold-600'
-                  )}
-                >
-                  <Link href={item.href}>
-                    <Icon className="h-4 w-4 mr-2" />
-                    {item.label}
+                <motion.div key={item.href} whileTap={{ scale: 0.97 }}>
+                  <Link href={item.href} className="relative">
+                    <Button
+                      variant={isActive ? 'default' : 'ghost'}
+                      size="sm"
+                      className={cn(
+                        'relative rounded-xl',
+                        isActive && 'gradient-gold text-white shadow-gold'
+                      )}
+                    >
+                      <Icon className="h-4 w-4 mr-2" />
+                      {item.label}
+                    </Button>
                     {isActive && (
                       <motion.div
                         layoutId="activeTab"
-                        className="absolute bottom-0 left-0 right-0 h-0.5 bg-gold-400"
-                        transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                        className="absolute -bottom-1 left-0 right-0 h-0.5 bg-gold-500 rounded-full"
+                        transition={{ type: "spring", stiffness: 500, damping: 30 }}
                       />
                     )}
                   </Link>
-                </Button>
+                </motion.div>
               )
             })}
           </nav>
@@ -88,15 +89,16 @@ export function SiteHeader() {
           <div className="flex items-center gap-3">
             {/* Gamification Stats - Only show when logged in */}
             {userStats.isLoggedIn && (
-              <div className="hidden lg:flex items-center gap-3">
+              <div className="hidden lg:flex items-center gap-2">
                 {/* Streak Counter */}
                 <motion.div
                   whileHover={{ scale: 1.05 }}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gradient-to-r from-orange-500/10 to-red-500/10 border border-orange-500/20"
+                  whileTap={{ scale: 0.95 }}
+                  className="flex items-center gap-1.5 px-3 py-2 rounded-xl glass border border-orange-500/20 cursor-pointer"
                 >
                   <motion.div
                     animate={{
-                      scale: [1, 1.2, 1],
+                      scale: [1, 1.15, 1],
                       rotate: [0, 5, -5, 0]
                     }}
                     transition={{
@@ -115,15 +117,14 @@ export function SiteHeader() {
                 {/* XP & Level */}
                 <motion.div
                   whileHover={{ scale: 1.05 }}
-                  className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-gradient-to-r from-gold-500/10 to-gold-600/10 border border-gold-500/20"
+                  whileTap={{ scale: 0.95 }}
+                  className="flex items-center gap-2 px-3 py-2 rounded-xl glass border border-gold-500/20 cursor-pointer"
                 >
                   <Zap className="h-4 w-4 text-gold-600" />
-                  <div className="flex flex-col">
-                    <div className="flex items-center gap-1">
-                      <span className="text-xs font-medium text-muted-foreground">
-                        سطح {userStats.level}
-                      </span>
-                    </div>
+                  <div className="flex flex-col gap-0.5">
+                    <span className="text-xs font-medium text-muted-foreground leading-none">
+                      سطح {userStats.level}
+                    </span>
                     <Progress
                       value={xpProgress}
                       className="h-1 w-16 bg-gold-500/20"
@@ -140,25 +141,35 @@ export function SiteHeader() {
 
             {!userStats.isLoggedIn ? (
               <>
-                <Button variant="outline" size="sm" className="hidden sm:flex">
-                  ورود
-                </Button>
-                <Button
-                  size="sm"
-                  className="hidden sm:flex bg-gradient-to-r from-gold-600 to-gold-500 hover:from-gold-700 hover:to-gold-600 shadow-lg shadow-gold-500/30"
-                >
-                  <Sparkles className="h-4 w-4 ml-2" />
-                  اشتراک ویژه
-                </Button>
+                <motion.div whileTap={{ scale: 0.97 }}>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="hidden sm:flex rounded-xl border-2 border-gold-600/30 hover:border-gold-600 hover:bg-gold-600/10"
+                  >
+                    ورود
+                  </Button>
+                </motion.div>
+                <motion.div whileTap={{ scale: 0.97 }}>
+                  <Button
+                    size="sm"
+                    className="hidden sm:flex gradient-gold text-white shadow-gold rounded-xl"
+                  >
+                    <Sparkles className="h-4 w-4 ml-2" />
+                    اشتراک ویژه
+                  </Button>
+                </motion.div>
               </>
             ) : (
-              <Button
-                size="sm"
-                className="hidden sm:flex bg-gradient-to-r from-gold-600 to-gold-500 hover:from-gold-700 hover:to-gold-600 shadow-lg shadow-gold-500/30"
-              >
-                <Sparkles className="h-4 w-4 ml-2" />
-                ارتقا به پرمیوم
-              </Button>
+              <motion.div whileTap={{ scale: 0.97 }}>
+                <Button
+                  size="sm"
+                  className="hidden sm:flex gradient-gold text-white shadow-gold rounded-xl"
+                >
+                  <Sparkles className="h-4 w-4 ml-2" />
+                  ارتقا به پرمیوم
+                </Button>
+              </motion.div>
             )}
 
             {/* Mobile Menu Button */}
@@ -181,39 +192,53 @@ export function SiteHeader() {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.2 }}
-            className="md:hidden border-t bg-background"
+            transition={{ type: "spring", stiffness: 400, damping: 30 }}
+            className="md:hidden border-t glass"
           >
-            <nav className="container mx-auto px-4 py-4 space-y-2">
-              {navItems.map((item) => {
+            <nav className="px-4 py-4 space-y-2">
+              {navItems.map((item, index) => {
                 const Icon = item.icon
                 const isActive = pathname === item.href
                 return (
-                  <Link
+                  <motion.div
                     key={item.href}
-                    href={item.href}
-                    onClick={() => setMobileMenuOpen(false)}
-                    className={cn(
-                      'flex items-center gap-3 px-4 py-3 rounded-lg transition-colors',
-                      isActive
-                        ? 'bg-gradient-to-r from-gold-600 to-gold-500 text-white'
-                        : 'hover:bg-muted'
-                    )}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: index * 0.05 }}
                   >
-                    <Icon className="h-5 w-5" />
-                    <span className="font-medium">{item.label}</span>
-                  </Link>
+                    <Link
+                      href={item.href}
+                      onClick={() => setMobileMenuOpen(false)}
+                      className={cn(
+                        'flex items-center gap-3 px-4 py-3 rounded-xl transition-all',
+                        isActive
+                          ? 'gradient-gold text-white shadow-gold'
+                          : 'hover:bg-muted active:scale-[0.98]'
+                      )}
+                    >
+                      <Icon className="h-5 w-5" />
+                      <span className="font-medium">{item.label}</span>
+                    </Link>
+                  </motion.div>
                 )
               })}
-              <div className="pt-4 space-y-2">
-                <Button variant="outline" className="w-full">
+              <motion.div
+                className="pt-4 space-y-2"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.3 }}
+              >
+                <Button
+                  variant="outline"
+                  className="w-full rounded-xl border-2 border-gold-600/30 hover:border-gold-600 hover:bg-gold-600/10"
+                >
                   ورود
                 </Button>
-                <Button className="w-full bg-gradient-to-r from-gold-600 to-gold-500 hover:from-gold-700 hover:to-gold-600">
+                <Button className="w-full gradient-gold text-white shadow-gold rounded-xl">
                   <Sparkles className="h-4 w-4 ml-2" />
                   اشتراک ویژه
                 </Button>
-              </div>
+              </motion.div>
             </nav>
           </motion.div>
         )}

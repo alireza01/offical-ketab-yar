@@ -14,9 +14,13 @@ export function XPRewardAnimation({ amount, onComplete }: XPRewardAnimationProps
 
   useEffect(() => {
     // Play sound effect using sound utility (Agent 3 - Psychology)
-    import('@/lib/utils/sound-effects').then(({ soundEffects }) => {
-      soundEffects.xpGain(amount)
-    })
+    if (typeof window !== 'undefined') {
+      import('@/lib/utils/sound-effects').then(({ soundEffects }) => {
+        soundEffects.xpGain(amount)
+      }).catch(() => {
+        // Silently fail if sound system not available
+      })
+    }
 
     // Auto-hide after animation
     const timer = setTimeout(() => {

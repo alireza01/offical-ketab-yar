@@ -2,7 +2,7 @@
 
 import { BookCard } from '@/components/books/book-card'
 import { Button } from '@/components/ui/button'
-import { createClient } from '@/lib/supabase/client'
+import { getBooks } from '@/lib/data'
 import { useQuery } from '@tanstack/react-query'
 import { motion } from 'framer-motion'
 import { ArrowLeft } from 'lucide-react'
@@ -23,46 +23,26 @@ const item = {
   show: { opacity: 1, scale: 1 }
 }
 
-interface BookGenre {
-  genres: {
-    name: string
-  } | null
-}
-
-interface BookWithGenres {
-  id: string
-  slug: string
-  title: string
-  author: string
-  cover_url: string | null
-  rating: number | null
-  book_genres: BookGenre[] | null
-}
-
 export function FeaturedBooks() {
   const { data: featuredBooks = [] } = useQuery({
     queryKey: ['featured-books'],
     queryFn: async () => {
-      const supabase = createClient()
-      const { data, error } = await supabase
-        .from('books')
-        .select('*, book_genres(genres(name))')
-        .eq('status', 'published')
-        .eq('featured', true)
-        .order('rating', { ascending: false })
-        .limit(6)
+      const books = await getBooks()
 
-      if (error) throw error
-
-      return (data as unknown as BookWithGenres[] || []).map((book) => ({
-        id: book.id,
-        slug: book.slug,
-        title: book.title,
-        author: book.author,
-        coverImage: book.cover_url || '/images/placeholder-book.jpg',
-        rating: book.rating || 0,
-        genre: book.book_genres?.map((bg) => bg.genres?.name).filter((name): name is string => Boolean(name)) || []
-      }))
+      // Filter featured books and sort by rating
+      return books
+        .filter(book => book.featured)
+        .sort((a, b) => (b.rating || 0) - (a.rating || 0))
+        .slice(0, 6)
+        .map((book) => ({
+          id: book.id,
+          slug: book.slug,
+          title: book.title,
+          author: book.authors?.name || 'Unknown Author',
+          coverImage: book.cover_image || '/images/placeholder-book.jpg',
+          rating: book.rating || 0,
+          genre: book.genres || []
+        }))
     },
   })
 

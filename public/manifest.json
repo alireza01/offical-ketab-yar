@@ -1,24 +1,49 @@
 {
   "name": "کتاب‌یار - پلتفرم هوشمند مطالعه دوزبانه",
   "short_name": "کتاب‌یار",
-  "description": "بیش از 1000 کتاب انگلیسی را رایگان و دوزبانه بخوانید. با هوش مصنوعی Gemini، واژگان هوشمند و گیمیفیکیشن",
+  "description": "بیش از 1000 کتاب انگلیسی را رایگان و دوزبانه بخوانید. با هوش مصنوعی، واژگان هوشمند و گیمیفیکیشن",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#f4ecd8",
-  "theme_color": "#D4AF37",
+  "background_color": "#F9F5EB",
+  "theme_color": "#C9A961",
   "orientation": "portrait-primary",
-  "dir": "rtl",
+  "scope": "/",
   "lang": "fa",
+  "dir": "rtl",
   "icons": [
     {
-      "src": "/icon-192x192.png",
-      "sizes": "192x192",
+      "src": "/icon-72x72.png",
+      "sizes": "72x72",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/icon-256x256.png",
-      "sizes": "256x256",
+      "src": "/icon-96x96.png",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-128x128.png",
+      "sizes": "128x128",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-144x144.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-152x152.png",
+      "sizes": "152x152",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-192x192.png",
+      "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
@@ -35,44 +60,36 @@
       "purpose": "any maskable"
     }
   ],
-  "categories": ["education", "books", "productivity"],
   "screenshots": [
     {
-      "src": "/screenshot-1.png",
-      "sizes": "1280x720",
+      "src": "/screenshot-mobile-1.png",
+      "sizes": "390x844",
       "type": "image/png",
-      "label": "صفحه اصلی کتاب‌یار"
+      "form_factor": "narrow"
     },
     {
-      "src": "/screenshot-2.png",
-      "sizes": "1280x720",
+      "src": "/screenshot-desktop-1.png",
+      "sizes": "1920x1080",
       "type": "image/png",
-      "label": "کتاب‌خوان دوزبانه"
+      "form_factor": "wide"
     }
   ],
+  "categories": ["education", "books", "productivity"],
   "shortcuts": [
     {
       "name": "کتابخانه",
       "short_name": "کتابخانه",
-      "description": "مرور کتاب‌ها",
+      "description": "مشاهده کتابخانه",
       "url": "/library",
       "icons": [{ "src": "/icon-192x192.png", "sizes": "192x192" }]
     },
     {
       "name": "داشبورد",
       "short_name": "داشبورد",
-      "description": "پیشرفت من",
+      "description": "مشاهده داشبورد",
       "url": "/dashboard",
-      "icons": [{ "src": "/icon-192x192.png", "sizes": "192x192" }]
-    },
-    {
-      "name": "واژگان",
-      "short_name": "واژگان",
-      "description": "واژگان من",
-      "url": "/vocabulary",
       "icons": [{ "src": "/icon-192x192.png", "sizes": "192x192" }]
     }
   ],
-  "related_applications": [],
   "prefer_related_applications": false
 }

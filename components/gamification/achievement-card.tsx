@@ -7,27 +7,21 @@ import { cn } from '@/lib/utils'
 import { motion } from 'framer-motion'
 import { Award, Check, Lock } from 'lucide-react'
 
-interface Achievement {
-    id: string
-    name: string
-    description: string
-    icon: string
-    xp_reward: number
-    requirement_type: string
-    requirement_value: number
-    earned?: boolean
-    progress?: number
-}
+import type { AchievementWithProgress } from '@/types/gamification'
+import { getTierColor, getTierText } from '@/types/gamification'
 
 interface AchievementCardProps {
-    achievement: Achievement
+    achievement: AchievementWithProgress
     className?: string
+    onUnlock?: (achievement: AchievementWithProgress) => void
 }
 
-export function AchievementCard({ achievement, className }: AchievementCardProps) {
-    const isEarned = achievement.earned || false
-    const progress = achievement.progress || 0
-    const progressPercentage = (progress / achievement.requirement_value) * 100
+export function AchievementCard({ achievement, className, onUnlock }: AchievementCardProps) {
+    const isEarned = achievement.earned
+    const progress = achievement.progress
+    const progressPercentage = achievement.progress_percentage
+    const tierGradient = getTierColor(achievement.tier)
+    const tierText = getTierText(achievement.tier)
 
     return (
         <motion.div
@@ -80,9 +74,20 @@ export function AchievementCard({ achievement, className }: AchievementCardProps
                             <p className="text-sm text-muted-foreground mb-2">
                                 {achievement.description}
                             </p>
-                            <Badge variant={isEarned ? 'default' : 'secondary'} className="text-xs">
-                                {achievement.xp_reward} XP
-                            </Badge>
+                            <div className="flex gap-2">
+                                <Badge variant={isEarned ? 'default' : 'secondary'} className="text-xs">
+                                    {achievement.xp_reward.toLocaleString('fa-IR')} XP
+                                </Badge>
+                                <Badge
+                                    variant="outline"
+                                    className={cn(
+                                        'text-xs',
+                                        isEarned && `bg-gradient-to-r ${tierGradient} text-white border-none`
+                                    )}
+                                >
+                                    {tierText}
+                                </Badge>
+                            </div>
                         </div>
                     </div>
 
@@ -91,16 +96,24 @@ export function AchievementCard({ achievement, className }: AchievementCardProps
                         <div className="space-y-2">
                             <div className="flex items-center justify-between text-xs text-muted-foreground">
                                 <span>پیشرفت</span>
-                                <span>{progress} / {achievement.requirement_value}</span>
+                                <span>
+                                    {progress.toLocaleString('fa-IR')} / {achievement.requirement_value.toLocaleString('fa-IR')}
+                                </span>
                             </div>
                             <Progress value={progressPercentage} className="h-2">
                                 <motion.div
-                                    className="h-full rounded-full bg-gradient-to-r from-[#D4AF37] to-[#C9A961]"
+                                    className={cn(
+                                        'h-full rounded-full',
+                                        `bg-gradient-to-r ${tierGradient}`
+                                    )}
                                     initial={{ width: 0 }}
                                     animate={{ width: `${progressPercentage}%` }}
                                     transition={{ duration: 0.5, ease: 'easeOut' }}
                                 />
                             </Progress>
+                            <p className="text-xs text-center text-muted-foreground">
+                                {Math.floor(progressPercentage)}% تکمیل شده
+                            </p>
                         </div>
                     )}
 
@@ -139,15 +152,19 @@ export function AchievementCard({ achievement, className }: AchievementCardProps
 }
 
 // Achievement Unlock Animation
-export function AchievementUnlockAnimation({ achievement }: { achievement: Achievement }) {
+export function AchievementUnlockAnimation({ achievement }: { achievement: AchievementWithProgress }) {
+    const tierGradient = getTierColor(achievement.tier)
     return (
         <motion.div
             initial={{ opacity: 0, scale: 0.8, y: 50 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.8, y: -50 }}
-            className="fixed bottom-4 right-4 z-50 max-w-sm"
+            className="fixed bottom-4 left-4 z-50 max-w-sm"
         >
-            <Card className="border-[#D4AF37] bg-gradient-to-br from-[#D4AF37]/20 to-background shadow-2xl">
+            <Card className={cn(
+                'border-2 shadow-2xl',
+                `bg-gradient-to-br ${tierGradient} bg-opacity-20`
+            )}>
                 <CardContent className="p-4">
                     <div className="flex items-center gap-3">
                         <motion.div
@@ -159,21 +176,24 @@ export function AchievementUnlockAnimation({ achievement }: { achievement: Achie
                                 rotate: { duration: 1, ease: 'easeOut' },
                                 scale: { duration: 0.5 },
                             }}
-                            className="flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-br from-[#D4AF37] to-[#B8956A] text-2xl shadow-lg"
+                            className={cn(
+                                'flex items-center justify-center w-12 h-12 rounded-full text-2xl shadow-lg',
+                                `bg-gradient-to-br ${tierGradient}`
+                            )}
                         >
                             {achievement.icon}
                         </motion.div>
 
                         <div className="flex-1">
-                            <p className="text-xs text-muted-foreground mb-1">دستاورد جدید!</p>
-                            <h4 className="font-bold text-[#D4AF37]">{achievement.name}</h4>
+                            <p className="text-xs text-muted-foreground mb-1">🎉 دستاورد جدید!</p>
+                            <h4 className="font-bold text-foreground">{achievement.name}</h4>
                             <p className="text-xs text-muted-foreground">{achievement.description}</p>
                             <Badge variant="secondary" className="mt-1 text-xs">
-                                +{achievement.xp_reward} XP
+                                +{achievement.xp_reward.toLocaleString('fa-IR')} XP
                             </Badge>
                         </div>
 
-                        <Award className="w-6 h-6 text-[#D4AF37]" />
+                        <Award className="w-6 h-6 text-foreground" />
                     </div>
                 </CardContent>
             </Card>
