@@ -4,55 +4,60 @@
 
 @layer base {
   :root {
-    /* Premium color system - ENHANCED LIGHT MODE (Inspired by Spida theme) */
-    /* Main backgrounds - layered depth like dark mode */
-    --background: 43 30% 98%;           /* Warm off-white base (like cream paper) */
-    --foreground: 240 10% 10%;
+    /* PASTEL GOLD LIGHT MODE - Warm, Professional, High Saturation */
     
-    /* Cards - multiple layers for depth */
-    --card: 0 0% 100%;                  /* Pure white for cards (stands out from background) */
-    --card-foreground: 240 10% 10%;
-    --card-hover: 43 40% 97%;           /* Subtle gold tint on hover */
+    /* Main backgrounds - Distinct pastel gold layers (like dark mode's grays) */
+    --background: 43 45% 94%;           /* Rich pastel gold cream (base layer) */
+    --foreground: 43 20% 18%;           /* Warm dark brown text */
+    
+    /* Cards - Lighter pastel gold (clear separation from background) */
+    --card: 43 50% 97%;                 /* Light pastel gold white */
+    --card-foreground: 43 20% 18%;
+    --card-hover: 43 55% 95%;           /* Richer gold on hover */
     
     /* Popovers and dialogs */
-    --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 10%;
+    --popover: 43 50% 98%;
+    --popover-foreground: 43 20% 18%;
     
-    /* Primary gold colors */
-    --primary: 43 74% 49%;
-    --primary-foreground: 0 0% 100%;
+    /* Primary gold - Vibrant pastel gold */
+    --primary: 43 70% 55%;              /* Bright pastel gold */
+    --primary-foreground: 43 20% 15%;   /* Dark warm text */
     
-    /* Secondary - warm beige tones */
-    --secondary: 43 25% 94%;            /* Warmer secondary background */
-    --secondary-foreground: 43 74% 25%;
+    /* Secondary - Medium pastel gold (for alternating sections) */
+    --secondary: 43 45% 90%;            /* Medium pastel gold beige */
+    --secondary-foreground: 43 60% 35%; /* Rich gold text */
     
-    /* Muted - for less important content */
-    --muted: 43 20% 95%;                /* Warm muted background */
-    --muted-foreground: 240 4% 46%;
+    /* Muted - Soft pastel gold (for subtle backgrounds) */
+    --muted: 43 40% 92%;                /* Soft pastel gold */
+    --muted-foreground: 43 15% 45%;     /* Warm medium gray */
     
-    /* Accent */
-    --accent: 43 74% 49%;
-    --accent-foreground: 0 0% 100%;
+    /* Accent - Bright pastel gold */
+    --accent: 43 65% 60%;               /* Bright pastel gold accent */
+    --accent-foreground: 43 20% 18%;
     
     /* Destructive */
-    --destructive: 0 84.2% 60.2%;
+    --destructive: 0 70% 55%;
     --destructive-foreground: 0 0% 100%;
     
-    /* Borders - visible but subtle */
-    --border: 43 15% 88%;               /* Warm border color */
-    --input: 43 20% 96%;                /* Warm input background */
-    --ring: 43 74% 49%;
+    /* Borders - Visible warm gold borders */
+    --border: 43 35% 80%;               /* Clear warm gold border */
+    --input: 43 50% 96%;                /* Light pastel gold input */
+    --ring: 43 70% 55%;
     --radius: 0.75rem;
     
-    /* Enhanced light mode specific variables */
-    --section-separator: 43 15% 92%;    /* Warm separator */
-    --hover-overlay: 43 74% 49%;
-    --hover-overlay-opacity: 0.08;
+    /* Section separation - Like dark mode's different grays */
+    --section-1: 43 45% 94%;            /* Base section (darkest) */
+    --section-2: 43 48% 96%;            /* Elevated section */
+    --section-3: 43 52% 98%;            /* Highest section (lightest) */
     
-    /* Additional depth layers */
-    --surface-1: 43 30% 98%;            /* Background level */
-    --surface-2: 43 25% 96%;            /* Slightly elevated */
-    --surface-3: 0 0% 100%;             /* Cards - highest elevation */
+    /* Hover effects */
+    --hover-overlay: 43 70% 55%;
+    --hover-overlay-opacity: 0.15;
+    
+    /* Premium gold surfaces */
+    --gold-light: 43 60% 92%;           /* Light gold surface */
+    --gold-medium: 43 55% 88%;          /* Medium gold surface */
+    --gold-rich: 43 50% 84%;            /* Rich gold surface */
   }
 
   .dark {
@@ -334,24 +339,22 @@ button:disabled,
   background: hsl(var(--card));
   border: 1px solid hsl(var(--border));
   border-radius: 1rem;
-  /* Light mode: Subtle warm shadows */
+  /* Light mode: Soft, airy shadows (no deep shadows) */
   box-shadow: 
-    0 1px 3px rgba(201, 169, 97, 0.08),
-    0 2px 6px rgba(201, 169, 97, 0.06),
-    0 0 0 1px rgba(201, 169, 97, 0.04);
+    0 1px 3px rgba(201, 169, 97, 0.15),
+    0 2px 6px rgba(212, 175, 55, 0.1);
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   will-change: transform;
 }
 
 .native-card:hover {
   background: hsl(var(--card-hover));
-  border-color: hsl(var(--primary) / 0.4);
-  /* Light mode: Enhanced gold glow on hover */
+  border-color: hsl(var(--primary) / 0.6);
+  /* Light mode: Soft gold glow (not deep shadow) */
   box-shadow: 
-    0 4px 12px rgba(201, 169, 97, 0.15),
-    0 8px 24px rgba(212, 175, 55, 0.2),
-    0 0 0 1px rgba(212, 175, 55, 0.1);
-  transform: translateY(-4px);
+    0 4px 12px rgba(212, 175, 55, 0.2),
+    0 8px 20px rgba(212, 175, 55, 0.15);
+  transform: translateY(-2px);
 }
 
 .native-card:active {
@@ -963,17 +966,33 @@ iframe {
    SECTION STYLING - LAYERED DEPTH
    ============================================ */
 
-/* Light mode: Alternating warm backgrounds for visual separation */
+/* Light mode: Clear section separation (like dark mode's different grays) */
 .section-light-primary {
-  background: hsl(var(--background));
+  background: hsl(var(--section-1));  /* Darkest pastel gold */
 }
 
 .section-light-secondary {
-  background: hsl(var(--secondary));
+  background: hsl(var(--section-2));  /* Medium pastel gold */
 }
 
-.section-light-muted {
-  background: hsl(var(--muted));
+.section-light-tertiary {
+  background: hsl(var(--section-3));  /* Lightest pastel gold */
+}
+
+/* Alternating sections for clear visual rhythm */
+.section-alternate-1 {
+  background: hsl(43 45% 94%);  /* Rich pastel gold */
+}
+
+.section-alternate-2 {
+  background: hsl(43 50% 97%);  /* Light pastel gold */
+}
+
+/* Premium gold section */
+.section-gold {
+  background: hsl(var(--gold-light));
+  border-top: 1px solid hsl(var(--border));
+  border-bottom: 1px solid hsl(var(--border));
 }
 
 /* Dark mode: Alternating dark backgrounds */
@@ -1121,25 +1140,24 @@ iframe {
    ENHANCED BUTTON STYLES
    ============================================ */
 
-/* Primary button - gold gradient */
+/* Primary button - Vibrant pastel gold */
 .btn-light-primary {
-  background: linear-gradient(135deg, hsl(43 74% 49%) 0%, hsl(43 74% 42%) 100%);
-  color: hsl(var(--primary-foreground));
-  border: 2px solid hsl(43 74% 49%);
+  background: hsl(43 70% 58%);
+  color: hsl(43 20% 15%);
+  border: 2px solid hsl(43 65% 52%);
   font-weight: 600;
   transition: all 0.2s ease;
   box-shadow: 
     0 2px 8px rgba(212, 175, 55, 0.25),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    0 4px 12px rgba(212, 175, 55, 0.15);
 }
 
 .btn-light-primary:hover {
-  background: linear-gradient(135deg, hsl(43 74% 42%) 0%, hsl(43 74% 35%) 100%);
-  border-color: hsl(43 74% 42%);
+  background: hsl(43 75% 62%);
+  border-color: hsl(43 70% 56%);
   box-shadow: 
-    0 4px 16px rgba(212, 175, 55, 0.4),
-    0 8px 24px rgba(212, 175, 55, 0.2),
-    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    0 4px 16px rgba(212, 175, 55, 0.35),
+    0 8px 24px rgba(212, 175, 55, 0.2);
   transform: translateY(-2px);
 }
 
@@ -1150,23 +1168,24 @@ iframe {
     inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
-/* Secondary button - outlined with warm background on hover */
+/* Secondary button - Pastel gold outline */
 .btn-light-secondary {
   background: hsl(var(--card));
-  color: hsl(var(--foreground));
-  border: 2px solid hsl(var(--border));
+  color: hsl(43 60% 40%);
+  border: 2px solid hsl(43 50% 75%);
   font-weight: 600;
   transition: all 0.2s ease;
-  box-shadow: 0 1px 3px rgba(201, 169, 97, 0.08);
+  box-shadow: 
+    0 2px 6px rgba(212, 175, 55, 0.1);
 }
 
 .btn-light-secondary:hover {
-  background: hsl(var(--secondary));
-  border-color: hsl(var(--primary) / 0.5);
+  background: hsl(var(--gold-light));
+  border-color: hsl(var(--primary) / 0.7);
   color: hsl(var(--primary));
   box-shadow: 
-    0 2px 8px rgba(212, 175, 55, 0.15),
-    0 4px 12px rgba(212, 175, 55, 0.1);
+    0 4px 12px rgba(212, 175, 55, 0.2),
+    0 6px 16px rgba(212, 175, 55, 0.12);
   transform: translateY(-1px);
 }
 
@@ -1393,24 +1412,46 @@ iframe {
 }
 
 /* ============================================
-   LIGHT MODE UTILITY CLASSES
+   LIGHT MODE UTILITY CLASSES - ENHANCED WARMTH
    ============================================ */
 
-/* Warm background variants for light mode */
-.bg-warm-50 {
-  background: hsl(43 40% 98%);
+/* Pastel gold background variants - High saturation, clear separation */
+.bg-pastel-gold-1 {
+  background: hsl(43 45% 94%);  /* Darkest - like dark mode's darkest gray */
 }
 
-.bg-warm-100 {
-  background: hsl(43 35% 96%);
+.bg-pastel-gold-2 {
+  background: hsl(43 48% 96%);  /* Medium */
 }
 
-.bg-warm-200 {
-  background: hsl(43 30% 94%);
+.bg-pastel-gold-3 {
+  background: hsl(43 52% 98%);  /* Lightest */
 }
 
-.bg-warm-300 {
-  background: hsl(43 25% 92%);
+/* Rich gold backgrounds */
+.bg-gold-light {
+  background: hsl(var(--gold-light));
+}
+
+.bg-gold-medium {
+  background: hsl(var(--gold-medium));
+}
+
+.bg-gold-rich {
+  background: hsl(var(--gold-rich));
+}
+
+/* Gradient backgrounds */
+.bg-gold-gradient-soft {
+  background: linear-gradient(135deg, 
+    hsl(43 50% 96%) 0%, 
+    hsl(43 55% 98%) 100%);
+}
+
+.bg-gold-gradient-rich {
+  background: linear-gradient(135deg, 
+    hsl(43 55% 90%) 0%, 
+    hsl(43 60% 94%) 100%);
 }
 
 /* Dark mode overrides */
@@ -1592,4 +1633,240 @@ iframe {
   background-image: 
     linear-gradient(hsl(240 3.7% 18%) 1px, transparent 1px),
     linear-gradient(90deg, hsl(240 3.7% 18%) 1px, transparent 1px);
+}
+
+
+/* ============================================
+   PREMIUM LIGHT MODE ENHANCEMENTS
+   ============================================ */
+
+/* Premium pastel gold card */
+.card-premium {
+  background: hsl(43 52% 97%);
+  border: 1px solid hsl(43 40% 82%);
+  box-shadow: 
+    0 2px 8px rgba(212, 175, 55, 0.12),
+    0 4px 12px rgba(212, 175, 55, 0.08);
+  transition: all 0.2s ease;
+}
+
+.card-premium:hover {
+  background: hsl(43 55% 95%);
+  border-color: hsl(var(--primary) / 0.7);
+  box-shadow: 
+    0 4px 16px rgba(212, 175, 55, 0.2),
+    0 8px 24px rgba(212, 175, 55, 0.12);
+  transform: translateY(-2px);
+}
+
+/* Rich gold card variant */
+.card-gold {
+  background: hsl(var(--gold-light));
+  border: 1px solid hsl(43 45% 78%);
+  box-shadow: 
+    0 2px 8px rgba(212, 175, 55, 0.15),
+    0 4px 12px rgba(212, 175, 55, 0.1);
+}
+
+.card-gold:hover {
+  background: hsl(var(--gold-medium));
+  border-color: hsl(var(--primary) / 0.8);
+  box-shadow: 
+    0 4px 16px rgba(212, 175, 55, 0.25),
+    0 8px 24px rgba(212, 175, 55, 0.15);
+  transform: translateY(-2px);
+}
+
+/* Pastel gold borders - Visible and warm */
+.border-gold-light {
+  border-color: hsl(43 45% 82%);
+}
+
+.border-gold-medium {
+  border-color: hsl(43 50% 75%);
+}
+
+.border-gold-strong {
+  border-color: hsl(43 60% 65%);
+}
+
+.border-gold-vibrant {
+  border-color: hsl(var(--primary));
+}
+
+/* Warm text colors - High contrast */
+.text-warm-primary {
+  color: hsl(43 20% 18%);  /* Dark warm brown */
+}
+
+.text-warm-secondary {
+  color: hsl(43 15% 35%);  /* Medium warm brown */
+}
+
+.text-warm-muted {
+  color: hsl(43 12% 50%);  /* Light warm gray */
+}
+
+/* Pastel gold text variants */
+.text-gold-dark {
+  color: hsl(43 60% 35%);  /* Dark pastel gold */
+}
+
+.text-gold-medium {
+  color: hsl(43 65% 45%);  /* Medium pastel gold */
+}
+
+.text-gold-light {
+  color: hsl(43 70% 55%);  /* Light pastel gold */
+}
+
+.text-gold-bright {
+  color: hsl(43 75% 60%);  /* Bright pastel gold */
+}
+
+/* Premium hover effects */
+.hover-gold-glow {
+  transition: all 0.2s ease;
+}
+
+.hover-gold-glow:hover {
+  box-shadow: 
+    0 0 20px rgba(212, 175, 55, 0.3),
+    0 0 40px rgba(212, 175, 55, 0.15);
+}
+
+/* Pastel gold input fields */
+.input-pastel-gold {
+  background: hsl(43 52% 97%);
+  border: 2px solid hsl(43 45% 82%);
+  color: hsl(43 20% 18%);
+  transition: all 0.2s ease;
+}
+
+.input-pastel-gold:focus {
+  background: hsl(43 55% 98%);
+  border-color: hsl(var(--primary));
+  box-shadow: 
+    0 0 0 4px hsl(var(--primary) / 0.2),
+    0 2px 8px rgba(212, 175, 55, 0.15);
+}
+
+.input-pastel-gold::placeholder {
+  color: hsl(43 15% 55%);
+}
+
+/* Pastel gold badge variants */
+.badge-pastel-gold {
+  background: hsl(43 55% 90%);
+  color: hsl(43 60% 35%);
+  border: 1px solid hsl(43 50% 78%);
+  font-weight: 600;
+}
+
+.badge-gold-vibrant {
+  background: hsl(43 70% 58%);
+  color: hsl(43 20% 15%);
+  border: 1px solid hsl(43 65% 52%);
+  font-weight: 700;
+  box-shadow: 
+    0 2px 6px rgba(212, 175, 55, 0.2);
+}
+
+.badge-gold-rich {
+  background: hsl(var(--gold-medium));
+  color: hsl(43 60% 30%);
+  border: 1px solid hsl(43 50% 75%);
+  font-weight: 600;
+}
+
+/* Warm dividers with gold accent */
+.divider-gold {
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    hsl(var(--primary) / 0.3) 50%,
+    transparent 100%
+  );
+}
+
+/* Premium section backgrounds - Clear separation */
+.section-pastel-gold-dark {
+  background: hsl(43 45% 94%);  /* Darkest pastel gold */
+}
+
+.section-pastel-gold-medium {
+  background: hsl(43 50% 96%);  /* Medium pastel gold */
+}
+
+.section-pastel-gold-light {
+  background: hsl(43 55% 98%);  /* Lightest pastel gold */
+}
+
+/* Gradient sections */
+.section-gold-gradient-subtle {
+  background: linear-gradient(180deg, 
+    hsl(43 48% 96%) 0%, 
+    hsl(43 52% 98%) 100%);
+}
+
+.section-gold-gradient-rich {
+  background: linear-gradient(180deg, 
+    hsl(43 55% 92%) 0%, 
+    hsl(43 60% 96%) 100%);
+  border-top: 1px solid hsl(43 50% 80%);
+  border-bottom: 1px solid hsl(43 50% 80%);
+}
+
+/* Warm skeleton loaders */
+.skeleton-premium {
+  background: linear-gradient(
+    90deg,
+    hsl(43 35% 93%) 0%,
+    hsl(43 40% 95%) 50%,
+    hsl(43 35% 93%) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+}
+
+/* Gold glow effect for special elements */
+.glow-gold {
+  box-shadow: 
+    0 0 20px rgba(212, 175, 55, 0.4),
+    0 0 40px rgba(212, 175, 55, 0.2),
+    0 0 60px rgba(212, 175, 55, 0.1);
+}
+
+/* Warm overlay for modals/dialogs */
+.overlay-warm {
+  background: linear-gradient(
+    135deg,
+    rgba(201, 169, 97, 0.05) 0%,
+    rgba(212, 175, 55, 0.08) 100%
+  );
+  backdrop-filter: blur(8px);
+}
+
+/* Premium link hover effect */
+.link-gold {
+  color: hsl(43 74% 45%);
+  transition: all 0.2s ease;
+  text-decoration: underline;
+  text-decoration-color: hsl(var(--primary) / 0.3);
+  text-underline-offset: 4px;
+}
+
+.link-gold:hover {
+  color: hsl(43 74% 40%);
+  text-decoration-color: hsl(var(--primary) / 0.8);
+  text-shadow: 0 0 8px rgba(212, 175, 55, 0.3);
+}
+
+/* Warm focus ring */
+.focus-gold:focus-visible {
+  outline: none;
+  box-shadow: 
+    0 0 0 3px hsl(var(--background)), 
+    0 0 0 6px hsl(var(--primary) / 0.5);
 }
