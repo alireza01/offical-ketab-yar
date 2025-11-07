@@ -53,7 +53,7 @@ export default async function ReadBookPage({ params }: ReadBookPageProps) {
     // Transform book data to match expected interface
     const bookWithContent = {
       ...book,
-      content: content.map(c => c.content)
+      content: content.map((c: { content: any }) => c.content)
     }
 
     return <ReaderWithTracking book={bookWithContent} />
