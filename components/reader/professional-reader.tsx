@@ -49,21 +49,7 @@ interface ReaderProps {
 }
 
 export function ProfessionalReader({ book }: ReaderProps) {
-  // Safety check: Ensure book has content
-  if (!book || !book.content || book.content.length === 0) {
-    return (
-      <div className="fixed inset-0 bg-background flex items-center justify-center p-8">
-        <div className="text-center space-y-4">
-          <h1 className="text-2xl font-bold text-red-600">⚠️ Reader Error</h1>
-          <p className="text-muted-foreground">Book content is empty or invalid.</p>
-          <pre className="text-left bg-muted p-4 rounded-lg overflow-auto max-w-2xl text-xs">
-            {JSON.stringify(book, null, 2)}
-          </pre>
-        </div>
-      </div>
-    )
-  }
-
+  // All hooks must be called before any conditional returns (Rules of Hooks)
   const { preferences, updatePreference } = useReadingPreferences()
   const prefersReducedMotion = useMediaQuery('(prefers-reduced-motion: reduce)')
 
@@ -156,9 +142,6 @@ export function ProfessionalReader({ book }: ReaderProps) {
     loadHighlights()
     loadState()
   }, [book.slug])
-
-  // Restore highlights to DOM for current page
-  if (!pageRef.current) return
 
   const restoreHighlightsToDOM = useCallback(() => {
     // Get highlights for current page
@@ -598,6 +581,21 @@ export function ProfessionalReader({ book }: ReaderProps) {
     window.addEventListener('keydown', handleKeyPress)
     return () => window.removeEventListener('keydown', handleKeyPress)
   }, [currentPage, nextPage, prevPage])
+
+  // Safety check: Ensure book has content (AFTER all hooks)
+  if (!book || !book.content || book.content.length === 0) {
+    return (
+      <div className="fixed inset-0 bg-background flex items-center justify-center p-8">
+        <div className="text-center space-y-4">
+          <h1 className="text-2xl font-bold text-red-600">⚠️ Reader Error</h1>
+          <p className="text-muted-foreground">Book content is empty or invalid.</p>
+          <pre className="text-left bg-muted p-4 rounded-lg overflow-auto max-w-2xl text-xs">
+            {JSON.stringify(book, null, 2)}
+          </pre>
+        </div>
+      </div>
+    )
+  }
 
   const themeColors = {
     light: 'bg-[#faf8f3] text-[#2a2a2a]',
