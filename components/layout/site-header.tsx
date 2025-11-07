@@ -1,256 +1,304 @@
 'use client'
 
 import { useGamificationContext } from '@/components/gamification/gamification-provider'
+import { SyncIndicator } from '@/components/sync/sync-indicator'
 import { ThemeToggle } from '@/components/theme-toggle'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 import { Progress } from '@/components/ui/progress'
-import { useAuth } from '@/hooks/use-auth'
+import { useSupabaseAuth } from '@/hooks/use-supabase-auth'
 import { cn } from '@/lib/utils'
 import { AnimatePresence, motion } from 'framer-motion'
-import { BookMarked, BookOpen, Flame, LayoutDashboard, Library, Menu, Settings, Sparkles, X, Zap } from 'lucide-react'
+import { BookMarked, BookOpen, Flame, Home, LayoutDashboard, Library, LogOut, Settings, Sparkles, User, Zap } from 'lucide-react'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { useState } from 'react'
 
 export function SiteHeader() {
   const pathname = usePathname()
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-  const { user } = useAuth()
+  const router = useRouter()
+  const { user, signOut } = useSupabaseAuth()
   const { level, xp, currentStreak } = useGamificationContext()
+  const [libraryHover, setLibraryHover] = useState(false)
 
-  // Calculate XP progress to next level
   const xpForNextLevel = level * 100
   const xpProgress = (xp / xpForNextLevel) * 100
 
-  const navItems = [
-    { href: '/', label: 'خانه', icon: BookOpen },
-    { href: '/library', label: 'کتابخانه', icon: Library },
-    { href: '/dashboard', label: 'داشبورد', icon: LayoutDashboard },
-    { href: '/vocabulary', label: 'واژگان', icon: BookMarked },
-    { href: '/settings', label: 'تنظیمات', icon: Settings },
+  const getUserInitials = () => {
+    if (!user?.email) return 'U'
+    return user.email.charAt(0).toUpperCase()
+  }
+
+  const handleSignOut = async () => {
+    await signOut()
+    router.push('/')
+  }
+
+  // Mock genres - replace with actual Sanity query later
+  const genres = [
+    'Fiction', 'Non-Fiction', 'Science Fiction', 'Mystery',
+    'Romance', 'Biography', 'Self-Help', 'History',
+    'Fantasy', 'Thriller', 'Horror', 'Poetry'
   ]
 
   return (
-    <header className="native-header">
+    <header className="native-header sticky top-0 z-50 border-b">
       <div className="w-full px-4 md:px-6 lg:px-8">
-        <div className="flex h-14 md:h-16 items-center justify-between">
+        <div className="flex h-16 md:h-20 items-center justify-between">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2 md:gap-3 font-bold text-lg md:text-xl group">
+          <Link href="/" className="flex items-center gap-3 font-bold text-xl md:text-2xl group">
             <motion.div
               whileHover={{ rotate: 360, scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               transition={{ type: "spring", stiffness: 400, damping: 17 }}
-              className="w-9 h-9 md:w-10 md:h-10 gradient-gold rounded-xl md:rounded-2xl flex items-center justify-center shadow-gold"
+              className="w-12 h-12 md:w-14 md:h-14 gradient-gold rounded-2xl flex items-center justify-center shadow-gold"
             >
-              <BookOpen className="h-5 w-5 md:h-6 md:w-6 text-white" />
+              <BookOpen className="h-6 w-6 md:h-7 md:w-7 text-white" />
             </motion.div>
-            <span className="text-gradient-gold hidden sm:inline-block">
+            <span className="text-gradient-gold hidden sm:inline-block text-2xl">
               کتاب‌یار
             </span>
           </Link>
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-1">
-            {navItems.map((item) => {
-              const Icon = item.icon
-              const isActive = pathname === item.href
-              return (
-                <motion.div key={item.href} whileTap={{ scale: 0.97 }}>
-                  <Link href={item.href} className="relative">
-                    <Button
-                      variant={isActive ? 'default' : 'ghost'}
-                      size="sm"
-                      className={cn(
-                        'relative rounded-xl',
-                        isActive && 'gradient-gold text-white shadow-gold'
-                      )}
-                    >
-                      <Icon className="h-4 w-4 mr-2" />
-                      {item.label}
-                    </Button>
-                    {isActive && (
-                      <motion.div
-                        layoutId="activeTab"
-                        className="absolute -bottom-1 left-0 right-0 h-0.5 bg-gold-500 rounded-full"
-                        transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                      />
-                    )}
-                  </Link>
-                </motion.div>
-              )
-            })}
+            <Link href="/">
+              <Button
+                variant={pathname === '/' ? 'default' : 'ghost'}
+                size="lg"
+                className={cn(
+                  'rounded-xl font-semibold text-base h-12 px-5',
+                  pathname === '/' && 'gradient-gold text-white shadow-gold'
+                )}
+              >
+                <Home className="h-5 w-5 ml-2" />
+                خانه
+              </Button>
+            </Link>
+
+            {/* Library with Hover Menu */}
+            <div
+              className="relative"
+              onMouseEnter={() => setLibraryHover(true)}
+              onMouseLeave={() => setLibraryHover(false)}
+            >
+              <Link href="/library">
+                <Button
+                  variant={pathname.startsWith('/library') ? 'default' : 'ghost'}
+                  size="lg"
+                  className={cn(
+                    'rounded-xl font-semibold text-base h-12 px-5',
+                    pathname.startsWith('/library') && 'gradient-gold text-white shadow-gold'
+                  )}
+                >
+                  <Library className="h-5 w-5 ml-2" />
+                  کتابخانه
+                </Button>
+              </Link>
+
+              {/* Hover Dropdown */}
+              <AnimatePresence>
+                {libraryHover && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 10 }}
+                    transition={{ duration: 0.2 }}
+                    className="absolute top-full left-0 mt-2 w-80 bg-popover border rounded-xl shadow-xl p-4"
+                  >
+                    <div className="mb-3">
+                      <Link href="/library">
+                        <Button variant="ghost" className="w-full justify-start font-semibold text-base h-10">
+                          <Library className="h-5 w-5 ml-2" />
+                          همه کتاب‌ها
+                        </Button>
+                      </Link>
+                    </div>
+                    <div className="border-t pt-3">
+                      <p className="text-xs font-semibold text-muted-foreground mb-2 px-3">دسته‌بندی‌ها</p>
+                      <div className="grid grid-cols-2 gap-1">
+                        {genres.map((genre) => (
+                          <Link key={genre} href={`/library?genre=${genre.toLowerCase()}`}>
+                            <Button variant="ghost" className="w-full justify-start text-sm h-9">
+                              {genre}
+                            </Button>
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
+            <Link href="/dashboard">
+              <Button
+                variant={pathname === '/dashboard' ? 'default' : 'ghost'}
+                size="lg"
+                className={cn(
+                  'rounded-xl font-semibold text-base h-12 px-5',
+                  pathname === '/dashboard' && 'gradient-gold text-white shadow-gold'
+                )}
+              >
+                <LayoutDashboard className="h-5 w-5 ml-2" />
+                داشبورد
+              </Button>
+            </Link>
+
+            <Link href="/vocabulary">
+              <Button
+                variant={pathname === '/vocabulary' ? 'default' : 'ghost'}
+                size="lg"
+                className={cn(
+                  'rounded-xl font-semibold text-base h-12 px-5',
+                  pathname === '/vocabulary' && 'gradient-gold text-white shadow-gold'
+                )}
+              >
+                <BookMarked className="h-5 w-5 ml-2" />
+                واژگان
+              </Button>
+            </Link>
+
+            <Link href="/settings">
+              <Button
+                variant={pathname === '/settings' ? 'default' : 'ghost'}
+                size="lg"
+                className={cn(
+                  'rounded-xl font-semibold text-base h-12 px-5',
+                  pathname === '/settings' && 'gradient-gold text-white shadow-gold'
+                )}
+              >
+                <Settings className="h-5 w-5 ml-2" />
+                تنظیمات
+              </Button>
+            </Link>
           </nav>
 
           {/* Right Actions */}
-          <div className="flex items-center gap-3">
-            {/* Gamification Stats - Only show when logged in */}
-            {user && (
-              <div className="hidden lg:flex items-center gap-2">
-                {/* Streak Counter */}
-                <motion.div
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="flex items-center gap-1.5 px-3 py-2 rounded-xl glass border border-orange-500/20 cursor-pointer"
-                >
-                  <motion.div
-                    animate={{
-                      scale: [1, 1.15, 1],
-                      rotate: [0, 5, -5, 0]
-                    }}
-                    transition={{
-                      duration: 2,
-                      repeat: Infinity,
-                      ease: "easeInOut"
-                    }}
-                  >
-                    <Flame className="h-4 w-4 text-orange-500" />
-                  </motion.div>
-                  <span className="text-sm font-bold text-orange-600 dark:text-orange-400">
-                    {currentStreak}
-                  </span>
-                </motion.div>
+          <div className="flex items-center gap-3 md:gap-4">
+            <SyncIndicator />
 
-                {/* XP & Level */}
-                <motion.div
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="flex items-center gap-2 px-3 py-2 rounded-xl glass border border-gold-500/20 cursor-pointer"
-                >
-                  <Zap className="h-4 w-4 text-gold-600" />
-                  <div className="flex flex-col gap-0.5">
-                    <span className="text-xs font-medium text-muted-foreground leading-none">
-                      سطح {level}
-                    </span>
-                    <Progress
-                      value={xpProgress}
-                      className="h-1 w-16 bg-gold-500/20"
-                    />
-                  </div>
-                  <span className="text-xs font-bold text-gold-600">
-                    {xp}
-                  </span>
-                </motion.div>
-              </div>
-            )}
-
-            <ThemeToggle />
-
-            {!user ? (
+            {user ? (
               <>
-                <motion.div whileTap={{ scale: 0.97 }}>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    asChild
-                    className="hidden sm:flex rounded-xl border-2 border-gold-600/30 hover:border-gold-600 hover:bg-gold-600/10"
+                {/* Gamification Stats */}
+                <div className="hidden lg:flex items-center gap-2">
+                  {/* Streak */}
+                  <motion.div
+                    whileHover={{ scale: 1.05 }}
+                    className="flex items-center gap-2 px-4 py-2.5 rounded-xl glass border border-orange-500/20 cursor-pointer"
                   >
-                    <Link href="/auth/login">ورود</Link>
-                  </Button>
-                </motion.div>
-                <motion.div whileTap={{ scale: 0.97 }}>
-                  <Button
-                    size="sm"
-                    asChild
-                    className="hidden sm:flex gradient-gold text-white shadow-gold rounded-xl"
+                    <motion.div
+                      animate={{
+                        scale: [1, 1.15, 1],
+                        rotate: [0, 5, -5, 0]
+                      }}
+                      transition={{
+                        duration: 2,
+                        repeat: Infinity,
+                        ease: "easeInOut"
+                      }}
+                    >
+                      <Flame className="h-5 w-5 text-orange-500" />
+                    </motion.div>
+                    <span className="text-base font-bold text-orange-600 dark:text-orange-400">
+                      {currentStreak}
+                    </span>
+                  </motion.div>
+
+                  {/* XP & Level */}
+                  <motion.div
+                    whileHover={{ scale: 1.05 }}
+                    className="flex items-center gap-2 px-4 py-2.5 rounded-xl glass border border-gold-500/20 cursor-pointer"
                   >
-                    <Link href="/auth/signup">
-                      <Sparkles className="h-4 w-4 ml-2" />
-                      اشتراک ویژه
-                    </Link>
-                  </Button>
-                </motion.div>
+                    <Zap className="h-5 w-5 text-gold-600" />
+                    <div className="flex flex-col gap-1">
+                      <span className="text-xs font-medium text-muted-foreground leading-none">
+                        سطح {level}
+                      </span>
+                      <Progress
+                        value={xpProgress}
+                        className="h-1.5 w-20 bg-gold-500/20"
+                      />
+                    </div>
+                    <span className="text-base font-bold text-gold-600">
+                      {xp}
+                    </span>
+                  </motion.div>
+                </div>
+
+                <ThemeToggle />
+
+                {/* User Profile Dropdown */}
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" className="relative h-12 w-12 rounded-full">
+                      <Avatar className="h-12 w-12 border-2 border-gold-500/30">
+                        <AvatarImage src={user.user_metadata?.avatar_url} alt={user.email || ''} />
+                        <AvatarFallback className="bg-gradient-to-br from-gold-600 to-gold-400 text-white font-bold text-lg">
+                          {getUserInitials()}
+                        </AvatarFallback>
+                      </Avatar>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="w-64" align="end">
+                    <div className="flex items-center gap-3 p-3">
+                      <Avatar className="h-12 w-12">
+                        <AvatarImage src={user.user_metadata?.avatar_url} />
+                        <AvatarFallback className="bg-gradient-to-br from-gold-600 to-gold-400 text-white font-bold">
+                          {getUserInitials()}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="flex flex-col">
+                        <p className="text-sm font-semibold">{user.user_metadata?.name || 'کاربر'}</p>
+                        <p className="text-xs text-muted-foreground truncate">{user.email}</p>
+                      </div>
+                    </div>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem asChild>
+                      <Link href="/profile" className="cursor-pointer">
+                        <User className="ml-2 h-4 w-4" />
+                        پروفایل
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link href="/settings" className="cursor-pointer">
+                        <Settings className="ml-2 h-4 w-4" />
+                        تنظیمات
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={handleSignOut} className="text-red-600 cursor-pointer">
+                      <LogOut className="ml-2 h-4 w-4" />
+                      خروج
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </>
             ) : (
-              <motion.div whileTap={{ scale: 0.97 }}>
+              <>
+                <ThemeToggle />
                 <Button
-                  size="sm"
+                  size="lg"
                   asChild
-                  className="hidden sm:flex gradient-gold text-white shadow-gold rounded-xl"
+                  className="gradient-gold text-white shadow-gold rounded-xl font-bold text-base px-8 h-12"
                 >
-                  <Link href="/subscription">
-                    <Sparkles className="h-4 w-4 ml-2" />
-                    ارتقا به پرمیوم
+                  <Link href="/auth/signup">
+                    <Sparkles className="h-5 w-5 ml-2" />
+                    ثبت‌نام رایگان
                   </Link>
                 </Button>
-              </motion.div>
+              </>
             )}
-
-            {/* Mobile Menu Button */}
-            <Button
-              variant="ghost"
-              size="sm"
-              className="md:hidden"
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            >
-              {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-            </Button>
           </div>
         </div>
       </div>
-
-      {/* Mobile Menu */}
-      <AnimatePresence>
-        {mobileMenuOpen && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ type: "spring", stiffness: 400, damping: 30 }}
-            className="md:hidden border-t glass"
-          >
-            <nav className="px-4 py-4 space-y-2">
-              {navItems.map((item, index) => {
-                const Icon = item.icon
-                const isActive = pathname === item.href
-                return (
-                  <motion.div
-                    key={item.href}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: index * 0.05 }}
-                  >
-                    <Link
-                      href={item.href}
-                      onClick={() => setMobileMenuOpen(false)}
-                      className={cn(
-                        'flex items-center gap-3 px-4 py-3 rounded-xl transition-all',
-                        isActive
-                          ? 'gradient-gold text-white shadow-gold'
-                          : 'hover:bg-muted active:scale-[0.98]'
-                      )}
-                    >
-                      <Icon className="h-5 w-5" />
-                      <span className="font-medium">{item.label}</span>
-                    </Link>
-                  </motion.div>
-                )
-              })}
-              {!user && (
-                <motion.div
-                  className="pt-4 space-y-2"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.3 }}
-                >
-                  <Button
-                    variant="outline"
-                    asChild
-                    className="w-full rounded-xl border-2 border-gold-600/30 hover:border-gold-600 hover:bg-gold-600/10"
-                  >
-                    <Link href="/auth/login">ورود</Link>
-                  </Button>
-                  <Button asChild className="w-full gradient-gold text-white shadow-gold rounded-xl">
-                    <Link href="/auth/signup">
-                      <Sparkles className="h-4 w-4 ml-2" />
-                      اشتراک ویژه
-                    </Link>
-                  </Button>
-                </motion.div>
-              )}
-            </nav>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </header>
   )
 }

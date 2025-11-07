@@ -149,9 +149,9 @@ hooks/
 
 ### Theme-Aware Shadow & Highlight System
 
-Each theme requires different shadow/highlight intensities for realistic 3D effect:
+Each theme requires different shadow/highlight intensities for realistic 3D effect. **EXACT COLORS FROM PROFESSIONAL READER:**
 
-**Light Mode (`#faf8f3` background):**
+**Light Mode (`#faf8f3` background, `#2a2a2a` text):**
 ```css
 --page-shadow-color: rgba(0, 0, 0, 0.15)
 --page-shadow-blur: 20px
@@ -164,7 +164,7 @@ Each theme requires different shadow/highlight intensities for realistic 3D effe
 )
 ```
 
-**Sepia Mode (`#f4ecd8` background):**
+**Sepia Mode - DEFAULT & MOST SPECIAL (`#f4ecd8` background, `#5f4b32` text):**
 ```css
 --page-shadow-color: rgba(95, 75, 50, 0.2)
 --page-shadow-blur: 18px
@@ -176,8 +176,9 @@ Each theme requires different shadow/highlight intensities for realistic 3D effe
   rgba(255, 250, 230, 0.4) 100%
 )
 ```
+**NOTE:** Sepia is the default theme and most important. It has warm brown tones that match the book-reading aesthetic perfectly.
 
-**Dark Mode (`#0f0e0c` background):**
+**Dark Mode (`#0f0e0c` background, `#f5f5f5` text):**
 ```css
 --page-shadow-color: rgba(0, 0, 0, 0.6)
 --page-shadow-blur: 25px

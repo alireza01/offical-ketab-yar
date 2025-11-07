@@ -2,10 +2,12 @@
 
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { getBooks, type BookListItem } from '@/lib/data'
+import { useLibraryStore } from '@/lib/store/library-store'
 import { useQuery } from '@tanstack/react-query'
-import { motion } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
 import { AlertCircle } from 'lucide-react'
 import { BookCard } from './book-card'
+import { BookListItemComponent } from './book-list-item'
 
 const container = {
   hidden: { opacity: 0 },
@@ -31,6 +33,8 @@ async function fetchBooks(): Promise<BookListItem[]> {
 }
 
 export function BookGrid() {
+  const viewMode = useLibraryStore((state) => state.viewMode)
+
   // Agent 2: Cache for 5 minutes, stale-while-revalidate strategy
   const { data: books, isLoading, error } = useQuery({
     queryKey: ['books', 'published'],
@@ -42,6 +46,18 @@ export function BookGrid() {
 
   // Agent 3 (Psychology): Skeleton loading for better perceived performance
   if (isLoading) {
+    if (viewMode === 'list') {
+      return (
+        <div className="space-y-4">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <div key={i} className="animate-pulse">
+              <div className="h-40 bg-muted rounded-lg" />
+            </div>
+          ))}
+        </div>
+      )
+    }
+
     return (
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-6">
         {Array.from({ length: 12 }).map((_, i) => (
@@ -79,17 +95,58 @@ export function BookGrid() {
   }
 
   return (
-    <motion.div
-      variants={container}
-      initial="hidden"
-      animate="show"
-      className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-6"
-    >
-      {books.map((book: BookListItem) => (
-        <motion.div key={book._id} variants={item}>
-          <BookCard book={book} />
+    <AnimatePresence mode="wait">
+      {viewMode === 'list' ? (
+        // List View with FAST transition
+        <motion.div
+          key="list-view"
+          initial={{ opacity: 0, scale: 0.98 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.98 }}
+          transition={{ duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
+          className="space-y-4"
+        >
+          {books.map((book: BookListItem, index) => (
+            <motion.div
+              key={book._id}
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{
+                duration: 0.2,
+                delay: index * 0.02,
+                ease: [0.25, 0.1, 0.25, 1]
+              }}
+            >
+              <BookListItemComponent book={book} />
+            </motion.div>
+          ))}
         </motion.div>
-      ))}
-    </motion.div>
+      ) : (
+        // Grid View with FAST transition
+        <motion.div
+          key="grid-view"
+          initial={{ opacity: 0, scale: 0.98 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.98 }}
+          transition={{ duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
+          className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-6"
+        >
+          {books.map((book: BookListItem, index) => (
+            <motion.div
+              key={book._id}
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{
+                duration: 0.2,
+                delay: index * 0.015,
+                ease: [0.25, 0.1, 0.25, 1]
+              }}
+            >
+              <BookCard book={book} />
+            </motion.div>
+          ))}
+        </motion.div>
+      )}
+    </AnimatePresence>
   )
 }

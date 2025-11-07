@@ -36,7 +36,7 @@ export default async function AdminLayout({
   }
 
   return (
-    <div className="flex min-h-screen">
+    <div className="flex min-h-screen" suppressHydrationWarning>
       <AdminSidebar />
       <main className="flex-1 overflow-y-auto bg-background p-8">
         {children}

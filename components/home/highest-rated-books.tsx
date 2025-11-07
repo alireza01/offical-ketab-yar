@@ -1,6 +1,5 @@
 import { getTrendingBooks } from '@/lib/data'
-import { Star } from 'lucide-react'
-import { BookCarouselSection } from './book-carousel-section'
+import { BookCarouselSectionClient } from './book-carousel-section-client'
 
 export async function HighestRatedBooks() {
     try {
@@ -10,12 +9,15 @@ export async function HighestRatedBooks() {
             return null
         }
 
+        // Serialize to ensure JSON-safe data for Client Component (Agent 2 - Performance)
+        const serializedBooks = JSON.parse(JSON.stringify(books))
+
         return (
-            <BookCarouselSection
+            <BookCarouselSectionClient
                 title="بالاترین امتیازها"
                 description="کتاب‌هایی که بیشترین امتیاز را از خوانندگان دریافت کرده‌اند"
-                books={books}
-                icon={<Star className="w-8 h-8 text-gold-500 fill-gold-500" />}
+                books={serializedBooks}
+                iconType="star"
                 viewAllLink="/library?sort=rating"
                 viewAllText="مشاهده همه کتاب‌های برتر"
                 bgClass="bg-muted/30"

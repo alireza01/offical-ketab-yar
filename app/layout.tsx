@@ -1,8 +1,10 @@
 import { GamificationProvider } from "@/components/gamification/gamification-provider"
 import { ConditionalLayout } from "@/components/layout/conditional-layout"
+import { NavigationProgress } from "@/components/layout/navigation-progress"
 import { QueryProvider } from "@/components/providers/query-provider"
 import { ThemeProvider } from "@/components/providers/theme-provider"
 import { PWAWrapper } from "@/components/pwa/pwa-wrapper"
+import { AuthProvider } from "@/hooks/use-supabase-auth"
 import type { Metadata, Viewport } from "next"
 import { Inter, Vazirmatn } from "next/font/google"
 import { Toaster } from "sonner"
@@ -111,25 +113,30 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <QueryProvider>
-            <GamificationProvider>
-              <PWAWrapper>
-                <ConditionalLayout>
-                  {children}
-                </ConditionalLayout>
-                <Toaster
-                  position="bottom-center"
-                  richColors
-                  toastOptions={{
-                    className: 'bottom-nav-safe',
-                    style: {
-                      marginBottom: 'env(safe-area-inset-bottom)',
-                    }
-                  }}
-                />
-              </PWAWrapper>
-            </GamificationProvider>
-          </QueryProvider>
+          <AuthProvider>
+            <QueryProvider>
+              <GamificationProvider>
+                <PWAWrapper>
+                  {/* Global Navigation Progress Bar - Shows on ALL link clicks */}
+                  <NavigationProgress />
+
+                  <ConditionalLayout>
+                    {children}
+                  </ConditionalLayout>
+                  <Toaster
+                    position="bottom-center"
+                    richColors
+                    toastOptions={{
+                      className: 'bottom-nav-safe',
+                      style: {
+                        marginBottom: 'env(safe-area-inset-bottom)',
+                      }
+                    }}
+                  />
+                </PWAWrapper>
+              </GamificationProvider>
+            </QueryProvider>
+          </AuthProvider>
         </ThemeProvider>
       </body>
     </html>

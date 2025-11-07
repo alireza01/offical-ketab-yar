@@ -8,13 +8,13 @@ import Link from 'next/link'
 export function HeroSection() {
 
   return (
-    <section className="relative min-h-[100vh] overflow-hidden bg-gradient-to-br from-gold-100/40 via-background to-gold-50/30 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950">
+    <section className="relative min-h-[100vh] overflow-hidden bg-gradient-to-br from-warm-50 via-warm-100 to-warm-200 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950">
       {/* Enhanced background elements - Agent 3 Psychology */}
       <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(201,169,97,0.15),transparent_50%)]" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,rgba(212,175,55,0.12),transparent_50%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(201,169,97,0.2),transparent_50%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,rgba(212,175,55,0.15),transparent_50%)]" />
         {/* Subtle dot pattern for depth */}
-        <div className="absolute inset-0 bg-dot-pattern opacity-30" />
+        <div className="absolute inset-0 bg-dot-pattern opacity-40 dark:opacity-30" />
       </div>
 
       <div className="container relative mx-auto px-4 sm:px-6 pt-32 pb-20 md:pt-40 md:pb-32">

@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
 import { Skeleton } from '@/components/ui/skeleton'
+import { useLikedBooks } from '@/hooks/use-liked-books'
 import { createClient } from '@/lib/supabase/client'
 import type { User } from '@supabase/supabase-js'
 import { useQuery } from '@tanstack/react-query'
@@ -18,6 +19,7 @@ import {
     Calendar,
     Clock,
     Flame,
+    Heart,
     Target,
     TrendingUp,
     Trophy,
@@ -70,6 +72,8 @@ export function DashboardEnhanced() {
     const [user, setUser] = useState<User | null>(null)
     const [showXPAnimation, setShowXPAnimation] = useState(false)
     const supabase = createClient()
+    const { getLikedBooks } = useLikedBooks()
+    const [likedBooksData, setLikedBooksData] = useState<any[]>([])
 
     // Get current user
     useEffect(() => {
@@ -77,6 +81,16 @@ export function DashboardEnhanced() {
             setUser(data.user)
         })
     }, [supabase])
+
+    // Load liked books
+    useEffect(() => {
+        loadLikedBooks()
+    }, [])
+
+    async function loadLikedBooks() {
+        const liked = await getLikedBooks()
+        setLikedBooksData(liked)
+    }
 
     // Single optimized query for ALL dashboard data (Agent 2: Performance)
     const { data, isLoading, error } = useQuery({
@@ -452,11 +466,71 @@ export function DashboardEnhanced() {
                 </motion.div>
             )}
 
+            {/* Liked Books Section (Agent 3: Collection Psychology) */}
+            {likedBooksData.length > 0 && (
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.6 }}
+                >
+                    <Card className="border-2 shadow-md dark:border-border dark:shadow-none">
+                        <CardHeader className="border-b-2 border-gray-100 dark:border-border">
+                            <CardTitle className="flex items-center gap-2 text-gray-900 dark:text-foreground">
+                                <Heart className="size-5 text-red-500 fill-current" />
+                                کتاب‌های مورد علاقه
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                                {likedBooksData.slice(0, 6).map((book, index) => (
+                                    <motion.div
+                                        key={book.book_id}
+                                        initial={{ opacity: 0, scale: 0.9 }}
+                                        animate={{ opacity: 1, scale: 1 }}
+                                        transition={{ delay: index * 0.05 }}
+                                    >
+                                        <Link href={`/books/${book.book_slug}`}>
+                                            <div className="group relative aspect-[2/3] rounded-lg overflow-hidden border-2 border-transparent hover:border-gold-500 transition-all">
+                                                {book.book_cover ? (
+                                                    <img
+                                                        src={book.book_cover}
+                                                        alt={book.book_title}
+                                                        className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                                                    />
+                                                ) : (
+                                                    <div className="w-full h-full bg-gradient-to-br from-gold-500/20 to-gold-600/20 flex items-center justify-center">
+                                                        <BookOpen className="w-12 h-12 text-gold-600" />
+                                                    </div>
+                                                )}
+                                                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-2">
+                                                    <p className="text-white text-xs font-medium line-clamp-2">
+                                                        {book.book_title}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </Link>
+                                    </motion.div>
+                                ))}
+                            </div>
+                            {likedBooksData.length > 6 && (
+                                <div className="mt-4 text-center">
+                                    <Button variant="outline" asChild>
+                                        <Link href="/library?filter=liked">
+                                            مشاهده همه ({likedBooksData.length} کتاب)
+                                        </Link>
+                                    </Button>
+                                </div>
+                            )}
+                        </CardContent>
+                    </Card>
+                </motion.div>
+            )}
+
             {/* Daily Goal (Agent 3: Commitment Device) */}
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.6 }}
+                transition={{ delay: 0.7 }}
             >
                 <Card className="border-2 shadow-md dark:border-border dark:shadow-none">
                     <CardHeader className="border-b-2 border-gray-100 dark:border-border">

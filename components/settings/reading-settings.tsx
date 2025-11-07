@@ -7,12 +7,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Separator } from '@/components/ui/separator'
 import { Slider } from '@/components/ui/slider'
 import { Switch } from '@/components/ui/switch'
+import { useReadingPreferences } from '@/hooks/use-reading-preferences'
 import { motion } from 'framer-motion'
-import { BookOpen, Save, Type } from 'lucide-react'
+import { BookOpen, Info, Save, Sparkles, Type } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
 
 export default function ReadingSettings() {
+    const { preferences, updatePreference } = useReadingPreferences()
     const [fontSize, setFontSize] = useState([16])
     const [lineHeight, setLineHeight] = useState([1.6])
     const [fontFamily, setFontFamily] = useState('vazirmatn')
@@ -154,6 +156,62 @@ export default function ReadingSettings() {
                         </div>
                         <Switch checked={autoSave} onCheckedChange={setAutoSave} />
                     </div>
+                </CardContent>
+            </Card>
+
+            <Card className="border-gold-200 dark:border-gold-800">
+                <CardHeader>
+                    <div className="flex items-center gap-2">
+                        <Sparkles className="size-5 text-gold-600" />
+                        <CardTitle>انیمیشن ورق زدن واقع‌گرایانه</CardTitle>
+                    </div>
+                    <CardDescription>تجربه ورق زدن صفحات با فیزیک واقعی</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                    <div className="flex items-start justify-between">
+                        <div className="space-y-1 flex-1">
+                            <Label className="text-base font-semibold">
+                                فعال‌سازی انیمیشن فیزیکی
+                            </Label>
+                            <p className="text-sm text-muted-foreground">
+                                انیمیشن پیشرفته با حس واقعی کاغذ
+                            </p>
+                        </div>
+                        <Switch
+                            checked={preferences.physicsPageTurn}
+                            onCheckedChange={(checked) => updatePreference('physicsPageTurn', checked)}
+                            className="ml-4"
+                        />
+                    </div>
+
+                    {preferences.physicsPageTurn && (
+                        <motion.div
+                            initial={{ opacity: 0, y: -10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="space-y-3"
+                        >
+                            <div className="p-4 rounded-lg border-2 border-gold-500/30 bg-gold-50 dark:bg-gold-950/20">
+                                <div className="flex items-start gap-3">
+                                    <Sparkles className="size-5 text-gold-600 dark:text-gold-400 mt-0.5 flex-shrink-0" />
+                                    <div>
+                                        <p className="text-sm font-medium text-gold-700 dark:text-gold-300">
+                                            ✨ انیمیشن واقع‌گرایانه فعال است
+                                        </p>
+                                        <p className="text-xs text-gold-600 dark:text-gold-400 mt-1">
+                                            برای ورق زدن صفحه، از هر نقطه‌ای روی صفحه بکشید
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="flex items-start gap-2 p-3 rounded-lg bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800">
+                                <Info className="size-4 text-amber-600 dark:text-amber-400 mt-0.5 flex-shrink-0" />
+                                <p className="text-xs text-amber-700 dark:text-amber-300">
+                                    این ویژگی ممکن است در دستگاه‌های ضعیف باعث کندی شود. در صورت مشاهده مشکل، آن را غیرفعال کنید.
+                                </p>
+                            </div>
+                        </motion.div>
+                    )}
                 </CardContent>
             </Card>
 

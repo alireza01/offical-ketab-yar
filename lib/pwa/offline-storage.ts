@@ -25,15 +25,79 @@ interface KetabYarDB extends DBSchema {
         }
         indexes: { bookSlug: string }
     }
+    liked_books: {
+        key: string // book_id
+        value: {
+            book_id: string
+            book_slug: string
+            book_title: string
+            book_cover: string | null
+            liked_at: number
+            synced: boolean
+        }
+        indexes: { 'by-synced': boolean }
+    }
+    reading_progress: {
+        key: string // book_id
+        value: {
+            book_id: string
+            current_page: number
+            total_pages: number
+            progress_percentage: number
+            last_read_at: number
+            synced: boolean
+        }
+        indexes: { 'by-synced': boolean }
+    }
+    vocabulary: {
+        key: string // word_id (generated)
+        value: {
+            id: string
+            word: string
+            definition: string | null
+            context: string | null
+            book_id: string | null
+            page_number: number | null
+            mastery_level: number
+            created_at: number
+            synced: boolean
+        }
+        indexes: { 'by-synced': boolean; 'by-book': string }
+    }
+    highlights: {
+        key: string // highlight_id (generated)
+        value: {
+            id: string
+            book_id: string
+            page_number: number
+            text: string
+            color: string
+            note: string | null
+            created_at: number
+            synced: boolean
+        }
+        indexes: { 'by-synced': boolean; 'by-book': string }
+    }
+    sync_queue: {
+        key: number // auto-increment
+        value: {
+            id?: number
+            action: 'create' | 'update' | 'delete'
+            table: 'liked_books' | 'reading_progress' | 'vocabulary' | 'highlights'
+            data: any
+            created_at: number
+            retry_count: number
+        }
+    }
 }
 
 const DB_NAME = 'ketab-yar-offline'
-const DB_VERSION = 1
+const DB_VERSION = 2 // Bumped to 2 to add new stores
 
 // Initialize database
 async function getDB(): Promise<IDBPDatabase<KetabYarDB>> {
     return openDB<KetabYarDB>(DB_NAME, DB_VERSION, {
-        upgrade(db) {
+        upgrade(db, oldVersion) {
             // Create books store
             if (!db.objectStoreNames.contains('books')) {
                 db.createObjectStore('books', { keyPath: 'slug' })
@@ -45,6 +109,40 @@ async function getDB(): Promise<IDBPDatabase<KetabYarDB>> {
                     keyPath: ['bookSlug', 'chapterNumber'],
                 })
                 chapterStore.createIndex('bookSlug', 'bookSlug')
+            }
+
+            // Version 2: Add stores from offline-storage.ts
+            if (oldVersion < 2) {
+                // Liked books store
+                if (!db.objectStoreNames.contains('liked_books')) {
+                    const likedStore = db.createObjectStore('liked_books', { keyPath: 'book_id' })
+                    likedStore.createIndex('by-synced', 'synced')
+                }
+
+                // Reading progress store
+                if (!db.objectStoreNames.contains('reading_progress')) {
+                    const progressStore = db.createObjectStore('reading_progress', { keyPath: 'book_id' })
+                    progressStore.createIndex('by-synced', 'synced')
+                }
+
+                // Vocabulary store
+                if (!db.objectStoreNames.contains('vocabulary')) {
+                    const vocabStore = db.createObjectStore('vocabulary', { keyPath: 'id' })
+                    vocabStore.createIndex('by-synced', 'synced')
+                    vocabStore.createIndex('by-book', 'book_id')
+                }
+
+                // Highlights store
+                if (!db.objectStoreNames.contains('highlights')) {
+                    const highlightStore = db.createObjectStore('highlights', { keyPath: 'id' })
+                    highlightStore.createIndex('by-synced', 'synced')
+                    highlightStore.createIndex('by-book', 'book_id')
+                }
+
+                // Sync queue store
+                if (!db.objectStoreNames.contains('sync_queue')) {
+                    db.createObjectStore('sync_queue', { keyPath: 'id', autoIncrement: true })
+                }
             }
         },
     })

@@ -3,9 +3,10 @@
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
+import { offlineVocabulary } from '@/lib/offline/vocabulary-storage'
 import { createClient } from '@/lib/supabase/client'
 import { AnimatePresence, motion } from 'framer-motion'
-import { BookOpen, Brain, GraduationCap, TrendingUp } from 'lucide-react'
+import { BookOpen, Brain, CloudOff, GraduationCap, TrendingUp } from 'lucide-react'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
@@ -23,6 +24,7 @@ interface BookWithWords {
 export default function VocabularyPage() {
   const [books, setBooks] = useState<BookWithWords[]>([])
   const [loading, setLoading] = useState(true)
+  const [isOffline, setIsOffline] = useState(false)
   const [stats, setStats] = useState({
     total_words: 0,
     mastered: 0,
@@ -38,8 +40,15 @@ export default function VocabularyPage() {
   const loadVocabularyBooks = async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser()
+
+      // Load from offline storage first (works without login)
+      const offlineWords = await offlineVocabulary.getAll()
+
       if (!user) {
-        toast.error('لطفاً وارد شوید')
+        // Not logged in - use offline data only
+        setIsOffline(true)
+        processOfflineWords(offlineWords)
+        setLoading(false)
         return
       }
 
@@ -116,10 +125,63 @@ export default function VocabularyPage() {
       })
     } catch (error) {
       console.error('Error loading vocabulary:', error)
-      toast.error('خطا در بارگذاری واژگان')
+
+      // Fallback to offline data
+      const offlineWords = await offlineVocabulary.getAll()
+      processOfflineWords(offlineWords)
+      setIsOffline(true)
+      toast.error('خطا در بارگذاری - از حافظه محلی استفاده می‌شود')
     } finally {
       setLoading(false)
     }
+  }
+
+  const processOfflineWords = (words: any[]) => {
+    const bookMap = new Map<string, BookWithWords>()
+    let totalMastered = 0
+    let totalLearning = 0
+    let totalNew = 0
+
+    words.forEach((word) => {
+      if (!word.book_id) return
+
+      const bookId = word.book_id
+      const bookTitle = 'کتاب ذخیره شده'
+
+      if (!bookMap.has(bookId)) {
+        bookMap.set(bookId, {
+          book_id: bookId,
+          book_title: bookTitle,
+          book_slug: bookId,
+          word_count: 0,
+          mastered_count: 0,
+          learning_count: 0,
+          new_count: 0
+        })
+      }
+
+      const book = bookMap.get(bookId)!
+      book.word_count++
+
+      if (word.mastery_level >= 5) {
+        book.mastered_count++
+        totalMastered++
+      } else if (word.mastery_level >= 2) {
+        book.learning_count++
+        totalLearning++
+      } else {
+        book.new_count++
+        totalNew++
+      }
+    })
+
+    setBooks(Array.from(bookMap.values()))
+    setStats({
+      total_words: words.length,
+      mastered: totalMastered,
+      learning: totalLearning,
+      new: totalNew
+    })
   }
 
   if (loading) {
@@ -133,29 +195,35 @@ export default function VocabularyPage() {
   }
 
   return (
-    <div className="container mx-auto p-8" dir="rtl">
+    <div className="container mx-auto px-4 py-6 md:p-8" dir="rtl">
       {/* Header */}
-      <div className="mb-8 text-center">
-        <h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-gold-600 to-gold-400 bg-clip-text text-transparent">
+      <div className="mb-6 md:mb-8 text-center">
+        <h1 className="text-3xl md:text-4xl font-bold mb-2 bg-gradient-to-r from-gold-600 to-gold-400 bg-clip-text text-transparent">
           واژگان من
         </h1>
-        <p className="text-muted-foreground">
+        <p className="text-sm md:text-base text-muted-foreground">
           {stats.total_words.toLocaleString('fa-IR')} کلمه ذخیره شده
         </p>
+        {isOffline && (
+          <div className="mt-2 inline-flex items-center gap-2 text-xs md:text-sm text-orange-600 bg-orange-500/10 px-3 py-1 rounded-full">
+            <CloudOff className="h-3 w-3 md:h-4 md:w-4" />
+            حالت آفلاین
+          </div>
+        )}
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-6 md:mb-8">
         <Card className="bg-gradient-to-br from-gold/10 to-gold/5 border-gold/20">
-          <CardContent className="pt-6">
+          <CardContent className="pt-4 md:pt-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground">مجموع کلمات</p>
-                <p className="text-3xl font-bold text-gold-600">
+                <p className="text-xs md:text-sm text-muted-foreground">مجموع کلمات</p>
+                <p className="text-2xl md:text-3xl font-bold text-gold-600">
                   {stats.total_words.toLocaleString('fa-IR')}
                 </p>
               </div>
-              <BookOpen className="h-10 w-10 text-gold-600/50" />
+              <BookOpen className="h-8 w-8 md:h-10 md:w-10 text-gold-600/50" />
             </div>
           </CardContent>
         </Card>

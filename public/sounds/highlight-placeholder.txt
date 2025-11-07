@@ -1,0 +1,12 @@
+# Temporary Placeholder
+
+The app is currently configured to use `/sounds/highlight.mp3`.
+
+Until you add a real sound file, the highlighting will work silently.
+
+To add a proper sound:
+1. Download a short "marker stroke" or "swoosh" sound from freesound.org
+2. Save it as `highlight.mp3` in this directory
+3. The sound will automatically work
+
+The app won't crash if the sound file is missing - it will just skip the audio.

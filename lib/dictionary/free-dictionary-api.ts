@@ -23,10 +23,15 @@ export interface DictionaryDefinition {
     sourceUrls?: string[]
 }
 
+export interface PhoneticVariant {
+    text: string
+    audio?: string
+    accent: 'US' | 'UK' | 'AU' | 'Other'
+}
+
 export interface SimplifiedDefinition {
     word: string
-    pronunciation?: string
-    audioUrl?: string
+    phonetics: PhoneticVariant[] // Multiple phonetics (US, UK, etc.)
     definitions: Array<{
         partOfSpeech: string // noun, verb, adjective, etc.
         meaning: string
@@ -60,10 +65,34 @@ export async function fetchWordDefinition(
 
         const firstEntry = data[0]
 
-        // Extract audio URL (prefer US pronunciation)
-        const audioUrl = firstEntry.phonetics.find(p => p.audio)?.audio
+        // Extract all phonetic variants (US, UK, etc.)
+        const phonetics: PhoneticVariant[] = firstEntry.phonetics
+            .filter(p => p.text || p.audio)
+            .map(p => {
+                // Detect accent from audio URL
+                let accent: 'US' | 'UK' | 'AU' | 'Other' = 'Other'
+                if (p.audio) {
+                    if (p.audio.includes('-us.mp3') || p.audio.includes('-american')) accent = 'US'
+                    else if (p.audio.includes('-uk.mp3') || p.audio.includes('-british')) accent = 'UK'
+                    else if (p.audio.includes('-au.mp3') || p.audio.includes('-australian')) accent = 'AU'
+                }
 
-        // Collect all definitions
+                return {
+                    text: p.text || firstEntry.phonetic || '',
+                    audio: p.audio,
+                    accent
+                }
+            })
+
+        // If no phonetics found, add default
+        if (phonetics.length === 0 && firstEntry.phonetic) {
+            phonetics.push({
+                text: firstEntry.phonetic,
+                accent: 'Other'
+            })
+        }
+
+        // Collect all definitions (limit to 3 per part of speech)
         const definitions = firstEntry.meanings.flatMap(meaning =>
             meaning.definitions.slice(0, 3).map(def => ({
                 partOfSpeech: meaning.partOfSpeech,
@@ -79,7 +108,7 @@ export async function fetchWordDefinition(
                     m.definitions.flatMap(d => d.synonyms || [])
                 )
             )
-        ).slice(0, 5)
+        ).slice(0, 8)
 
         const antonyms = Array.from(
             new Set(
@@ -87,12 +116,11 @@ export async function fetchWordDefinition(
                     m.definitions.flatMap(d => d.antonyms || [])
                 )
             )
-        ).slice(0, 5)
+        ).slice(0, 8)
 
         return {
             word: firstEntry.word,
-            pronunciation: firstEntry.phonetic,
-            audioUrl,
+            phonetics,
             definitions,
             synonyms,
             antonyms

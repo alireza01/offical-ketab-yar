@@ -91,9 +91,9 @@ export function SiteFooter() {
         />
       </div>
 
-      <div className="container relative mx-auto px-4 py-16 pb-8">
-        {/* Main Footer Content */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-12 mb-12">
+      <div className="container relative mx-auto px-4 py-8 md:py-16 pb-4 md:pb-8">
+        {/* Main Footer Content - Hidden on Mobile */}
+        <div className="hidden md:grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-12 mb-12">
           {/* Brand Section */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -103,16 +103,12 @@ export function SiteFooter() {
             className="col-span-1 md:col-span-2"
           >
             <Link href="/" className="group inline-flex items-center gap-3 mb-6">
-              <motion.div
-                whileHover={{ rotate: 360, scale: 1.1 }}
-                transition={{ duration: 0.6 }}
-                className="relative"
-              >
+              <div className="relative transition-transform duration-600 group-hover:rotate-[360deg] group-hover:scale-110">
                 <div className="absolute inset-0 bg-gradient-to-br from-gold-600 to-gold-400 rounded-xl blur-lg opacity-50 group-hover:opacity-75 transition-opacity" />
                 <div className="relative w-12 h-12 bg-gradient-to-br from-gold-600 to-gold-400 rounded-xl flex items-center justify-center shadow-xl">
                   <BookOpen className="h-6 w-6 text-white" />
                 </div>
-              </motion.div>
+              </div>
               <div>
                 <span className="block text-2xl font-bold bg-gradient-to-r from-gold-600 via-gold-500 to-gold-400 bg-clip-text text-transparent group-hover:from-gold-500 group-hover:to-gold-300 transition-all">
                   کتاب‌یار
@@ -130,12 +126,10 @@ export function SiteFooter() {
               {socialLinks.map((social, index) => {
                 const Icon = social.icon
                 return (
-                  <motion.div
+                  <div
                     key={social.label}
-                    initial={{ opacity: 0, scale: 0 }}
-                    whileInView={{ opacity: 1, scale: 1 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.3, delay: index * 0.1 }}
+                    className="animate-in fade-in zoom-in-50"
+                    style={{ animationDelay: `${index * 100}ms`, animationFillMode: 'backwards' }}
                   >
                     <Button
                       variant="outline"
@@ -147,7 +141,7 @@ export function SiteFooter() {
                         <Icon className="h-4 w-4 relative z-10 transition-transform group-hover:scale-110" />
                       </a>
                     </Button>
-                  </motion.div>
+                  </div>
                 )
               })}
             </div>
@@ -173,12 +167,10 @@ export function SiteFooter() {
                 {links.map((link, index) => {
                   const LinkIcon = link.icon
                   return (
-                    <motion.li
+                    <li
                       key={link.href}
-                      initial={{ opacity: 0, x: -10 }}
-                      whileInView={{ opacity: 1, x: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ duration: 0.3, delay: index * 0.05 }}
+                      className="animate-in fade-in slide-in-from-left-2"
+                      style={{ animationDelay: `${index * 50}ms`, animationFillMode: 'backwards' }}
                     >
                       <Link
                         href={link.href}
@@ -188,7 +180,7 @@ export function SiteFooter() {
                         <span className="group-hover:translate-x-1 transition-transform">{link.label}</span>
                         <ArrowUpRight className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
                       </Link>
-                    </motion.li>
+                    </li>
                   )
                 })}
               </ul>
@@ -197,7 +189,7 @@ export function SiteFooter() {
         </div>
 
         {/* Divider with gradient */}
-        <div className="relative mb-8">
+        <div className="relative mb-6 md:mb-8">
           <div className="absolute inset-0 flex items-center">
             <div className="w-full border-t border-border" />
           </div>
@@ -208,14 +200,36 @@ export function SiteFooter() {
           </div>
         </div>
 
-        {/* Bottom Bar - Mobile Optimized */}
+        {/* Bottom Bar - 2 Column on Mobile, Centered */}
         <motion.div
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5, delay: 0.3 }}
-          className="flex flex-col items-center justify-center gap-4 text-center pb-4 px-4"
+          className="flex flex-col items-center justify-center gap-4 text-center px-4"
         >
+          {/* Mobile: 2 Column Quick Links */}
+          <div className="grid grid-cols-2 gap-x-8 gap-y-2 md:hidden text-center">
+            <Link href="/library" className="text-sm text-muted-foreground hover:text-gold-600 transition-colors">
+              کتابخانه
+            </Link>
+            <Link href="/about" className="text-sm text-muted-foreground hover:text-gold-600 transition-colors">
+              درباره ما
+            </Link>
+            <Link href="/help" className="text-sm text-muted-foreground hover:text-gold-600 transition-colors">
+              راهنما
+            </Link>
+            <Link href="/contact" className="text-sm text-muted-foreground hover:text-gold-600 transition-colors">
+              تماس با ما
+            </Link>
+            <Link href="/privacy" className="text-sm text-muted-foreground hover:text-gold-600 transition-colors">
+              حریم خصوصی
+            </Link>
+            <Link href="/support" className="text-sm text-muted-foreground hover:text-gold-600 transition-colors">
+              پشتیبانی
+            </Link>
+          </div>
+
           {/* Made with Love */}
           <motion.div
             className="flex items-center gap-2 text-sm text-muted-foreground justify-center"
@@ -247,7 +261,7 @@ export function SiteFooter() {
           </motion.div>
 
           {/* Copyright */}
-          <p className="text-sm text-muted-foreground text-center leading-relaxed">
+          <p className="text-xs md:text-sm text-muted-foreground text-center leading-relaxed">
             <span className="inline-block">© {new Date().getFullYear()} کتاب‌یار.</span>
             <span className="text-gold-600/70 mx-2">•</span>
             <span className="inline-block">تمامی حقوق محفوظ است.</span>

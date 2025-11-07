@@ -1,6 +1,5 @@
 import { getUserReadingProgress } from '@/lib/supabase/queries/reading-progress'
-import { BookOpen } from 'lucide-react'
-import { BookCarouselSection } from './book-carousel-section'
+import { BookCarouselSectionClient } from './book-carousel-section-client'
 
 interface ReadingProgressItem {
     book_id: string
@@ -64,11 +63,11 @@ export async function ContinueReading() {
         )
 
         return (
-            <BookCarouselSection
+            <BookCarouselSectionClient
                 title="ادامه مطالعه"
                 description="کتاب‌هایی که در حال خواندن آن‌ها هستید"
                 books={books}
-                icon={<BookOpen className="w-8 h-8 text-gold-500" />}
+                iconType="book-open"
                 viewAllLink="/dashboard"
                 viewAllText="مشاهده داشبورد"
                 progress={progressMap}

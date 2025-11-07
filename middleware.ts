@@ -15,18 +15,34 @@ import { type NextRequest, NextResponse } from "next/server"
  */
 
 // Define route patterns
+// Agent 3 (Psychology): Force login for ALL features (even free ones)
+// This creates account dependency and enables proper freemium tracking
 const PUBLIC_ROUTES = [
   '/',
   '/about',
   '/help',
   '/blog',
-  '/books', // Book detail pages (SSG)
+  '/books', // Book detail pages ONLY (SSG) - NOT the reader
   '/auth/login',
   '/auth/register',
   '/auth/error',
   '/auth/callback',
+  '/auth/verify',
+  '/auth/forgot-password',
+  '/auth/reset-password',
   '/offline',
   '/api/auth', // Auth API routes
+]
+
+// Protected routes that require authentication
+// Agent 3 (Psychology): Make features accessible without login to lower barrier
+// Only truly private features require auth
+const PROTECTED_ROUTES = [
+  '/profile', // Personal profile requires auth
+  '/subscription', // Payment requires auth
+  '/admin', // Admin panel requires auth
+  // Note: /dashboard, /library, /vocabulary, /settings, /books/read work without auth
+  // They use offline storage and sync when user logs in
 ]
 
 const ADMIN_ROUTES = [
@@ -51,29 +67,47 @@ export async function proxy(request: NextRequest) {
   }
 
   // 2. Check if route is public
-  const isPublicRoute = PUBLIC_ROUTES.some(route =>
+  const isPublicRoute = PUBLIC_ROUTES.some(route => {
+    // Exact match for root routes
+    if (route === pathname) return true
+
+    // Special handling for /books - allow /books/[slug] but NOT /books/read/[slug]
+    if (route === '/books') {
+      return pathname.startsWith('/books/') && !pathname.startsWith('/books/read/')
+    }
+
+    // Other routes with subpaths
+    return pathname.startsWith(`${route}/`)
+  })
+
+  // 3. Check if route is protected (requires auth)
+  const isProtectedRoute = PROTECTED_ROUTES.some(route =>
     pathname === route || pathname.startsWith(`${route}/`)
   )
 
-  // 3. Check if route is admin
+  // 4. Check if route is admin
   const isAdminRoute = ADMIN_ROUTES.some(route =>
     pathname === route || pathname.startsWith(`${route}/`)
   )
 
-  // 4. Check Supabase configuration
+  // 5. Check Supabase configuration
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
   const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
   const isSupabaseConfigured = supabaseUrl &&
     supabaseKey &&
-    supabaseUrl !== 'your_supabase_url_here'
+    supabaseUrl !== 'your_supabase_url_here' &&
+    !supabaseUrl.includes('placeholder') &&
+    supabaseKey !== 'placeholder_anon_key_here' &&
+    !supabaseKey.includes('placeholder')
 
-  // 5. Development mode: Allow all routes if Supabase not configured
-  if (process.env.NODE_ENV === 'development' && !isSupabaseConfigured) {
-    console.log(`[Middleware] Dev mode without Supabase - allowing: ${pathname}`)
+  // 6. Development mode: Allow all routes if Supabase not configured
+  // This allows testing the app without authentication setup
+  if (!isSupabaseConfigured) {
+    console.log(`[Middleware] Supabase not configured - allowing all routes: ${pathname}`)
     return NextResponse.next()
   }
 
-  // 6. Public routes: Always allow
+  // 7. Public routes: Always allow (no auth needed)
   if (isPublicRoute) {
     // Still update session for public routes (for user state)
     if (isSupabaseConfigured) {
@@ -82,8 +116,8 @@ export async function proxy(request: NextRequest) {
     return NextResponse.next()
   }
 
-  // 7. Protected routes: Require authentication
-  if (isSupabaseConfigured) {
+  // 8. Protected routes: Require authentication
+  if (isProtectedRoute && isSupabaseConfigured) {
     const response = await updateSession(request)
 
     // Check if user is authenticated
@@ -106,7 +140,12 @@ export async function proxy(request: NextRequest) {
     return response
   }
 
-  // 8. Fallback: Allow access (shouldn't reach here in production)
+  // 9. All other routes: Allow access (works offline with IndexedDB)
+  // Agent 3 (Psychology): Lower barrier to entry, sync when user logs in
+  if (isSupabaseConfigured) {
+    return await updateSession(request)
+  }
+
   return NextResponse.next()
 }
 

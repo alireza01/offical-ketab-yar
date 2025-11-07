@@ -1,6 +1,5 @@
 import { getBooks } from '@/lib/data'
-import { Sparkles } from 'lucide-react'
-import { BookCarouselSection } from './book-carousel-section'
+import { BookCarouselSectionClient } from './book-carousel-section-client'
 
 export async function RecentlyAddedBooks() {
     try {
@@ -22,12 +21,15 @@ export async function RecentlyAddedBooks() {
             isPremium: book.isPremium,
         }))
 
+        // Serialize to ensure JSON-safe data for Client Component (Agent 2 - Performance)
+        const serializedBooks = JSON.parse(JSON.stringify(books))
+
         return (
-            <BookCarouselSection
+            <BookCarouselSectionClient
                 title="جدیدترین کتاب‌ها"
                 description="تازه‌ترین کتاب‌های اضافه شده به کتابخانه"
-                books={books}
-                icon={<Sparkles className="w-8 h-8 text-gold-500" />}
+                books={serializedBooks}
+                iconType="sparkles"
                 viewAllLink="/library?sort=newest"
                 viewAllText="مشاهده همه کتاب‌های جدید"
                 autoScrollDirection="left"

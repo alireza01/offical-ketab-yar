@@ -1,5 +1,5 @@
 import { groq } from 'next-sanity'
-import { sanityClient } from './client'
+import { sanityClientWithMock as sanityClient } from './client-with-mock'
 import type { Author, SanityBook, SanityBookListItem } from './types'
 
 // ============================================

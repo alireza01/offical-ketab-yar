@@ -25,7 +25,7 @@ export default function NotFound() {
                 </div>
 
                 {/* Message */}
-                <div className="space-y-4 animate-fade-in">
+                <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-600">
                     <h1 className="text-3xl md:text-4xl font-bold text-foreground">
                         Page Not Found
                     </h1>
@@ -35,7 +35,7 @@ export default function NotFound() {
                 </div>
 
                 {/* Action Buttons */}
-                <div className="flex flex-col sm:flex-row gap-4 justify-center items-center animate-slide-up">
+                <div className="flex flex-col sm:flex-row gap-4 justify-center items-center animate-in fade-in slide-in-from-bottom-4 duration-600 delay-200">
                     <Button asChild size="lg" className="bg-gold hover:bg-gold/90 text-white min-w-[200px]">
                         <Link href="/">
                             <Home className="mr-2 h-5 w-5" />
@@ -52,7 +52,7 @@ export default function NotFound() {
                 </div>
 
                 {/* Helpful Links */}
-                <div className="pt-8 border-t border-border/50 animate-fade-in-delayed">
+                <div className="pt-8 border-t border-border/50 animate-in fade-in slide-in-from-bottom-2 duration-800 delay-300">
                     <p className="text-sm text-muted-foreground mb-4">
                         Or try one of these popular pages:
                     </p>
@@ -89,44 +89,8 @@ export default function NotFound() {
 
                 {/* Decorative Elements */}
                 <div className="absolute top-10 left-10 w-20 h-20 bg-gold/5 rounded-full blur-3xl animate-pulse" />
-                <div className="absolute bottom-10 right-10 w-32 h-32 bg-gold/5 rounded-full blur-3xl animate-pulse delay-1000" />
+                <div className="absolute bottom-10 right-10 w-32 h-32 bg-gold/5 rounded-full blur-3xl animate-pulse" />
             </div>
-
-            <style jsx>{`
-        @keyframes fade-in {
-          from {
-            opacity: 0;
-            transform: translateY(10px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-
-        @keyframes slide-up {
-          from {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-
-        .animate-fade-in {
-          animation: fade-in 0.6s ease-out;
-        }
-
-        .animate-fade-in-delayed {
-          animation: fade-in 0.8s ease-out 0.3s both;
-        }
-
-        .animate-slide-up {
-          animation: slide-up 0.6s ease-out 0.2s both;
-        }
-      `}</style>
         </div>
     )
 }

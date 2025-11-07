@@ -21,6 +21,7 @@ import {
   SheetTrigger,
 } from '@/components/ui/sheet'
 import { Slider } from '@/components/ui/slider'
+import { useLibraryStore } from '@/lib/store/library-store'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Filter, Grid3x3, List, Search, Sparkles, Star, TrendingUp, X } from 'lucide-react'
 import { useState } from 'react'
@@ -36,7 +37,7 @@ interface LibraryHeaderProps {
 }
 
 export function LibraryHeader({ categories }: LibraryHeaderProps) {
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
+  const { viewMode, setViewMode } = useLibraryStore()
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedGenres, setSelectedGenres] = useState<string[]>([])
   const [selectedLanguages, setSelectedLanguages] = useState<string[]>([])
@@ -118,14 +119,14 @@ export function LibraryHeader({ categories }: LibraryHeaderProps) {
                 ease: "easeInOut"
               }}
             >
-              <Sparkles className="h-8 w-8 text-gold-500" />
+              <Sparkles className="h-8 w-8 text-gold-600 dark:text-gold-500" />
             </motion.div>
-            <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-gold-600 via-gold-500 to-gold-400 bg-clip-text text-transparent">
+            <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-gold-700 via-gold-600 to-gold-500 dark:from-gold-600 dark:via-gold-500 dark:to-gold-400 bg-clip-text text-transparent">
               کتابخانه
             </h1>
           </div>
-          <p className="text-muted-foreground text-lg flex items-center gap-2">
-            <TrendingUp className="h-4 w-4" />
+          <p className="text-gray-700 dark:text-muted-foreground text-lg flex items-center gap-2">
+            <TrendingUp className="h-4 w-4 text-gold-600 dark:text-gold-500" />
             کاوش در بیش از 1000 کتاب برتر
           </p>
         </motion.div>
@@ -149,7 +150,7 @@ export function LibraryHeader({ categories }: LibraryHeaderProps) {
                   ease: "easeInOut"
                 }}
               >
-                <Search className="h-5 w-5 text-gold-500" />
+                <Search className="h-5 w-5 text-gold-600 dark:text-gold-500" />
               </motion.div>
             </div>
             <Input
@@ -182,9 +183,9 @@ export function LibraryHeader({ categories }: LibraryHeaderProps) {
           {/* Enhanced Sort */}
           <motion.div whileHover={{ scale: 1.02 }} transition={{ duration: 0.2 }}>
             <Select value={sortBy} onValueChange={setSortBy}>
-              <SelectTrigger className="w-full md:w-[220px] h-12 border-2 border-gold-500/20 bg-background/50 backdrop-blur-sm shadow-lg hover:shadow-xl hover:border-gold-500/50 transition-all duration-300">
+              <SelectTrigger className="w-full md:w-[220px] h-12 border-2 border-gold-500/30 bg-background/80 backdrop-blur-sm shadow-lg hover:shadow-xl hover:border-gold-600/60 transition-all duration-300">
                 <div className="flex items-center gap-2">
-                  <Star className="h-4 w-4 text-gold-500" />
+                  <Star className="h-4 w-4 text-gold-600 dark:text-gold-500" />
                   <SelectValue placeholder="مرتب‌سازی" />
                 </div>
               </SelectTrigger>
@@ -213,29 +214,53 @@ export function LibraryHeader({ categories }: LibraryHeaderProps) {
             </Select>
           </motion.div>
 
-          {/* Enhanced View Mode */}
-          <div className="hidden md:flex items-center gap-2 border-2 border-gold-500/20 rounded-xl p-1.5 bg-background/50 backdrop-blur-sm shadow-lg">
-            <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
+          {/* Enhanced View Mode with Morphing Background - FIXED */}
+          <div className="hidden md:flex items-center gap-2 border-2 border-gold-500/30 rounded-xl p-1.5 bg-background/80 backdrop-blur-sm shadow-lg relative">
+            {/* Morphing Background Indicator - FIXED: Grid=left(0), List=right(44) */}
+            <motion.div
+              className="absolute top-1.5 left-1.5 w-9 h-9 bg-gradient-to-r from-gold-600 to-gold-500 rounded-lg shadow-lg shadow-gold-500/30"
+              animate={{
+                x: viewMode === 'grid' ? 0 : 44
+              }}
+              transition={{
+                type: 'spring',
+                stiffness: 400,
+                damping: 25
+              }}
+            />
+
+            {/* Grid Button */}
+            <motion.div
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.95 }}
+              className="relative z-10"
+            >
               <Button
-                variant={viewMode === 'grid' ? 'default' : 'ghost'}
+                variant="ghost"
                 size="sm"
                 onClick={() => setViewMode('grid')}
-                className={`h-9 w-9 p-0 rounded-lg transition-all duration-300 ${viewMode === 'grid'
-                    ? 'bg-gradient-to-r from-gold-600 to-gold-500 shadow-lg shadow-gold-500/30'
-                    : 'hover:bg-gold-500/10'
+                className={`h-9 w-9 p-0 rounded-lg transition-all duration-200 ${viewMode === 'grid'
+                  ? 'text-white hover:bg-transparent'
+                  : 'hover:bg-gold-500/10'
                   }`}
               >
                 <Grid3x3 className="h-4 w-4" />
               </Button>
             </motion.div>
-            <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
+
+            {/* List Button */}
+            <motion.div
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.95 }}
+              className="relative z-10"
+            >
               <Button
-                variant={viewMode === 'list' ? 'default' : 'ghost'}
+                variant="ghost"
                 size="sm"
                 onClick={() => setViewMode('list')}
-                className={`h-9 w-9 p-0 rounded-lg transition-all duration-300 ${viewMode === 'list'
-                    ? 'bg-gradient-to-r from-gold-600 to-gold-500 shadow-lg shadow-gold-500/30'
-                    : 'hover:bg-gold-500/10'
+                className={`h-9 w-9 p-0 rounded-lg transition-all duration-200 ${viewMode === 'list'
+                  ? 'text-white hover:bg-transparent'
+                  : 'hover:bg-gold-500/10'
                   }`}
               >
                 <List className="h-4 w-4" />
@@ -249,10 +274,10 @@ export function LibraryHeader({ categories }: LibraryHeaderProps) {
               <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                 <Button
                   variant="outline"
-                  className="relative h-12 border-2 border-gold-500/20 bg-gradient-to-r from-gold-500/10 to-gold-400/10 hover:from-gold-500/20 hover:to-gold-400/20 backdrop-blur-sm shadow-lg hover:shadow-xl hover:border-gold-500/50 transition-all duration-300"
+                  className="relative h-12 border-2 border-gold-500/30 bg-gradient-to-r from-gold-500/15 to-gold-400/15 hover:from-gold-500/25 hover:to-gold-400/25 backdrop-blur-sm shadow-lg hover:shadow-xl hover:border-gold-600/60 transition-all duration-300"
                 >
-                  <Filter className="ml-2 h-5 w-5 text-gold-600" />
-                  <span className="font-semibold">فیلترها</span>
+                  <Filter className="ml-2 h-5 w-5 text-gold-700 dark:text-gold-600" />
+                  <span className="font-semibold text-gray-900 dark:text-gray-100">فیلترها</span>
                   <AnimatePresence>
                     {activeFiltersCount > 0 && (
                       <motion.div
@@ -366,8 +391,8 @@ export function LibraryHeader({ categories }: LibraryHeaderProps) {
             >
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
-                  <Filter className="h-4 w-4 text-gold-600" />
-                  <span className="text-sm font-semibold text-gold-700 dark:text-gold-400">
+                  <Filter className="h-4 w-4 text-gold-700 dark:text-gold-600" />
+                  <span className="text-sm font-semibold text-gold-800 dark:text-gold-400">
                     فیلترهای فعال ({activeFiltersCount})
                   </span>
                 </div>
@@ -375,7 +400,7 @@ export function LibraryHeader({ categories }: LibraryHeaderProps) {
                   variant="ghost"
                   size="sm"
                   onClick={clearFilters}
-                  className="h-7 text-xs hover:bg-gold-500/10 hover:text-gold-600"
+                  className="h-7 text-xs hover:bg-gold-500/10 hover:text-gold-700 dark:hover:text-gold-600"
                 >
                   <X className="h-3 w-3 ml-1" />
                   پاک کردن همه
@@ -392,9 +417,9 @@ export function LibraryHeader({ categories }: LibraryHeaderProps) {
                   >
                     <Badge
                       variant="secondary"
-                      className="gap-2 pr-3 pl-1 py-1.5 bg-gold-500/10 text-gold-700 dark:text-gold-400 border border-gold-500/30 hover:bg-gold-500/20 transition-colors"
+                      className="gap-2 pr-3 pl-1 py-1.5 bg-gold-500/15 text-gold-800 dark:text-gold-400 border border-gold-500/40 hover:bg-gold-500/25 transition-colors"
                     >
-                      <Sparkles className="h-3 w-3" />
+                      <Sparkles className="h-3 w-3 text-gold-700 dark:text-gold-500" />
                       {categories.find(c => c.slug === genre)?.name}
                       <Button
                         variant="ghost"
@@ -440,9 +465,9 @@ export function LibraryHeader({ categories }: LibraryHeaderProps) {
                   >
                     <Badge
                       variant="secondary"
-                      className="gap-2 pr-3 pl-1 py-1.5 bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-500/30 hover:bg-amber-500/20 transition-colors"
+                      className="gap-2 pr-3 pl-1 py-1.5 bg-amber-500/15 text-amber-800 dark:text-amber-400 border border-amber-500/40 hover:bg-amber-500/25 transition-colors"
                     >
-                      <Star className="h-3 w-3" />
+                      <Star className="h-3 w-3 text-amber-700 dark:text-amber-500" />
                       امتیاز: {ratingRange[0]}-{ratingRange[1]}
                       <Button
                         variant="ghost"

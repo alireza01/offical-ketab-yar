@@ -8,6 +8,11 @@ interface SkeletonProps extends React.HTMLAttributes<HTMLDivElement> {
   shimmer?: boolean
 }
 
+/**
+ * Skeleton Component - Visible in both light and dark themes
+ * Agent 2 (Performance): GPU-accelerated animations
+ * Agent 3 (Psychology): Premium loading feel
+ */
 function Skeleton({
   className,
   variant = "default",
@@ -27,7 +32,10 @@ function Skeleton({
   return (
     <div
       className={cn(
-        "bg-muted relative overflow-hidden",
+        // Enhanced visibility for BOTH light and dark themes
+        "relative overflow-hidden rounded-md",
+        "bg-gray-200/80 dark:bg-gray-800/80",
+        "border border-gray-300/30 dark:border-gray-700/30",
         animate && "animate-pulse",
         variants[variant],
         className
@@ -36,9 +44,9 @@ function Skeleton({
     >
       {shimmer && (
         <div
-          className="absolute inset-0 -translate-x-full animate-[shimmer_2s_infinite] bg-gradient-to-r from-transparent via-white/10 to-transparent"
+          className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/50 dark:via-white/10 to-transparent"
           style={{
-            animation: "shimmer 2s infinite",
+            animation: "shimmer 2s infinite linear",
           }}
         />
       )}

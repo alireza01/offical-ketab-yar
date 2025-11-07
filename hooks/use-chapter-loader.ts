@@ -1,6 +1,6 @@
 'use client'
 
-import { sanityClientCDN } from '@/lib/sanity/client'
+import { sanityClientCDNWithMock } from '@/lib/sanity/client-with-mock'
 import type { Chapter } from '@/lib/sanity/types'
 import { groq } from 'next-sanity'
 import { useCallback, useEffect, useRef, useState } from 'react'
@@ -30,7 +30,7 @@ export function useChapterLoader({ bookSlug, initialChapter }: UseChapterLoaderP
         "totalChapters": count(chapters)
       }`
 
-            const result = await sanityClientCDN.fetch(query, { slug: bookSlug })
+            const result = await sanityClientCDNWithMock.fetch(query, { slug: bookSlug })
             setTotalChapters(result.totalChapters)
         }
 
@@ -97,7 +97,7 @@ export function useChapterLoader({ bookSlug, initialChapter }: UseChapterLoaderP
           }
         }`
 
-                const result = await sanityClientCDN.fetch(query, { slug: bookSlug })
+                const result = await sanityClientCDNWithMock.fetch(query, { slug: bookSlug })
 
                 if (result?.chapter) {
                     setChapters((prev) => ({
@@ -125,10 +125,18 @@ export function useChapterLoader({ bookSlug, initialChapter }: UseChapterLoaderP
     )
 
     // N+1 Strategy: Load next chapter immediately after current chapter loads
+    // This ensures instant chapter transitions
     useEffect(() => {
         if (currentChapter === 1 && chapters[1]) {
             // Chapter 1 loaded, immediately start loading Chapter 2
             loadChapter(2)
+        }
+    }, [currentChapter, chapters, loadChapter])
+
+    // Prefetch previous chapter when going back (for smooth navigation)
+    useEffect(() => {
+        if (currentChapter > 1 && !chapters[currentChapter - 1]) {
+            loadChapter(currentChapter - 1)
         }
     }, [currentChapter, chapters, loadChapter])
 

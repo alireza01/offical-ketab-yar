@@ -1,6 +1,5 @@
 import { getTrendingBooks } from '@/lib/data'
-import { TrendingUp } from 'lucide-react'
-import { BookCarouselSection } from './book-carousel-section'
+import { BookCarouselSectionClient } from './book-carousel-section-client'
 
 export async function MostReadBooks() {
     try {
@@ -10,12 +9,15 @@ export async function MostReadBooks() {
             return null
         }
 
+        // Serialize to ensure JSON-safe data for Client Component (Agent 2 - Performance)
+        const serializedBooks = JSON.parse(JSON.stringify(books))
+
         return (
-            <BookCarouselSection
+            <BookCarouselSectionClient
                 title="پرخواننده‌ترین کتاب‌ها"
                 description="کتاب‌هایی که بیشترین تعداد خواننده را داشته‌اند"
-                books={books}
-                icon={<TrendingUp className="w-8 h-8 text-gold-500" />}
+                books={serializedBooks}
+                iconType="trending"
                 viewAllLink="/library?sort=popular"
                 viewAllText="مشاهده همه کتاب‌های محبوب"
                 showReadCount

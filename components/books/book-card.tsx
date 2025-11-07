@@ -1,10 +1,11 @@
 'use client'
 
+import { LikeButton } from '@/components/books/like-button'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardFooter } from '@/components/ui/card'
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion'
-import { BookOpen, Eye, Heart, Star } from 'lucide-react'
+import { BookOpen, Eye, Star } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useEffect, useRef, useState } from 'react'
@@ -31,12 +32,12 @@ interface BookCardProps {
 }
 
 export function BookCard({ book, showReadCount, progress }: BookCardProps) {
-  const [isLiked, setIsLiked] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
 
   const coverImage = book.cover_image || book.coverImage || '/placeholder-book.jpg'
   const bookRating = book.rating || 0
   const bookGenre = book.genres || book.genre || []
+  const bookId = book.id || book._id || book.slug
 
   // Handle bilingual title
   const bookTitle = typeof book.title === 'string' ? book.title : (book.title?.fa || book.title?.en || 'Untitled')
@@ -102,37 +103,32 @@ export function BookCard({ book, showReadCount, progress }: BookCardProps) {
       className={enable3D ? "perspective-1000" : ""}
     >
       <Link href={`/books/${book.slug}`}>
-        <Card className="group relative overflow-hidden hover:shadow-2xl hover:shadow-gold-500/20 transition-all duration-500 border-2 border-gray-200 hover:border-gold-500/50 cursor-pointer h-full bg-white dark:bg-card/50 dark:border-gold-500/20 dark:hover:border-gold-500/40 backdrop-blur-sm shadow-md hover:shadow-xl">
+        <Card className="group relative overflow-hidden hover:shadow-2xl hover:shadow-gold-500/20 transition-all duration-500 border-2 border-warm hover:border-gold-500/50 cursor-pointer h-full bg-card dark:bg-card/50 dark:border-gold-500/20 dark:hover:border-gold-500/40 backdrop-blur-sm shadow-md hover:shadow-xl">
           {/* Shine effect */}
           <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
             <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-transparent translate-x-[-100%] translate-y-[-100%] group-hover:translate-x-[100%] group-hover:translate-y-[100%] transition-transform duration-1000" />
           </div>
 
-          {/* Like button */}
-          <motion.button
-            whileHover={{ scale: 1.15 }}
-            whileTap={{ scale: 0.9 }}
-            onClick={(e) => {
-              e.preventDefault()
-              setIsLiked(!isLiked)
-            }}
-            className="absolute top-3 left-3 z-20 w-9 h-9 rounded-full bg-white/95 dark:bg-gray-900/95 backdrop-blur-md flex items-center justify-center shadow-lg opacity-0 group-hover:opacity-100 transition-all duration-300 border border-white/20"
+          {/* Like button (Agent 3: Collection Psychology) */}
+          <div
+            className="absolute top-3 left-3 z-20 opacity-0 group-hover:opacity-100 transition-all duration-300"
+            onClick={(e) => e.preventDefault()}
           >
-            <motion.div
-              animate={isLiked ? { scale: [1, 1.3, 1] } : {}}
-              transition={{ duration: 0.3 }}
-            >
-              <Heart
-                className={`h-4 w-4 transition-all duration-300 ${isLiked
-                  ? 'fill-red-500 text-red-500 drop-shadow-[0_0_8px_rgba(239,68,68,0.5)]'
-                  : 'text-gray-600 dark:text-gray-400'
-                  }`}
-              />
-            </motion.div>
-          </motion.button>
+            <LikeButton
+              book={{
+                id: bookId,
+                slug: book.slug,
+                title: bookTitle,
+                cover_url: coverImage,
+              }}
+              variant="ghost"
+              size="icon"
+              className="w-9 h-9 rounded-full bg-white/95 dark:bg-gray-900/95 backdrop-blur-md shadow-lg border border-white/20 hover:bg-white hover:dark:bg-gray-900"
+            />
+          </div>
 
           <CardContent className="p-0">
-            <div className="relative aspect-[2/3] overflow-hidden bg-gradient-to-br from-gold-100 via-gold-50 to-white dark:from-gray-800 dark:via-gray-850 dark:to-gray-900">
+            <div className="relative aspect-[2/3] overflow-hidden bg-gradient-to-br from-warm-100 via-warm-50 to-card dark:from-gray-800 dark:via-gray-850 dark:to-gray-900">
               <Image
                 src={coverImage}
                 alt={bookTitle}
@@ -197,11 +193,11 @@ export function BookCard({ book, showReadCount, progress }: BookCardProps) {
             </div>
           </CardContent>
 
-          <CardFooter className="flex flex-col items-start p-4 gap-2.5 bg-gradient-to-b from-white to-gray-50 dark:from-card dark:to-card/80 border-t-2 border-gray-100 dark:border-border/50">
-            <h3 className="font-bold text-base line-clamp-2 text-gray-900 group-hover:text-gold-600 dark:text-foreground transition-colors leading-snug">
+          <CardFooter className="flex flex-col items-start p-4 gap-2.5 bg-gradient-to-b from-card to-warm-50 dark:from-card dark:to-card/80 border-t-2 border-warm dark:border-border/50">
+            <h3 className="font-bold text-base line-clamp-2 text-warm-foreground group-hover:text-gold-600 dark:text-foreground transition-colors leading-snug">
               {bookTitle}
             </h3>
-            <p className="text-sm text-gray-600 dark:text-muted-foreground line-clamp-1 font-medium">{bookAuthor}</p>
+            <p className="text-sm text-warm-muted dark:text-muted-foreground line-clamp-1 font-medium">{bookAuthor}</p>
             {bookGenre.length > 0 && (
               <div className="flex flex-wrap gap-1.5 mt-1">
                 {bookGenre.slice(0, 2).map((g) => (
